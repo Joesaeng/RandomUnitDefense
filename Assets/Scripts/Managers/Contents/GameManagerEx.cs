@@ -5,13 +5,11 @@ using UnityEngine;
 
 public class GameManagerEx
 {
-    GameObject _player;
-    //Dictionary<int, GameObject> _players = new Dictionary<int, GameObject>();
     HashSet<GameObject> _monsters = new HashSet<GameObject>();
 
     public Action<int> OnSpawnEvent;
 
-    public GameObject GetPlayer() { return _player; }
+    public Action<int,int> OnMoveUnitEvent;
 
     public GameObject Spawn(Define.WorldObject type, string path, Transform parent = null)
     {
@@ -25,7 +23,6 @@ public class GameManagerEx
                     OnSpawnEvent.Invoke(1);
                 break;
             case Define.WorldObject.Player:
-                _player = go;
                 break;
         }
 
@@ -60,14 +57,17 @@ public class GameManagerEx
             break;
             case Define.WorldObject.Player:
             {
-                if (_player == go)
-                {
-                    _player = null;
-                }
+
             }
             break;
 
         }
         Managers.Resource.Destroy(go);
+    }
+
+    public void MoveUnitBetweenSlots(int curSlotIndex, int moveSlotIndex)
+    {
+        if(OnMoveUnitEvent != null)
+            OnMoveUnitEvent.Invoke(curSlotIndex, moveSlotIndex);
     }
 }

@@ -9,7 +9,7 @@ public class CursorController : MonoBehaviour
         None,
     }
 
-    CursorType _cursorType = CursorType.None;
+    // CursorType _cursorType = CursorType.None;
 
     void Start()
     {
