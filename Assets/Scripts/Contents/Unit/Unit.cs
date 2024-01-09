@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -33,9 +34,9 @@ public class Unit : MonoBehaviour
 
     private void BindToMouseUp()
     {
-        DraggableUnit dragAndDrop = gameObject.GetComponent<DraggableUnit>();
-        dragAndDrop.OnMouseUpEvent -= MouseUpEventReader;
-        dragAndDrop.OnMouseUpEvent += MouseUpEventReader;
+        DraggableUnit draggableUnit = gameObject.GetComponent<DraggableUnit>();
+        draggableUnit.OnMouseUpEvent -= MouseUpEventReader;
+        draggableUnit.OnMouseUpEvent += MouseUpEventReader;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -44,8 +45,6 @@ public class Unit : MonoBehaviour
         {
             UnitSlot slot = collision.gameObject.GetComponent<UnitSlot>();
             moveSlotIndex = slot.slotIndex;
-            // moveSlotIndex의 슬롯으로 이동 가능한지 확인
-            // 이동 후 slotIndex를 moveSlotIndex로,
         }
     }
 

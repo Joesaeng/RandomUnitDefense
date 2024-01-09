@@ -23,7 +23,6 @@ public class DraggableUnit : MonoBehaviour
 
     public void OnMouseDown()
     {
-        Debug.Log($"{gameObject.name} Drag!");
         unit.IsDraging = true;
         mousePos = Input.mousePosition - GetMousePos();
     }

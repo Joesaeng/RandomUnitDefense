@@ -42,10 +42,8 @@ public class GameScene : BaseScene
             obj.GetComponent<SpriteRenderer>().color = new Color(randomR, randomG, randomB);
             //
 
-            // 유닛을 스폰할 때 카메라쪽으로 일정거리 이동시킵니다.
-            // UnitSlot 오브젝트 등과 동일선상에 있으니 Unit의 마우스 이벤트가 간헐적으로
-            // 동작이 안되는 버그가 있었습니다.
-            obj.transform.position = unitSlots[i].transform.position - new Vector3(0,0,1f);
+            
+            obj.transform.position = GetUnitMovePos(i);
             obj.GetOrAddComponent<Unit>().Init(i);
 
             unitDict.Add(i, obj);
@@ -70,6 +68,7 @@ public class GameScene : BaseScene
             unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
             return;
         }
+        // 이동할 슬롯에 다른 유닛이 있다면 스왑한다.
         if(unitDict.ContainsKey(curSlotIndex) && unitDict.ContainsKey(nextSlotIndex))
         {
             GameObject obj = Instantiate(unitDict[nextSlotIndex]);
@@ -88,15 +87,31 @@ public class GameScene : BaseScene
         }
     }
 
+    private void DestroyUnit(int slotIndex)
+    {
+        GameObject obj;
+        if (unitDict.TryGetValue(slotIndex, out obj))
+        {
+            Managers.Resource.Destroy(obj);
+            unitDict.Remove(slotIndex);
+        }
+    }
+
     private Vector3 GetUnitMovePos(int slotIndex)
     {
-        // 스폰할때와 동일하게 유닛을 움직일때도 카메라방향으로 일정거리 이동한 위치시킵니다.
-        return unitSlots[slotIndex].transform.position - new Vector3(0, 0, 1f);
+        // 유닛의 위치가 UnitSlot 오브젝트 등과 동일선상에 있으니
+        // Unit의 마우스 이벤트가 간헐적으로
+        // 동작이 안되는 버그? 있음
+        // Unit을 강제적으로 카메라쪽으로 1만큼 이동하게 하여 해결
+        return unitSlots[slotIndex].transform.position + Vector3.back;
     }
 
     public override void Clear()
     {
-
+        for (int i = 0; i < unitSlots.Length; i++)
+        {
+            DestroyUnit(i);
+        }
     }
 
 }
