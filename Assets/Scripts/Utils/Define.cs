@@ -21,6 +21,7 @@ public class Define
 
     public enum Layer
     {
+        Unit = 3,
         Monster = 6,
         Ground = 7,
         Block = 8,

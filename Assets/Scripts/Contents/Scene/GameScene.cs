@@ -42,7 +42,10 @@ public class GameScene : BaseScene
             obj.GetComponent<SpriteRenderer>().color = new Color(randomR, randomG, randomB);
             //
 
-            obj.transform.position = unitSlots[i].transform.position;
+            // 유닛을 스폰할 때 카메라쪽으로 일정거리 이동시킵니다.
+            // UnitSlot 오브젝트 등과 동일선상에 있으니 Unit의 마우스 이벤트가 간헐적으로
+            // 동작이 안되는 버그가 있었습니다.
+            obj.transform.position = unitSlots[i].transform.position - new Vector3(0,0,1f);
             obj.GetOrAddComponent<Unit>().Init(i);
 
             unitDict.Add(i, obj);
@@ -53,7 +56,7 @@ public class GameScene : BaseScene
     {
         if(curSlotIndex == nextSlotIndex)
         {
-            unitDict[curSlotIndex].transform.position = MoveSlotToSlot(curSlotIndex);
+            unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
             return;
         }
         // 이동할 슬롯에 유닛이 없다면
@@ -64,7 +67,7 @@ public class GameScene : BaseScene
             obj.GetComponent<Unit>().SlotChange(nextSlotIndex);
             unitDict.Remove(curSlotIndex);
 
-            unitDict[nextSlotIndex].transform.position = MoveSlotToSlot(nextSlotIndex);
+            unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
             return;
         }
         if(unitDict.ContainsKey(curSlotIndex) && unitDict.ContainsKey(nextSlotIndex))
@@ -77,17 +80,18 @@ public class GameScene : BaseScene
             unitDict[nextSlotIndex] = unitDict[curSlotIndex];
             unitDict[curSlotIndex] = obj;
 
-            unitDict[nextSlotIndex].transform.position = MoveSlotToSlot(nextSlotIndex);
-            unitDict[curSlotIndex].transform.position = MoveSlotToSlot(curSlotIndex);
+            unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
+            unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
 
             unitDict[nextSlotIndex].GetComponent<Unit>().SlotChange(nextSlotIndex);
             unitDict[curSlotIndex].GetComponent<Unit>().SlotChange(curSlotIndex);
         }
     }
 
-    private Vector3 MoveSlotToSlot(int slotIndex)
+    private Vector3 GetUnitMovePos(int slotIndex)
     {
-        return unitSlots[slotIndex].transform.position;
+        // 스폰할때와 동일하게 유닛을 움직일때도 카메라방향으로 일정거리 이동한 위치시킵니다.
+        return unitSlots[slotIndex].transform.position - new Vector3(0, 0, 1f);
     }
 
     public override void Clear()
