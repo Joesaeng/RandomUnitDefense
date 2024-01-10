@@ -6,6 +6,16 @@ using UnityEngine;
 
 public class GameScene : BaseScene
 {
+    [SerializeField]
+    Transform monsterSpawnPoint;
+
+    HashSet<GameObject> monsters = new HashSet<GameObject>();
+
+    [SerializeField]
+    int monsterCount;
+
+    Define.Map curMap = Define.Map.Basic;
+
     protected override void Init()
     {
         base.Init();
@@ -23,31 +33,24 @@ public class GameScene : BaseScene
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
 
-        HashSet<int> randomIndex = new HashSet<int>();
-        while(randomIndex.Count < 5)
+        for(int i = 0; i < 5; ++i)
         {
-            int i = Random.Range(0,unitSlots.Length);
-            if(randomIndex.Contains(i) == false)
-                randomIndex.Add(i);
+            SpawnPlayerUnit();
         }
+    }
 
-        foreach(int i in  randomIndex)
+    float spawnTime = 0.5f;
+    float curTime = 0f;
+    private void Update()
+    {
+        // TEMP
+        curTime += Time.deltaTime;
+        if(curTime > spawnTime)
         {
-            GameObject obj = Managers.Resource.Instantiate("Unit");
-
-            // TEMP
-            float randomR = Random.value;
-            float randomG = Random.value;
-            float randomB = Random.value;
-            obj.GetComponent<SpriteRenderer>().color = new Color(randomR, randomG, randomB);
-            //
-
-            
-            obj.transform.position = GetUnitMovePos(i);
-            obj.GetOrAddComponent<Unit>().Init(i);
-
-            unitDict.Add(i, obj);
+            SpawnMonster(1);
+            curTime = 0f;
         }
+        //
     }
 
     private void OnMoveUnitBetweenSlots(int curSlotIndex, int nextSlotIndex)
@@ -64,6 +67,7 @@ public class GameScene : BaseScene
             unitDict[nextSlotIndex] = obj;
             obj.GetComponent<Unit>().SlotChange(nextSlotIndex);
             unitDict.Remove(curSlotIndex);
+            unitDict[nextSlotIndex].name = $"Unit Slot : {nextSlotIndex}";
 
             unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
             return;
@@ -71,13 +75,13 @@ public class GameScene : BaseScene
         // 이동할 슬롯에 다른 유닛이 있다면 스왑한다.
         if(unitDict.ContainsKey(curSlotIndex) && unitDict.ContainsKey(nextSlotIndex))
         {
-            GameObject obj = Instantiate(unitDict[nextSlotIndex]);
-            obj.name = unitDict[nextSlotIndex].name;
-            obj.GetOrAddComponent<Unit>().Init(nextSlotIndex);
-            Destroy(unitDict[nextSlotIndex]);
+            GameObject obj = unitDict[nextSlotIndex];
 
             unitDict[nextSlotIndex] = unitDict[curSlotIndex];
             unitDict[curSlotIndex] = obj;
+
+            unitDict[nextSlotIndex].name = $"Unit Slot : {nextSlotIndex}";
+            unitDict[curSlotIndex].name = $"Unit Slot : {curSlotIndex}";
 
             unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
             unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
@@ -87,7 +91,36 @@ public class GameScene : BaseScene
         }
     }
 
-    private void DestroyUnit(int slotIndex)
+    private void SpawnPlayerUnit()
+    {
+        int randSlotIndex;
+        while(true)
+        {
+            int i = Random.Range(0, unitSlots.Length);
+            if (unitDict.ContainsKey(i) == true)
+                continue;
+            randSlotIndex = i;
+            break;
+        }
+
+        GameObject obj = Managers.Resource.Instantiate("Unit");
+        obj.name = $"{obj.name} Slot : {randSlotIndex}";
+
+        // TEMP
+        float randomR = Random.value;
+        float randomG = Random.value;
+        float randomB = Random.value;
+        obj.GetComponent<SpriteRenderer>().color = new Color(randomR, randomG, randomB);
+        //
+
+
+        obj.transform.position = GetUnitMovePos(randSlotIndex);
+        obj.GetOrAddComponent<Unit>().Init(randSlotIndex);
+
+        unitDict.Add(randSlotIndex, obj);
+    }
+
+    private void DestroyPlayerUnit(int slotIndex)
     {
         GameObject obj;
         if (unitDict.TryGetValue(slotIndex, out obj))
@@ -110,8 +143,29 @@ public class GameScene : BaseScene
     {
         for (int i = 0; i < unitSlots.Length; i++)
         {
-            DestroyUnit(i);
+            DestroyPlayerUnit(i);
         }
     }
 
+    private void SpawnMonster(int stageNum)
+    {
+        GameObject monster = Managers.Resource.Instantiate("Monster");
+        monster.GetOrAddComponent<Monster>().Init(stageNum, curMap);
+
+        monster.transform.position = monsterSpawnPoint.position;
+        monsters.Add(monster);
+        monsterCount = monsters.Count;
+        // monsters의 Count 정보를 가지고 GameOver를 결정함.
+        // if(monsters.Count >= gameOverCount)
+        //    GameOver(); 뭐 이런거?
+
+    }
+
+    public void DestroyMonster(GameObject monster)
+    {
+        // monster 스크립트에서 체력이 0 이하가 되면 호출
+        monsters.Remove(monster);
+        Managers.Resource.Destroy(monster);
+        monsterCount = monsters.Count;
+    }
 }

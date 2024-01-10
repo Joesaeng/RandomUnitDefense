@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Define
 {
+    public enum Map
+    {
+        Basic,
+    }
+
     public enum WorldObject
     {
         Unknown,
