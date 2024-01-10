@@ -51,6 +51,15 @@ public class GameScene : BaseScene
             curTime = 0f;
         }
         //
+
+        foreach(KeyValuePair<int,GameObject> pair in unitDict)
+        {
+            pair.Value.GetComponent<Unit>().UnitUpdate();
+        }
+        foreach(GameObject monster in monsters)
+        {
+            monster.GetComponent<Monster>().MonsterUpdate();
+        }
     }
 
     private void OnMoveUnitBetweenSlots(int curSlotIndex, int nextSlotIndex)

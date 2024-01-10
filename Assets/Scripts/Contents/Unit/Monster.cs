@@ -29,7 +29,7 @@ public class Monster : MonoBehaviour
         }
     }
 
-    private void Update()
+    public void MonsterUpdate()
     {
         Move();
     }
