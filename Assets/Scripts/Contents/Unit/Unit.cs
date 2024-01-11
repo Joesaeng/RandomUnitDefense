@@ -16,15 +16,23 @@ public class Unit : MonoBehaviour
     private UnitState state;
     public UnitState State { get { return state; } set { state = value; } }
 
+    private Monster target;
+
     [SerializeField]
     int slotIndex;
     [SerializeField]
     int moveSlotIndex;
 
+    // TEMP
+    [SerializeField]
+    float skillRange;
+    [SerializeField]
+    float skillCoolTime = 3f;
+    [SerializeField]
+    float curSkillCoolTime;
+    //
     private bool isDraging;
     public bool IsDraging { get { return isDraging; } set { isDraging = value; } }
-
-    
 
     public void UnitUpdate()
     {
@@ -36,6 +44,7 @@ public class Unit : MonoBehaviour
         if (isDraging == true)  // 드래그중인 유닛은 아무런 활동을 하지 않음
                                 // 드래그 중에 스킬 쿨타임 등은 일시정지 해야할 듯?
             return;
+        curSkillCoolTime += Time.deltaTime;
         switch (State)
         {
             case UnitState.Idle:
@@ -50,19 +59,55 @@ public class Unit : MonoBehaviour
         }
     }
 
-    private void Idle()
+    private void MonsterScan()
     {
-
+        foreach (GameObject obj in Managers.Game.Monsters)
+        {
+            if (Util.GetDistance(obj, gameObject) <= skillRange)
+            {
+                if(target == null)
+                    target = obj.GetComponent<Monster>();
+                else if (Util.GetDistance(target.gameObject, gameObject)
+                    > Util.GetDistance(obj, gameObject))
+                {
+                    target = obj.GetComponent<Monster>();
+                }
+            }
+        }
+        // 공격 범위 내에 있는 타겟을 정하여 저장한다.
+        // 타겟이 범위 밖으로 나가거나, 타겟 사망 시
+        // 다른 몬스터로 타겟을 변경한다.
+        // 타겟이 없을 때 Idle로 상태 변경 // 굳이 Idle로 갈 필요가 있을까?
     }
 
-    private void Chase()
+    private void Idle()
     {
+        // 타겟이 없을 때
+    }
+
+    protected virtual void Chase()
+    {
+        // 
+        if(target == null || Util.GetDistance(target.gameObject,gameObject) > skillRange)
+        {
+            MonsterScan();
+        }
+        if(target != null && curSkillCoolTime > skillCoolTime)
+        {
+            State = UnitState.Skill;
+        }
+        // Scan에서 잡힌 targets 중 어떠한 녀석 을 타겟으로 할것인가?
+        // 컨텐츠적인 문제긴 하지만
+        // 일단 공격하던 적이 공격범위 내에 있을 때 그 녀석을 공격하게 해야함.
 
     }
 
     protected virtual void Skill()
     {
-        
+        Debug.Log($"{gameObject.name}'s Skill!");
+        target.TakeHit(GetComponent<SpriteRenderer>().color);
+        curSkillCoolTime = 0f;
+        State = UnitState.Chase;
         // 공격을 하는 타입이 다를텐데,
         // 그거를 여기서 case로 나누어서 진행을 하는가.
         // 아니면 unit 스크립트를 상속받는 다른 유닛들을 만들것인가.
@@ -73,6 +118,9 @@ public class Unit : MonoBehaviour
         SlotChange(slotIndex);
         gameObject.GetOrAddComponent<DraggableUnit>();
         BindToMouseUp();
+
+        // TEMP
+        State = UnitState.Chase;
     }
 
     public void SlotChange(int slotIndex)

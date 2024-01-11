@@ -12,7 +12,7 @@ public class Define
     public enum WorldObject
     {
         Unknown,
-        Player,
+        PlayerUnit,
         Monster
     }
 

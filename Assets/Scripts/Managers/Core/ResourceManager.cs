@@ -27,7 +27,7 @@ public class ResourceManager
     /// 리소스>프리펩 폴더에 있는 프리펩을 주소값으로 불러 반환합니다.
     /// path => Resources/Prefabs/{path}
     /// </summary>
-    public GameObject Instantiate(string path, Transform parent = null)
+    public GameObject Instantiate(string path, Transform parent = null, string newParentName = null)
     {
         GameObject original = Load<GameObject>($"Prefabs/{path}");
         if(original == null)
@@ -37,9 +37,22 @@ public class ResourceManager
         }
 
         if (original.GetComponent<Poolable>() != null)
-            return Managers.Pool.Pop(original, parent).gameObject;
+            return Managers.Pool.Pop(original, parent, newParentName).gameObject;
 
-        GameObject go = Object.Instantiate(original, parent);
+        GameObject go;
+        if (newParentName != null)
+        {
+            GameObject obj = GameObject.Find(newParentName);
+            if (obj == null)
+            {
+                obj = new GameObject { name = newParentName };
+            }
+            go = Object.Instantiate(original, obj.transform);
+        }
+        else
+        {
+            go = Object.Instantiate(original, parent);
+        }
         go.name = original.name;
 
         return go;

@@ -14,6 +14,9 @@ public class Monster : MonoBehaviour
     {
         SetMovePoint(map);
         nextMovePoint = 0;
+
+        SpriteRenderer spr = GetComponent<SpriteRenderer>();
+        tColor = spr.color;
         // stageNum에 따라서 유닛의 형태, 이동속도, 체력 등 초기화
     }
 
@@ -42,6 +45,21 @@ public class Monster : MonoBehaviour
             nextMovePoint %= movePoints.Length;
         }
         transform.position = Vector3.MoveTowards(transform.position, movePoints[nextMovePoint], moveSpeed * Time.deltaTime);
-        
+    }
+
+    Color tColor;
+    public void TakeHit(Color color)
+    {
+        SpriteRenderer spr = GetComponent<SpriteRenderer>();
+
+        spr.color = color;
+        StartCoroutine("CoColor");
+    }
+
+    IEnumerator CoColor()
+    {
+        yield return new WaitForSeconds(0.1f);
+        SpriteRenderer spr = GetComponent<SpriteRenderer>();
+        spr.color = tColor;
     }
 }

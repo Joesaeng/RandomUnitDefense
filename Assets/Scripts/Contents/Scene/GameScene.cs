@@ -9,11 +9,6 @@ public class GameScene : BaseScene
     [SerializeField]
     Transform monsterSpawnPoint;
 
-    HashSet<GameObject> monsters = new HashSet<GameObject>();
-
-    [SerializeField]
-    int monsterCount;
-
     Define.Map curMap = Define.Map.Basic;
 
     protected override void Init()
@@ -56,7 +51,7 @@ public class GameScene : BaseScene
         {
             pair.Value.GetComponent<Unit>().UnitUpdate();
         }
-        foreach(GameObject monster in monsters)
+        foreach(GameObject monster in Managers.Game.Monsters)
         {
             monster.GetComponent<Monster>().MonsterUpdate();
         }
@@ -112,7 +107,7 @@ public class GameScene : BaseScene
             break;
         }
 
-        GameObject obj = Managers.Resource.Instantiate("Unit");
+        GameObject obj = Managers.Game.Spawn(Define.WorldObject.PlayerUnit,"Unit");
         obj.name = $"{obj.name} Slot : {randSlotIndex}";
 
         // TEMP
@@ -158,12 +153,10 @@ public class GameScene : BaseScene
 
     private void SpawnMonster(int stageNum)
     {
-        GameObject monster = Managers.Resource.Instantiate("Monster");
+        GameObject monster = Managers.Game.Spawn(Define.WorldObject.Monster,"Monster",newParentName:"Monsters");
         monster.GetOrAddComponent<Monster>().Init(stageNum, curMap);
 
         monster.transform.position = monsterSpawnPoint.position;
-        monsters.Add(monster);
-        monsterCount = monsters.Count;
         // monsters의 Count 정보를 가지고 GameOver를 결정함.
         // if(monsters.Count >= gameOverCount)
         //    GameOver(); 뭐 이런거?
@@ -173,8 +166,6 @@ public class GameScene : BaseScene
     public void DestroyMonster(GameObject monster)
     {
         // monster 스크립트에서 체력이 0 이하가 되면 호출
-        monsters.Remove(monster);
-        Managers.Resource.Destroy(monster);
-        monsterCount = monsters.Count;
+        Managers.Game.Despawn(monster);
     }
 }

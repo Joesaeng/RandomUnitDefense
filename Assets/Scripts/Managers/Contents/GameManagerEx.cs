@@ -6,14 +6,14 @@ using UnityEngine;
 public class GameManagerEx
 {
     HashSet<GameObject> _monsters = new HashSet<GameObject>();
-
+    public HashSet<GameObject> Monsters { get { return _monsters; } }
     public Action<int> OnSpawnEvent;
 
     public Action<int,int> OnMoveUnitEvent;
 
-    public GameObject Spawn(Define.WorldObject type, string path, Transform parent = null)
+    public GameObject Spawn(Define.WorldObject type, string path, Transform parent = null, string newParentName = null)
     {
-        GameObject go = Managers.Resource.Instantiate(path, parent);
+        GameObject go = Managers.Resource.Instantiate(path, parent, newParentName);
 
         switch (type)
         {
@@ -22,7 +22,7 @@ public class GameManagerEx
                 if (OnSpawnEvent != null)
                     OnSpawnEvent.Invoke(1);
                 break;
-            case Define.WorldObject.Player:
+            case Define.WorldObject.PlayerUnit:
                 break;
         }
 
@@ -55,7 +55,7 @@ public class GameManagerEx
                 }
             }
             break;
-            case Define.WorldObject.Player:
+            case Define.WorldObject.PlayerUnit:
             {
 
             }

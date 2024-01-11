@@ -45,7 +45,7 @@ public class PoolManager
             _poolStack.Push(poolable);
         }
 
-        public Poolable Pop(Transform parent)
+        public Poolable Pop(Transform parent, string newParentName = null)
         {
             Poolable poolable;
 
@@ -60,7 +60,20 @@ public class PoolManager
             if (parent == null)
                 poolable.transform.parent = Managers.Scene.CurrentScene.transform;
 
-            poolable.transform.parent = parent;
+            if (newParentName != null)
+            {
+                GameObject obj = GameObject.Find(newParentName);
+                if (obj == null)
+                {
+                    obj = new GameObject { name = newParentName };
+                }
+                poolable.transform.parent = obj.transform;
+            }
+            else
+            {
+                poolable.transform.parent = parent;
+
+            }
             poolable.isUsing = true;
 
             return poolable;
@@ -98,7 +111,7 @@ public class PoolManager
     public void Push(Poolable poolable)
     {
         string name = poolable.gameObject.name;
-        if(_pool.ContainsKey(name) == false)
+        if (_pool.ContainsKey(name) == false)
         {
             GameObject.Destroy(poolable.gameObject);
             return;
@@ -110,13 +123,13 @@ public class PoolManager
     /// <summary>
     /// 풀에서 꺼내온다
     /// </summary>
-    public Poolable Pop(GameObject original, Transform parent = null)
+    public Poolable Pop(GameObject original, Transform parent = null, string newParentName = null)
     {
         if (_pool.ContainsKey(original.name) == false)
         {
             CreatePool(original);
         }
-        return _pool[original.name].Pop(parent);
+        return _pool[original.name].Pop(parent, newParentName);
     }
 
     public GameObject GetOriginal(string name)
