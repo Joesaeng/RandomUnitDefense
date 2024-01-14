@@ -7,6 +7,9 @@ public class GameManagerEx
 {
     HashSet<GameObject> _monsters = new HashSet<GameObject>();
     public HashSet<GameObject> Monsters { get { return _monsters; } }
+
+    public Stack<GameObject> dyingMonsters = new Stack<GameObject>();
+
     public Action<int> OnSpawnEvent;
 
     public Action<int,int> OnMoveUnitEvent;
@@ -69,5 +72,10 @@ public class GameManagerEx
     {
         if(OnMoveUnitEvent != null)
             OnMoveUnitEvent.Invoke(curSlotIndex, moveSlotIndex);
+    }
+
+    public void ThisFrameDieMonster(GameObject monster)
+    {
+        dyingMonsters.Push(monster);
     }
 }

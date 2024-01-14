@@ -27,9 +27,12 @@ public class Unit : MonoBehaviour
     [SerializeField]
     float skillRange;
     [SerializeField]
-    float skillCoolTime = 3f;
+    float skillCoolTime;
     [SerializeField]
     float curSkillCoolTime;
+    [SerializeField]
+    int attackDamage = 5;
+
     //
     private bool isDraging;
     public bool IsDraging { get { return isDraging; } set { isDraging = value; } }
@@ -105,7 +108,7 @@ public class Unit : MonoBehaviour
     protected virtual void Skill()
     {
         Debug.Log($"{gameObject.name}'s Skill!");
-        target.TakeHit(GetComponent<SpriteRenderer>().color);
+        target.TakeHit(GetComponent<SpriteRenderer>().color, attackDamage);
         curSkillCoolTime = 0f;
         State = UnitState.Chase;
         // 공격을 하는 타입이 다를텐데,
@@ -121,6 +124,8 @@ public class Unit : MonoBehaviour
 
         // TEMP
         State = UnitState.Chase;
+        skillRange = 3f;
+        skillCoolTime = 1f;
     }
 
     public void SlotChange(int slotIndex)

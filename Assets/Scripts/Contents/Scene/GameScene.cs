@@ -27,8 +27,11 @@ public class GameScene : BaseScene
         unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
+    }
 
-        for(int i = 0; i < 5; ++i)
+    public void OnSpawnUnit()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
         {
             SpawnPlayerUnit();
         }
@@ -38,6 +41,7 @@ public class GameScene : BaseScene
     float curTime = 0f;
     private void Update()
     {
+        OnSpawnUnit();
         // TEMP
         curTime += Time.deltaTime;
         if(curTime > spawnTime)
@@ -47,6 +51,9 @@ public class GameScene : BaseScene
         }
         //
 
+
+        // 업데이트 순서가 꼬일 수 있기 때문에 게임신에서
+        // 업데이트가 필요한 모든 오브젝트들의 업데이트를 관리한다.
         foreach(KeyValuePair<int,GameObject> pair in unitDict)
         {
             pair.Value.GetComponent<Unit>().UnitUpdate();
@@ -54,6 +61,13 @@ public class GameScene : BaseScene
         foreach(GameObject monster in Managers.Game.Monsters)
         {
             monster.GetComponent<Monster>().MonsterUpdate();
+        }
+        while(Managers.Game.dyingMonsters.Count > 0)
+        {
+            GameObject dyingMonster = Managers.Game.dyingMonsters.Pop();
+            Managers.Resource.Destroy(dyingMonster);
+            // TODO
+            // 몬스터 카운트 줄이기, 몬스터 처치 재화 획득 등 몬스터가 사망할 때 생기는 이벤트들 실행
         }
     }
 
@@ -76,7 +90,8 @@ public class GameScene : BaseScene
             unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
             return;
         }
-        // 이동할 슬롯에 다른 유닛이 있다면 스왑한다.
+        // 이동할 슬롯에 다른 유닛이 있다면 스왑한다
+        // 합성 가능한 유닛이라면 nextSlot에 합성된 유닛 생성
         if(unitDict.ContainsKey(curSlotIndex) && unitDict.ContainsKey(nextSlotIndex))
         {
             GameObject obj = unitDict[nextSlotIndex];
@@ -97,14 +112,19 @@ public class GameScene : BaseScene
 
     private void SpawnPlayerUnit()
     {
-        int randSlotIndex;
-        while(true)
+        int randSlotIndex = -1;
+        for(int i = 0; i < unitSlots.Length; ++i)
         {
-            int i = Random.Range(0, unitSlots.Length);
-            if (unitDict.ContainsKey(i) == true)
+            int rand = Random.Range(0, unitSlots.Length);
+            if (unitDict.ContainsKey(rand) == true)
                 continue;
-            randSlotIndex = i;
+            randSlotIndex = rand;
             break;
+        }
+        if(randSlotIndex == -1)
+        {
+            Debug.Log("unitSlots is Full!");
+            return;
         }
 
         GameObject obj = Managers.Game.Spawn(Define.WorldObject.PlayerUnit,"Unit");
