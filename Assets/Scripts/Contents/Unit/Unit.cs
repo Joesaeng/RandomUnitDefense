@@ -1,3 +1,4 @@
+using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +17,11 @@ public class Unit : MonoBehaviour
     private UnitState state;
     public UnitState State { get { return state; } set { state = value; } }
 
+    private UnitStat stat;
+    public UnitStat Stat { get { return stat; } }
+
+    float curSkillCoolTime;
+
     private Monster target;
 
     [SerializeField]
@@ -23,17 +29,7 @@ public class Unit : MonoBehaviour
     [SerializeField]
     int moveSlotIndex;
 
-    // TEMP
-    [SerializeField]
-    float skillRange;
-    [SerializeField]
-    float skillCoolTime;
-    [SerializeField]
-    float curSkillCoolTime;
-    [SerializeField]
-    int attackDamage = 5;
 
-    //
     private bool isDraging;
     public bool IsDraging { get { return isDraging; } set { isDraging = value; } }
 
@@ -66,7 +62,7 @@ public class Unit : MonoBehaviour
     {
         foreach (GameObject obj in Managers.Game.Monsters)
         {
-            if (Util.GetDistance(obj, gameObject) <= skillRange)
+            if (Util.GetDistance(obj, gameObject) <= Stat.skillRange)
             {
                 if(target == null)
                     target = obj.GetComponent<Monster>();
@@ -90,25 +86,21 @@ public class Unit : MonoBehaviour
 
     protected virtual void Chase()
     {
-        // 
-        if(target == null || Util.GetDistance(target.gameObject,gameObject) > skillRange)
+        if(target == null || 
+            (target != null && Util.GetDistance(target.gameObject,gameObject) > Stat.skillRange))
         {
             MonsterScan();
         }
-        if(target != null && curSkillCoolTime > skillCoolTime)
+        if(target != null && curSkillCoolTime > Stat.skillCoolTime)
         {
             State = UnitState.Skill;
         }
-        // Scan에서 잡힌 targets 중 어떠한 녀석 을 타겟으로 할것인가?
-        // 컨텐츠적인 문제긴 하지만
-        // 일단 공격하던 적이 공격범위 내에 있을 때 그 녀석을 공격하게 해야함.
-
     }
 
     protected virtual void Skill()
     {
         Debug.Log($"{gameObject.name}'s Skill!");
-        target.TakeHit(GetComponent<SpriteRenderer>().color, attackDamage);
+        target.TakeHit(GetComponent<SpriteRenderer>().color, Stat.attackDamage);
         curSkillCoolTime = 0f;
         State = UnitState.Chase;
         // 공격을 하는 타입이 다를텐데,
@@ -116,16 +108,15 @@ public class Unit : MonoBehaviour
         // 아니면 unit 스크립트를 상속받는 다른 유닛들을 만들것인가.
     }
 
-    public void Init(int slotIndex)
+    public void Init(int slotIndex, int id)
     {
         SlotChange(slotIndex);
         gameObject.GetOrAddComponent<DraggableUnit>();
+        stat = Managers.Data.StatDict[id];
         BindToMouseUp();
 
         // TEMP
         State = UnitState.Chase;
-        skillRange = 3f;
-        skillCoolTime = 1f;
     }
 
     public void SlotChange(int slotIndex)

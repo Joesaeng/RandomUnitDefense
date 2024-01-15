@@ -25,6 +25,8 @@ public class DraggableUnit : MonoBehaviour
     {
         unit.IsDraging = true;
         mousePos = Input.mousePosition - GetMousePos();
+        //TEMP
+        Debug.Log($"ID : {unit.Stat.id}");
     }
 
     public void OnMouseDrag()

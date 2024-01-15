@@ -1,3 +1,5 @@
+using Data;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
@@ -39,10 +41,11 @@ public class GameScene : BaseScene
 
     float spawnTime = 0.5f;
     float curTime = 0f;
+
     private void Update()
     {
-        OnSpawnUnit();
         // TEMP
+        OnSpawnUnit();
         curTime += Time.deltaTime;
         if(curTime > spawnTime)
         {
@@ -65,12 +68,13 @@ public class GameScene : BaseScene
         while(Managers.Game.dyingMonsters.Count > 0)
         {
             GameObject dyingMonster = Managers.Game.dyingMonsters.Pop();
-            Managers.Resource.Destroy(dyingMonster);
+            DestroyMonster(dyingMonster);
             // TODO
             // 몬스터 카운트 줄이기, 몬스터 처치 재화 획득 등 몬스터가 사망할 때 생기는 이벤트들 실행
         }
     }
 
+    // 유닛의 슬롯간 이동시 호출되는 메서드
     private void OnMoveUnitBetweenSlots(int curSlotIndex, int nextSlotIndex)
     {
         if(curSlotIndex == nextSlotIndex)
@@ -85,7 +89,6 @@ public class GameScene : BaseScene
             unitDict[nextSlotIndex] = obj;
             obj.GetComponent<Unit>().SlotChange(nextSlotIndex);
             unitDict.Remove(curSlotIndex);
-            unitDict[nextSlotIndex].name = $"Unit Slot : {nextSlotIndex}";
 
             unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
             return;
@@ -94,28 +97,56 @@ public class GameScene : BaseScene
         // 합성 가능한 유닛이라면 nextSlot에 합성된 유닛 생성
         if(unitDict.ContainsKey(curSlotIndex) && unitDict.ContainsKey(nextSlotIndex))
         {
-            GameObject obj = unitDict[nextSlotIndex];
+            if (AreUnitsComposeable(unitDict[curSlotIndex], unitDict[nextSlotIndex]))
+            {
+                // 합성이 가능하다면
+                // 두 유닛이 같고, 레벨 3이상 유닛이 아니라면. 합성한다.
 
-            unitDict[nextSlotIndex] = unitDict[curSlotIndex];
-            unitDict[curSlotIndex] = obj;
+                int id = unitDict[curSlotIndex].GetComponent<Unit>().Stat.id + 1;
 
-            unitDict[nextSlotIndex].name = $"Unit Slot : {nextSlotIndex}";
-            unitDict[curSlotIndex].name = $"Unit Slot : {curSlotIndex}";
+                DestroyPlayerUnit(curSlotIndex);
+                DestroyPlayerUnit(nextSlotIndex);
 
-            unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
-            unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
+                CreatePlayerUnit(nextSlotIndex, id);
+            }
+            else
+            {
+                GameObject obj = unitDict[nextSlotIndex];
 
-            unitDict[nextSlotIndex].GetComponent<Unit>().SlotChange(nextSlotIndex);
-            unitDict[curSlotIndex].GetComponent<Unit>().SlotChange(curSlotIndex);
+                unitDict[nextSlotIndex] = unitDict[curSlotIndex];
+                unitDict[curSlotIndex] = obj;
+
+                unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
+                unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
+
+                unitDict[nextSlotIndex].GetComponent<Unit>().SlotChange(nextSlotIndex);
+                unitDict[curSlotIndex].GetComponent<Unit>().SlotChange(curSlotIndex);
+            }
         }
     }
 
+    // 유닛 두개가 같고 합성이 가능한가?
+    private bool AreUnitsComposeable(GameObject obj1, GameObject obj2)
+    {
+        bool isComposeable = false;
+        UnitStat obj1Stat = obj1.GetComponent<Unit>().Stat;
+        UnitStat obj2Stat = obj2.GetComponent<Unit>().Stat;
+
+        if(obj1Stat.id == obj2Stat.id && obj1Stat.level < 3)
+        {
+            isComposeable = true;
+        }
+        
+        return isComposeable;
+    }
+
+    // 플레이어가 유닛 소환 버튼 클릭 시 호출되는 메서드
     private void SpawnPlayerUnit()
     {
         int randSlotIndex = -1;
         for(int i = 0; i < unitSlots.Length; ++i)
         {
-            int rand = Random.Range(0, unitSlots.Length);
+            int rand = UnityEngine.Random.Range(0, unitSlots.Length);
             if (unitDict.ContainsKey(rand) == true)
                 continue;
             randSlotIndex = rand;
@@ -127,23 +158,27 @@ public class GameScene : BaseScene
             return;
         }
 
-        GameObject obj = Managers.Game.Spawn(Define.WorldObject.PlayerUnit,"Unit");
-        obj.name = $"{obj.name} Slot : {randSlotIndex}";
-
-        // TEMP
-        float randomR = Random.value;
-        float randomG = Random.value;
-        float randomB = Random.value;
-        obj.GetComponent<SpriteRenderer>().color = new Color(randomR, randomG, randomB);
-        //
+        int randId = 1;
+        // randId는 로비에서 등록한 유닛들의 Id를 가져와서 n개중 1개를 선택하는 방식으로 한다.
 
 
-        obj.transform.position = GetUnitMovePos(randSlotIndex);
-        obj.GetOrAddComponent<Unit>().Init(randSlotIndex);
-
-        unitDict.Add(randSlotIndex, obj);
+        CreatePlayerUnit(randSlotIndex, randId);
     }
 
+    // 플레이어 유닛 생성 메서드
+    private void CreatePlayerUnit(int slotIndex, int Id)
+    {
+        GameObject obj = Managers.Game.Spawn(Define.WorldObject.PlayerUnit,"Unit",newParentName:"Units");
+
+        obj.transform.position = GetUnitMovePos(slotIndex);
+        Unit unit = obj.GetOrAddComponent<Unit>();
+        unit.Init(slotIndex, Id);
+        obj.name = $"{unit.Stat.name} Level [{unit.Stat.level}]";
+
+        unitDict.Add(slotIndex, obj);
+    }
+
+    // 플레이어 유닛 제거 메서드
     private void DestroyPlayerUnit(int slotIndex)
     {
         GameObject obj;
@@ -154,6 +189,7 @@ public class GameScene : BaseScene
         }
     }
 
+    // 플레이어 유닛이 이동할 위치의 position을 뱉어주는 메서드
     private Vector3 GetUnitMovePos(int slotIndex)
     {
         // 유닛의 위치가 UnitSlot 오브젝트 등과 동일선상에 있으니
@@ -171,6 +207,7 @@ public class GameScene : BaseScene
         }
     }
 
+    // 몬스터 유닛 소환 메서드
     private void SpawnMonster(int stageNum)
     {
         GameObject monster = Managers.Game.Spawn(Define.WorldObject.Monster,"Monster",newParentName:"Monsters");
@@ -183,9 +220,9 @@ public class GameScene : BaseScene
 
     }
 
+    // 몬스터 유닛 제거 메서드
     public void DestroyMonster(GameObject monster)
     {
-        // monster 스크립트에서 체력이 0 이하가 되면 호출
         Managers.Game.Despawn(monster);
     }
 }
