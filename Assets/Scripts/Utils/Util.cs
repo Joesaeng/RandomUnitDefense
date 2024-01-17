@@ -61,6 +61,8 @@ public class Util
 
     public static float GetDistance(GameObject target, GameObject go)
     {
+        if (target == go)
+            return 0f;
         if (target == null || go == null)
             return 0f;
         return (target.transform.position - go.transform.position).magnitude;

@@ -21,7 +21,7 @@ public abstract class UI_Base : MonoBehaviour
     /// </summary>
     protected void Bind<T>(Type type) where T : UnityEngine.Object
     {
-        string[] names = Enum.GetNames(type); // C#에서 제공하는 기능
+        string[] names = Enum.GetNames(type);
         UnityEngine.Object[] objects = new UnityEngine.Object[names.Length];
         _objects.Add(typeof(T), objects);
 

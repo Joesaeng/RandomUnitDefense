@@ -9,27 +9,26 @@ using UnityEngine;
 public class GameScene : BaseScene
 {
     [SerializeField]
-    Transform monsterSpawnPoint;
+    Transform _monsterSpawnPoint;
 
-    Define.Map curMap = Define.Map.Basic;
+    [SerializeField]
+    Define.Map _curMap = Define.Map.Basic;
+
+    Dictionary<int,GameObject> _unitDict = new Dictionary<int,GameObject>();
+
+    UnitSlot[] _unitSlots = null;
 
     protected override void Init()
     {
         base.Init();
 
         SceneType = Define.Scene.Game;
-    }
 
-    Dictionary<int,GameObject> unitDict = new Dictionary<int,GameObject>();
-
-    UnitSlot[] unitSlots = null;
-
-    private void Start()
-    {
-        unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
+        _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
     }
+
 
     public void OnSpawnUnit()
     {
@@ -39,25 +38,23 @@ public class GameScene : BaseScene
         }
     }
 
-    float spawnTime = 0.5f;
-    float curTime = 0f;
-
+    float _curTime = 0f;
     private void Update()
     {
         // TEMP
         OnSpawnUnit();
-        curTime += Time.deltaTime;
-        if(curTime > spawnTime)
+        _curTime += Time.deltaTime;
+        if(_curTime > ConstantData.MonsterRespawnTime)
         {
-            SpawnMonster(1);
-            curTime = 0f;
+            SpawnMonster(1/*스테이지*/);
+            _curTime = 0f;
         }
         //
 
 
         // 업데이트 순서가 꼬일 수 있기 때문에 게임신에서
         // 업데이트가 필요한 모든 오브젝트들의 업데이트를 관리한다.
-        foreach(KeyValuePair<int,GameObject> pair in unitDict)
+        foreach(KeyValuePair<int,GameObject> pair in _unitDict)
         {
             pair.Value.GetComponent<Unit>().UnitUpdate();
         }
@@ -65,9 +62,9 @@ public class GameScene : BaseScene
         {
             monster.GetComponent<Monster>().MonsterUpdate();
         }
-        while(Managers.Game.dyingMonsters.Count > 0)
+        while(Managers.Game._dyingMonsters.Count > 0)
         {
-            GameObject dyingMonster = Managers.Game.dyingMonsters.Pop();
+            GameObject dyingMonster = Managers.Game._dyingMonsters.Pop();
             DestroyMonster(dyingMonster);
             // TODO
             // 몬스터 카운트 줄이기, 몬스터 처치 재화 획득 등 몬스터가 사망할 때 생기는 이벤트들 실행
@@ -79,48 +76,49 @@ public class GameScene : BaseScene
     {
         if(curSlotIndex == nextSlotIndex)
         {
-            unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
+            _unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
             return;
         }
         // 이동할 슬롯에 유닛이 없다면
-        if(unitDict.ContainsKey(nextSlotIndex) == false)
+        if(_unitDict.ContainsKey(nextSlotIndex) == false)
         {
-            GameObject obj = unitDict[curSlotIndex];
-            unitDict[nextSlotIndex] = obj;
+            GameObject obj = _unitDict[curSlotIndex];
+            _unitDict[nextSlotIndex] = obj;
             obj.GetComponent<Unit>().SlotChange(nextSlotIndex);
-            unitDict.Remove(curSlotIndex);
+            _unitDict.Remove(curSlotIndex);
 
-            unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
+            _unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
             return;
         }
         // 이동할 슬롯에 다른 유닛이 있다면 스왑한다
         // 합성 가능한 유닛이라면 nextSlot에 합성된 유닛 생성
-        if(unitDict.ContainsKey(curSlotIndex) && unitDict.ContainsKey(nextSlotIndex))
+        if(_unitDict.ContainsKey(curSlotIndex) && _unitDict.ContainsKey(nextSlotIndex))
         {
-            if (AreUnitsComposeable(unitDict[curSlotIndex], unitDict[nextSlotIndex]))
+            if (AreUnitsComposeable(_unitDict[curSlotIndex], _unitDict[nextSlotIndex]))
             {
                 // 합성이 가능하다면
                 // 두 유닛이 같고, 레벨 3이상 유닛이 아니라면. 합성한다.
 
-                int id = unitDict[curSlotIndex].GetComponent<Unit>().Stat.id + 1;
+                int id = _unitDict[curSlotIndex].GetComponent<Unit>().ID;
+                int nextLevel = _unitDict[nextSlotIndex].GetComponent<Unit>().Lv + 1;
 
                 DestroyPlayerUnit(curSlotIndex);
                 DestroyPlayerUnit(nextSlotIndex);
 
-                CreatePlayerUnit(nextSlotIndex, id);
+                CreatePlayerUnit(nextSlotIndex, id, nextLevel);
             }
             else
             {
-                GameObject obj = unitDict[nextSlotIndex];
+                GameObject obj = _unitDict[nextSlotIndex];
 
-                unitDict[nextSlotIndex] = unitDict[curSlotIndex];
-                unitDict[curSlotIndex] = obj;
+                _unitDict[nextSlotIndex] = _unitDict[curSlotIndex];
+                _unitDict[curSlotIndex] = obj;
 
-                unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
-                unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
+                _unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
+                _unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
 
-                unitDict[nextSlotIndex].GetComponent<Unit>().SlotChange(nextSlotIndex);
-                unitDict[curSlotIndex].GetComponent<Unit>().SlotChange(curSlotIndex);
+                _unitDict[nextSlotIndex].GetComponent<Unit>().SlotChange(nextSlotIndex);
+                _unitDict[curSlotIndex].GetComponent<Unit>().SlotChange(curSlotIndex);
             }
         }
     }
@@ -129,10 +127,10 @@ public class GameScene : BaseScene
     private bool AreUnitsComposeable(GameObject obj1, GameObject obj2)
     {
         bool isComposeable = false;
-        UnitStat obj1Stat = obj1.GetComponent<Unit>().Stat;
-        UnitStat obj2Stat = obj2.GetComponent<Unit>().Stat;
+        Unit left = obj1.GetComponent<Unit>();
+        Unit right = obj2.GetComponent<Unit>();
 
-        if(obj1Stat.id == obj2Stat.id && obj1Stat.level < 3)
+        if(left.ID == right.ID && left.Lv == right.Lv && left.Lv < ConstantData.PlayerUnitHighestLevel)
         {
             isComposeable = true;
         }
@@ -144,10 +142,10 @@ public class GameScene : BaseScene
     private void SpawnPlayerUnit()
     {
         int randSlotIndex = -1;
-        for(int i = 0; i < unitSlots.Length; ++i)
+        for(int i = 0; i < _unitSlots.Length; ++i)
         {
-            int rand = UnityEngine.Random.Range(0, unitSlots.Length);
-            if (unitDict.ContainsKey(rand) == true)
+            int rand = UnityEngine.Random.Range(0, _unitSlots.Length);
+            if (_unitDict.ContainsKey(rand) == true)
                 continue;
             randSlotIndex = rand;
             break;
@@ -157,8 +155,9 @@ public class GameScene : BaseScene
             Debug.Log("unitSlots is Full!");
             return;
         }
+        int[] ids = {105};
+        int randId = ids[UnityEngine.Random.Range(0, ids.Length)];
 
-        int randId = 1;
         // randId는 로비에서 등록한 유닛들의 Id를 가져와서 n개중 1개를 선택하는 방식으로 한다.
 
 
@@ -166,26 +165,42 @@ public class GameScene : BaseScene
     }
 
     // 플레이어 유닛 생성 메서드
-    private void CreatePlayerUnit(int slotIndex, int Id)
+    private void CreatePlayerUnit(int slotIndex, int id, int level = 1)
     {
-        GameObject obj = Managers.Game.Spawn(Define.WorldObject.PlayerUnit,"Unit",newParentName:"Units");
+        GameObject obj = Managers.Game.Spawn("Unit",newParentName:"Units");
 
         obj.transform.position = GetUnitMovePos(slotIndex);
-        Unit unit = obj.GetOrAddComponent<Unit>();
-        unit.Init(slotIndex, Id);
-        obj.name = $"{unit.Stat.name} Level [{unit.Stat.level}]";
 
-        unitDict.Add(slotIndex, obj);
+        obj.GetOrAddComponent<Unit>().Init(slotIndex,id,level);
+
+        //Temp
+        GameObject temp = new GameObject();
+        TextMesh tm = temp.AddComponent<TextMesh>();
+        tm.fontSize = 500;
+        tm.characterSize = 0.02f;
+        tm.color = Color.black;
+        tm.text = $"{Managers.Data.BaseUnitDict[id].baseUnit} Level [{level}]";
+        Instantiate(temp, obj.transform);
+        Destroy(temp);
+        
+
+        obj.name = $"{Managers.Data.BaseUnitDict[id].baseUnit} Level [{level}]";
+
+        _unitDict.Add(slotIndex, obj);
     }
 
     // 플레이어 유닛 제거 메서드
     private void DestroyPlayerUnit(int slotIndex)
     {
         GameObject obj;
-        if (unitDict.TryGetValue(slotIndex, out obj))
+        if (_unitDict.TryGetValue(slotIndex, out obj))
         {
+            obj.name = "Unit";
+            //TEMP
+            Destroy(Util.FindChild(obj));
+
             Managers.Resource.Destroy(obj);
-            unitDict.Remove(slotIndex);
+            _unitDict.Remove(slotIndex);
         }
     }
 
@@ -196,12 +211,12 @@ public class GameScene : BaseScene
         // Unit의 마우스 이벤트가 간헐적으로
         // 동작이 안되는 버그? 있음
         // Unit을 강제적으로 카메라쪽으로 1만큼 이동하게 하여 해결
-        return unitSlots[slotIndex].transform.position + Vector3.back;
+        return _unitSlots[slotIndex].transform.position + Vector3.back;
     }
 
     public override void Clear()
     {
-        for (int i = 0; i < unitSlots.Length; i++)
+        for (int i = 0; i < _unitSlots.Length; i++)
         {
             DestroyPlayerUnit(i);
         }
@@ -210,10 +225,10 @@ public class GameScene : BaseScene
     // 몬스터 유닛 소환 메서드
     private void SpawnMonster(int stageNum)
     {
-        GameObject monster = Managers.Game.Spawn(Define.WorldObject.Monster,"Monster",newParentName:"Monsters");
-        monster.GetOrAddComponent<Monster>().Init(stageNum, curMap);
+        GameObject monster = Managers.Game.Spawn("Monster",newParentName:"Monsters");
+        monster.GetOrAddComponent<Monster>().Init(stageNum, _curMap);
 
-        monster.transform.position = monsterSpawnPoint.position;
+        monster.transform.position = _monsterSpawnPoint.position;
         // monsters의 Count 정보를 가지고 GameOver를 결정함.
         // if(monsters.Count >= gameOverCount)
         //    GameOver(); 뭐 이런거?
@@ -221,7 +236,7 @@ public class GameScene : BaseScene
     }
 
     // 몬스터 유닛 제거 메서드
-    public void DestroyMonster(GameObject monster)
+    private void DestroyMonster(GameObject monster)
     {
         Managers.Game.Despawn(monster);
     }

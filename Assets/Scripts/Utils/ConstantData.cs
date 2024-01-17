@@ -11,6 +11,10 @@ public class ConstantData
 
 
     // ▽▽▽▽▽▽▽▽▽▽ Contents 데이터 ▽▽▽▽▽▽▽▽▽▽▽
+
+    public static readonly int     PlayerUnitHighestLevel = 3;
+    public static readonly float   MonsterRespawnTime = 0.5f; 
+
     #region 몬스터 이동 포인트 벡터
     // Basic Map
     public static readonly Vector3[] BasicMapPoint =

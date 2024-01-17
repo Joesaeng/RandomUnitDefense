@@ -8,12 +8,12 @@ using UnityEngine.EventSystems;
 public class DraggableUnit : MonoBehaviour
 {
     public Action OnMouseUpEvent;
-    Vector3 mousePos;
-    Unit unit;
+    Vector3 _mousePos;
+    Unit _unit;
 
     private void Start()
     {
-        unit = transform.GetComponent<Unit>();
+        _unit = transform.GetComponent<Unit>();
     }
 
     private Vector3 GetMousePos()
@@ -23,15 +23,13 @@ public class DraggableUnit : MonoBehaviour
 
     public void OnMouseDown()
     {
-        unit.IsDraging = true;
-        mousePos = Input.mousePosition - GetMousePos();
-        //TEMP
-        Debug.Log($"ID : {unit.Stat.id}");
+        _unit.IsDraging = true;
+        _mousePos = Input.mousePosition - GetMousePos();
     }
 
     public void OnMouseDrag()
     {
-        transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition - mousePos);
+        transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition - _mousePos);
     }
 
     public void OnMouseUp()
@@ -39,6 +37,6 @@ public class DraggableUnit : MonoBehaviour
         if (OnMouseUpEvent != null)
             OnMouseUpEvent.Invoke();
 
-        unit.IsDraging = false;
+        _unit.IsDraging = false;
     }
 }

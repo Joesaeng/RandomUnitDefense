@@ -1,71 +1,140 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // DataManager에서 Json을 어떤 파일 포맷으로 불러들일지 저장
 namespace Data
 {
-    #region UnitStat
+    #region BaseUnit
 
     [Serializable]
     public enum UnitType
     {
         Common,     // 일반적인 공격 유닛
-        AOE,        // 스플래쉬(광역) 공격 유닛
+        AOE,        // 광역(스플래쉬데미지가 있는)공격 유닛
         Buffer,     // 버퍼
         Debuffer,   // 디버퍼(메저)
     }
 
     [Serializable]
-    public enum BuffType
+    public enum BaseUnits
     {
-        None,
-        AttackSpeed,
-        AttackDamage,
+        Knight,
+        Spearman,
+        Archer,
+        FireMagician,
+        SlowMagician,
+        Priest,
+        StunGun,
+        Viking,
+        Warrior,
+        PoisonBowMan,
     }
 
     [Serializable]
-    public enum DeBuffType
+    public class BaseUnit
     {
-        None,
-        DefenseDecrease,
-        SlowDownMoveSpeed
+        public int          id;                 // 아이디
+        public BaseUnits    baseUnit;           // 베이스유닛
+        public UnitType     type;               // 유닛 타입
     }
 
     [Serializable]
-    public class UnitStat
+    public class BaseUnitDatas : ILoader<int, BaseUnit>
     {
-        public int          id;             // 유닛의 동일성 판단
-        public string       name;           // 이름
-        public UnitType     type;           // 유닛의 직업 타입
-        public int          level;          // 레벨
+        public List<BaseUnit> baseUnits = new List<BaseUnit>();
 
-        public float        skillRange;     // 공격 범위 && 버프 범위
-        public float        skillCoolTime;  // 공격 쿨타임 && 스킬 쿨타임
-
-        public int          attackDamage;   // 스킬 데미지
-        public float        wideAttackRange;// 광역공격 범위
-
-        public BuffType     buffType;       // 버프유닛의 버프 타입
-        public float        buffRatio;      // 버프율
-        public float        buffTime;       // 버프 지속시간
-
-        public DeBuffType   debuffType;     // 디버프유닛의 디버프 타입
-        public float        debuffRatio;    // 디버프율
-        public float        debuffTime;     // 디버프 지속시간
-    }
-
-    [Serializable]
-    public class StatData : ILoader<int, UnitStat>
-    {
-        public List<UnitStat> unitStats = new List<UnitStat>();
-
-        public Dictionary<int, UnitStat> MakeDict()
+        public Dictionary<int, BaseUnit> MakeDict()
         {
-            Dictionary<int,UnitStat> dict = new Dictionary<int,UnitStat>();
-            foreach (UnitStat stat in unitStats)
-                dict.Add(stat.id, stat);
+            Dictionary<int,BaseUnit> dict = new Dictionary<int,BaseUnit>();
+            foreach (BaseUnit data in baseUnits)
+                dict.Add(data.id, data);
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class UnitStat_Base
+    {
+        public int level;
+        public int attackDamage;
+        public float attackRange;
+        public float attackRate;
+    }
+
+    [Serializable]
+    public class AOE : UnitStat_Base
+    {
+        public float wideAttackRange;
+    }
+
+    [Serializable]
+    public class Knight : UnitStat_Base
+    {
+        
+    }
+    [Serializable]
+    public class Spearman : UnitStat_Base
+    {
+
+    }
+    [Serializable]
+    public class Archer : UnitStat_Base
+    {
+
+    }
+    [Serializable]
+    public class FireMagician : AOE
+    {
+        
+    }
+    [Serializable]
+    public class SlowMagician : AOE
+    {
+        public float slowRatio;
+        public float slowDuration;
+    }
+    [Serializable]
+    public class Priest : UnitStat_Base
+    {
+        public float increaseRatio;
+        public float increaseDuration;
+    }
+    [Serializable]
+    public class StunGun : UnitStat_Base
+    {
+        public float stunDuration;
+    }
+    [Serializable]
+    public class Viking : AOE
+    {
+
+    }
+    [Serializable]
+    public class Warrior : AOE
+    {
+
+    }
+    [Serializable]
+    public class PoisonBowMan : UnitStat_Base
+    {
+        public float poisonDamagePerSecond;
+        public float poisonDuration;
+    }
+
+
+    [Serializable]
+    public class UnitStats<T> : ILoader<int, T> where T : UnitStat_Base
+    {
+        public List<T> unitStats = new List<T>();
+
+        public Dictionary<int, T> MakeDict()
+        {
+            Dictionary<int,T> dict = new Dictionary<int,T>();
+            foreach (T data in unitStats)
+                dict.Add(data.level, data);
             return dict;
         }
     }

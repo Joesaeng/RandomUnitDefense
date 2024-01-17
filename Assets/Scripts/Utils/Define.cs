@@ -16,12 +16,12 @@ public class Define
         Monster
     }
 
-    public enum State
+    public enum AttackType
     {
-        Die,
-        Moving,
-        Idle,
-        Skill,
+        Common,
+        SlowMagic,
+        Stun,
+        Poison,
     }
 
     public enum Layer
