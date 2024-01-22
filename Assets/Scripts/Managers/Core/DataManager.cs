@@ -21,7 +21,6 @@ public class DataManager
     public Dictionary<int, Data.Archer> ArcherStats { get; private set; } = new Dictionary<int, Data.Archer>();
     public Dictionary<int, Data.FireMagician> FireMagicianStats { get; private set; } = new Dictionary<int, Data.FireMagician>();
     public Dictionary<int, Data.SlowMagician> SlowMagicianStats { get; private set; } = new Dictionary<int, Data.SlowMagician>();
-    public Dictionary<int, Data.Priest> PriestStats { get; private set; } = new Dictionary<int, Data.Priest>();
     public Dictionary<int, Data.StunGun> StunGunStats { get; private set; } = new Dictionary<int, Data.StunGun>();
     public Dictionary<int, Data.Viking> VikingStats { get; private set; } = new Dictionary<int, Data.Viking>();
     public Dictionary<int, Data.Warrior> WarriorStats { get; private set; } = new Dictionary<int, Data.Warrior>();
@@ -37,7 +36,6 @@ public class DataManager
         ArcherStats = LoadJson<Data.UnitStats<Archer>, int, Data.Archer>("Archer").MakeDict();
         FireMagicianStats = LoadJson<Data.UnitStats<FireMagician>, int, Data.FireMagician>("FireMagician").MakeDict();
         SlowMagicianStats = LoadJson<Data.UnitStats<SlowMagician>, int, Data.SlowMagician>("SlowMagician").MakeDict();
-        PriestStats = LoadJson<Data.UnitStats<Priest>, int, Data.Priest>("Priest").MakeDict();
         StunGunStats = LoadJson<Data.UnitStats<StunGun>, int, Data.StunGun>("StunGun").MakeDict();
         VikingStats = LoadJson<Data.UnitStats<Viking>, int, Data.Viking>("Viking").MakeDict();
         WarriorStats = LoadJson<Data.UnitStats<Warrior>, int, Data.Warrior>("Warrior").MakeDict();
@@ -64,8 +62,6 @@ public class DataManager
                 return FireMagicianStats[level];
             case BaseUnits.SlowMagician:
                 return SlowMagicianStats[level];
-            case BaseUnits.Priest:
-                return PriestStats[level];
             case BaseUnits.StunGun:
                 return StunGunStats[level];
             case BaseUnits.Viking:

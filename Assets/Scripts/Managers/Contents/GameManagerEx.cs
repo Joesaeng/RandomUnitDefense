@@ -1,10 +1,16 @@
+using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 public class GameManagerEx
 {
+    private Define.GameLanguage _gameLanguage = Define.GameLanguage.Korean;
+
+    public Define.GameLanguage GameLanguage => _gameLanguage;
+
     HashSet<GameObject> _monsters = new HashSet<GameObject>();
     public HashSet<GameObject> Monsters { get { return _monsters; } }
 
@@ -13,6 +19,16 @@ public class GameManagerEx
     public Action<int> OnSpawnEvent;
 
     public Action<int,int> OnMoveUnitEvent;
+
+    public GameObject _selectedUnit;
+    public UI_UnitInfo _selectUnitInfoUI;
+
+    public UnitAttackRange _unitAttackRange;
+
+    public void Init()
+    {
+        _unitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
+    }
 
     public GameObject Spawn(string path, Transform parent = null, string newParentName = null)
     {
@@ -47,5 +63,31 @@ public class GameManagerEx
     public void RegisterDyingMonster(GameObject monster)
     {
         _dyingMonsters.Push(monster);
+    }
+
+    // 유닛 선택 메서드(공격범위 및 UI_UnitInfo 생성)
+    public void SelectUnit(GameObject unit)
+    {
+        if(_selectedUnit != null && _selectUnitInfoUI != null)
+        {
+            Managers.UI.CloseWorldSpaceUI(_selectUnitInfoUI.gameObject);
+        }
+
+        _selectedUnit = unit;
+        _selectUnitInfoUI = Managers.UI.MakeWorldSpaceUI<UI_UnitInfo>(unit.transform);
+        _unitAttackRange.ActiveAttackRange(unit);
+    }
+
+    public void UnSelectUnit()
+    {
+        if (_selectedUnit != null && _selectUnitInfoUI != null)
+        {
+            Managers.UI.CloseWorldSpaceUI(_selectUnitInfoUI.gameObject);
+            _selectedUnit = null;
+            if(_unitAttackRange.enabled == true)
+            {
+                _unitAttackRange.UnActiveAttackRange();
+            }
+        }
     }
 }

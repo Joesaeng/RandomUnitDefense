@@ -75,6 +75,11 @@ public class UIManager
         return Util.GetOrAddComponent<T>(go);
     }
 
+    public void CloseWorldSpaceUI(GameObject closeUI)
+    {
+        Managers.Resource.Destroy(closeUI);
+    }
+
     public T MakeSubItem<T>(Transform parent = null, string name = null) where T : UI_Base
     {
         if (string.IsNullOrEmpty(name))

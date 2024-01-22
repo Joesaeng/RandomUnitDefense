@@ -2,7 +2,6 @@ using Data;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Unit;
 
 public class UnitStateMachine
 {
@@ -12,7 +11,13 @@ public class UnitStateMachine
     Unit _unitComponent;
 
     BaseUnit _baseUnit;
+    public BaseUnits GetBaseUnit
+    {
+        get { return _baseUnit.baseUnit; }
+    }
     UnitStat_Base _stat;
+
+    public UnitStat_Base Stat => _stat;
 
     float _curSkillCoolTime;
 
@@ -33,8 +38,6 @@ public class UnitStateMachine
     {
         switch (_baseUnit.type)
         {
-            case UnitType.Buffer:
-                break;
             default:
                 foreach (GameObject obj in Managers.Game.Monsters)
                 {
@@ -57,8 +60,6 @@ public class UnitStateMachine
     {
         switch (_baseUnit.type)
         {
-            case UnitType.Buffer:
-                break;
             default:
                 if (_target == null ||
                     (_target != null && Util.GetDistance(_target.gameObject, _ownObj) > _stat.attackRange))
@@ -92,7 +93,7 @@ public class UnitStateMachine
             {
                 float wideAttackRange = 0f;
                 if (_stat is AOE stat)
-                    wideAttackRange = stat.wideAttackRange;
+                    wideAttackRange = stat.wideAttackArea;
 
                 HashSet<GameObject> monsters = Managers.Game.Monsters;
                 foreach (GameObject obj in monsters)
@@ -109,35 +110,30 @@ public class UnitStateMachine
             {
                 float wideAttackRange = 0f;
                 if (_stat is AOE stat)
-                    wideAttackRange = stat.wideAttackRange;
+                    wideAttackRange = stat.wideAttackArea;
 
                 HashSet<GameObject> monsters = Managers.Game.Monsters;
                 foreach (GameObject obj in monsters)
                 {
                     if (Util.GetDistance(_target, obj) <= wideAttackRange)
                     {
-                        obj.GetComponent<Monster>().TakeHit(Color.green, _stat,Define.AttackType.SlowMagic);
+                        obj.GetComponent<Monster>().TakeHit(Color.green, _stat, Define.AttackType.SlowMagic);
                     }
                 }
                 break;
             }
             case BaseUnits.StunGun:
             {
-                _target.GetComponent<Monster>().TakeHit(Color.black, _stat,Define.AttackType.Stun);
+                _target.GetComponent<Monster>().TakeHit(Color.yellow, _stat, Define.AttackType.Stun);
                 break;
             }
             case BaseUnits.PoisonBowMan:
             {
-                _target.GetComponent<Monster>().TakeHit(Color.black, _stat,Define.AttackType.Poison);
-                break;
-            }
-            // Buffer
-            case BaseUnits.Priest:
-            {
+                _target.GetComponent<Monster>().TakeHit(Color.black, _stat, Define.AttackType.Poison);
                 break;
             }
         }
         _curSkillCoolTime = 0f;
-        _unitComponent.State = UnitState.Chase;
+        _unitComponent.State = Unit.UnitState.Chase;
     }
 }

@@ -14,7 +14,6 @@ namespace Data
     {
         Common,     // 일반적인 공격 유닛
         AOE,        // 광역(스플래쉬데미지가 있는)공격 유닛
-        Buffer,     // 버퍼
         Debuffer,   // 디버퍼(메저)
     }
 
@@ -26,7 +25,6 @@ namespace Data
         Archer,
         FireMagician,
         SlowMagician,
-        Priest,
         StunGun,
         Viking,
         Warrior,
@@ -67,7 +65,7 @@ namespace Data
     [Serializable]
     public class AOE : UnitStat_Base
     {
-        public float wideAttackRange;
+        public float wideAttackArea;
     }
 
     [Serializable]
@@ -95,12 +93,6 @@ namespace Data
     {
         public float slowRatio;
         public float slowDuration;
-    }
-    [Serializable]
-    public class Priest : UnitStat_Base
-    {
-        public float increaseRatio;
-        public float increaseDuration;
     }
     [Serializable]
     public class StunGun : UnitStat_Base

@@ -27,6 +27,9 @@ public class GameScene : BaseScene
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
+
+        Managers.Input.MouseAction -= OnMouseEvent;
+        Managers.Input.MouseAction += OnMouseEvent;
     }
 
 
@@ -36,6 +39,11 @@ public class GameScene : BaseScene
         {
             SpawnPlayerUnit();
         }
+    }
+
+    public void OnMouseEvent(Define.MouseEvent mouseEvent)
+    {
+
     }
 
     float _curTime = 0f;
@@ -97,7 +105,7 @@ public class GameScene : BaseScene
             if (AreUnitsComposeable(_unitDict[curSlotIndex], _unitDict[nextSlotIndex]))
             {
                 // 합성이 가능하다면
-                // 두 유닛이 같고, 레벨 3이상 유닛이 아니라면. 합성한다.
+                // 두 유닛이 같고, 레벨 3이상 유닛이 아니라면. 합성가능.
 
                 int id = _unitDict[curSlotIndex].GetComponent<Unit>().ID;
                 int nextLevel = _unitDict[nextSlotIndex].GetComponent<Unit>().Lv + 1;
@@ -141,21 +149,28 @@ public class GameScene : BaseScene
     // 플레이어가 유닛 소환 버튼 클릭 시 호출되는 메서드
     private void SpawnPlayerUnit()
     {
+        List<int> randIndexList = new List<int>();
         int randSlotIndex = -1;
         for(int i = 0; i < _unitSlots.Length; ++i)
         {
-            int rand = UnityEngine.Random.Range(0, _unitSlots.Length);
-            if (_unitDict.ContainsKey(rand) == true)
+            // 0부터 unitSlots.Length 까지의 숫자 중에서, 이미 선택된 숫자는 제외한다.
+            //int rand = UnityEngine.Random.Range(0, _unitSlots.Length);
+            if (_unitDict.ContainsKey(i) == true)
                 continue;
-            randSlotIndex = rand;
-            break;
+            
+            randIndexList.Add(i);
         }
-        if(randSlotIndex == -1)
+        if(randIndexList.Count > 0)
+        {
+            int idx = UnityEngine.Random.Range(0, randIndexList.Count);
+            randSlotIndex = randIndexList[idx];
+        }
+        if (randSlotIndex == -1)
         {
             Debug.Log("unitSlots is Full!");
             return;
         }
-        int[] ids = {105};
+        int[] ids = {100,101,102,103,104,105,106,107,108};
         int randId = ids[UnityEngine.Random.Range(0, ids.Length)];
 
         // randId는 로비에서 등록한 유닛들의 Id를 가져와서 n개중 1개를 선택하는 방식으로 한다.
@@ -173,17 +188,6 @@ public class GameScene : BaseScene
 
         obj.GetOrAddComponent<Unit>().Init(slotIndex,id,level);
 
-        //Temp
-        GameObject temp = new GameObject();
-        TextMesh tm = temp.AddComponent<TextMesh>();
-        tm.fontSize = 500;
-        tm.characterSize = 0.02f;
-        tm.color = Color.black;
-        tm.text = $"{Managers.Data.BaseUnitDict[id].baseUnit} Level [{level}]";
-        Instantiate(temp, obj.transform);
-        Destroy(temp);
-        
-
         obj.name = $"{Managers.Data.BaseUnitDict[id].baseUnit} Level [{level}]";
 
         _unitDict.Add(slotIndex, obj);
@@ -196,8 +200,6 @@ public class GameScene : BaseScene
         if (_unitDict.TryGetValue(slotIndex, out obj))
         {
             obj.name = "Unit";
-            //TEMP
-            Destroy(Util.FindChild(obj));
 
             Managers.Resource.Destroy(obj);
             _unitDict.Remove(slotIndex);

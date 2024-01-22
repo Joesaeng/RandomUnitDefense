@@ -71,27 +71,38 @@ public class Unit : MonoBehaviour
 
     public void Init(int slotIndex, int id, int level)
     {
+        IsDraging = false;
         ID = id;
         Lv = level;
         SlotChange(slotIndex);
         gameObject.GetOrAddComponent<DraggableUnit>();
         _stateMachine = new UnitStateMachine(gameObject, id, level);
-        BindToMouseUp();
+        BindToMouseEvent();
 
         // TEMP
         State = UnitState.Chase;
     }
 
+    public UnitStat_Base GetUnitStatus()
+    {
+        return _stateMachine.Stat;
+    }    
+    public BaseUnits GetBaseUnit()
+    {
+        return _stateMachine.GetBaseUnit;
+    }    
     public void SlotChange(int slotIndex)
     {
         this._slotIndex = slotIndex;
     }
 
-    private void BindToMouseUp()
+    private void BindToMouseEvent()
     {
         DraggableUnit draggableUnit = gameObject.GetComponent<DraggableUnit>();
         draggableUnit.OnMouseUpEvent -= MouseUpEventReader;
         draggableUnit.OnMouseUpEvent += MouseUpEventReader;
+        draggableUnit.OnMouseClickEvent -= MouseClickEventReader;
+        draggableUnit.OnMouseClickEvent += MouseClickEventReader;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -125,4 +136,8 @@ public class Unit : MonoBehaviour
         _moveSlotIndex = -1;
     }
 
+    private void MouseClickEventReader()
+    {
+        Managers.Game.SelectUnit(gameObject);
+    }
 }

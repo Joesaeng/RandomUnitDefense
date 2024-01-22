@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Define
 {
+    public enum GameLanguage
+    {
+        English,
+        Korean,
+    }
+
     public enum Map
     {
         Basic,

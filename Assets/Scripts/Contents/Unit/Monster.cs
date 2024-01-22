@@ -29,6 +29,7 @@ public class Monster : MonoBehaviour
     float _curMoveSpeed;
 
     int _maxHp = 10;
+    [SerializeField]
     float _curHp;
 
     public void Init(int stageNum, Define.Map map)
