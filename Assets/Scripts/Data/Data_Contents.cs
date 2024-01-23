@@ -8,7 +8,7 @@ using UnityEngine;
 // DataManager에서 Json을 어떤 파일 포맷으로 불러들일지 저장
 namespace Data
 {
-    #region BaseUnit
+    #region Units
 
     [Serializable]
     public enum UnitType
@@ -146,6 +146,34 @@ namespace Data
         }
     }
 
+    #endregion
+
+    #region Monsters
+
+    [Serializable]
+    public class MonsterData
+    {
+        public int          id;              // 아이디
+        public float        maxHp;           // Hp
+        public int          defense;         // 방어력
+        public float        moveSpeed;       // 이동속도
+    }
+
+    [Serializable]
+    public class MonsterDatas : ILoader<int, MonsterData>
+    {
+        public List<MonsterData> monsters = new List<MonsterData>();
+
+        public Dictionary<int, MonsterData> MakeDict()
+        {
+            Dictionary<int,MonsterData> dict = new Dictionary<int,MonsterData>();
+            foreach (MonsterData data in monsters)
+            {
+                dict.Add(data.id, data);
+            }
+            return dict;
+        }
+    }
     #endregion
 }
 

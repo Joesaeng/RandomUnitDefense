@@ -21,56 +21,43 @@ public class GameScene : BaseScene
     protected override void Init()
     {
         base.Init();
-
         SceneType = Define.Scene.Game;
 
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
 
-        Managers.Input.MouseAction -= OnMouseEvent;
-        Managers.Input.MouseAction += OnMouseEvent;
+        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
+        Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
     }
 
 
-    public void OnSpawnUnit()
+    public void InputSpawnUnitTemp()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             SpawnPlayerUnit();
         }
     }
 
-    public void OnMouseEvent(Define.MouseEvent mouseEvent)
-    {
-
-    }
-
-    float _curTime = 0f;
     private void Update()
     {
+        if (Managers.Time.IsPause)
+            return;
         // TEMP
-        OnSpawnUnit();
-        _curTime += Time.deltaTime;
-        if(_curTime > ConstantData.MonsterRespawnTime)
-        {
-            SpawnMonster(1/*스테이지*/);
-            _curTime = 0f;
-        }
-        //
-
+        InputSpawnUnitTemp();
 
         // 업데이트 순서가 꼬일 수 있기 때문에 게임신에서
         // 업데이트가 필요한 모든 오브젝트들의 업데이트를 관리한다.
-        foreach(KeyValuePair<int,GameObject> pair in _unitDict)
+        foreach (KeyValuePair<int, GameObject> pair in _unitDict)
         {
             pair.Value.GetComponent<Unit>().UnitUpdate();
         }
-        foreach(GameObject monster in Managers.Game.Monsters)
+        foreach (GameObject monster in Managers.Game.Monsters)
         {
             monster.GetComponent<Monster>().MonsterUpdate();
         }
-        while(Managers.Game._dyingMonsters.Count > 0)
+        while (Managers.Game._dyingMonsters.Count > 0)
         {
             GameObject dyingMonster = Managers.Game._dyingMonsters.Pop();
             DestroyMonster(dyingMonster);
@@ -82,13 +69,13 @@ public class GameScene : BaseScene
     // 유닛의 슬롯간 이동시 호출되는 메서드
     private void OnMoveUnitBetweenSlots(int curSlotIndex, int nextSlotIndex)
     {
-        if(curSlotIndex == nextSlotIndex)
+        if (curSlotIndex == nextSlotIndex)
         {
             _unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
             return;
         }
         // 이동할 슬롯에 유닛이 없다면
-        if(_unitDict.ContainsKey(nextSlotIndex) == false)
+        if (_unitDict.ContainsKey(nextSlotIndex) == false)
         {
             GameObject obj = _unitDict[curSlotIndex];
             _unitDict[nextSlotIndex] = obj;
@@ -100,7 +87,7 @@ public class GameScene : BaseScene
         }
         // 이동할 슬롯에 다른 유닛이 있다면 스왑한다
         // 합성 가능한 유닛이라면 nextSlot에 합성된 유닛 생성
-        if(_unitDict.ContainsKey(curSlotIndex) && _unitDict.ContainsKey(nextSlotIndex))
+        if (_unitDict.ContainsKey(curSlotIndex) && _unitDict.ContainsKey(nextSlotIndex))
         {
             if (AreUnitsComposeable(_unitDict[curSlotIndex], _unitDict[nextSlotIndex]))
             {
@@ -138,11 +125,11 @@ public class GameScene : BaseScene
         Unit left = obj1.GetComponent<Unit>();
         Unit right = obj2.GetComponent<Unit>();
 
-        if(left.ID == right.ID && left.Lv == right.Lv && left.Lv < ConstantData.PlayerUnitHighestLevel)
+        if (left.ID == right.ID && left.Lv == right.Lv && left.Lv < ConstantData.PlayerUnitHighestLevel)
         {
             isComposeable = true;
         }
-        
+
         return isComposeable;
     }
 
@@ -151,16 +138,16 @@ public class GameScene : BaseScene
     {
         List<int> randIndexList = new List<int>();
         int randSlotIndex = -1;
-        for(int i = 0; i < _unitSlots.Length; ++i)
+        for (int i = 0; i < _unitSlots.Length; ++i)
         {
             // 0부터 unitSlots.Length 까지의 숫자 중에서, 이미 선택된 숫자는 제외한다.
             //int rand = UnityEngine.Random.Range(0, _unitSlots.Length);
             if (_unitDict.ContainsKey(i) == true)
                 continue;
-            
+
             randIndexList.Add(i);
         }
-        if(randIndexList.Count > 0)
+        if (randIndexList.Count > 0)
         {
             int idx = UnityEngine.Random.Range(0, randIndexList.Count);
             randSlotIndex = randIndexList[idx];
@@ -186,7 +173,7 @@ public class GameScene : BaseScene
 
         obj.transform.position = GetUnitMovePos(slotIndex);
 
-        obj.GetOrAddComponent<Unit>().Init(slotIndex,id,level);
+        obj.GetOrAddComponent<Unit>().Init(slotIndex, id, level);
 
         obj.name = $"{Managers.Data.BaseUnitDict[id].baseUnit} Level [{level}]";
 
@@ -222,6 +209,13 @@ public class GameScene : BaseScene
         {
             DestroyPlayerUnit(i);
         }
+    }
+
+    // 몬스터를 리스폰할 시간이 되었다! 는 이벤트
+    private void TheRespawnTime()
+    {
+        if (Managers.Game.CurStageMonsterCount < ConstantData.OneStageSpawnCount)
+            SpawnMonster(Managers.Game.CurStage);
     }
 
     // 몬스터 유닛 소환 메서드

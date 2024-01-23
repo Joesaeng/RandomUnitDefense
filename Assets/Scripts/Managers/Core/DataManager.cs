@@ -15,6 +15,7 @@ public interface ILoader<Key, Value>
 public class DataManager 
 {
     public Dictionary<int, Data.BaseUnit> BaseUnitDict { get; private set; } = new Dictionary<int, Data.BaseUnit>();
+    public Dictionary<int, Data.MonsterData> MonsterDict { get; private set; } = new Dictionary<int, Data.MonsterData>();
 
     public Dictionary<int, Data.Knight> KnightStats { get; private set; } = new Dictionary<int, Data.Knight>();
     public Dictionary<int, Data.Spearman> SpearmanStats { get; private set; } = new Dictionary<int, Data.Spearman>();
@@ -30,7 +31,8 @@ public class DataManager
     public void Init()
     {
         BaseUnitDict = LoadJson<Data.BaseUnitDatas, int, Data.BaseUnit>("BaseUnits").MakeDict();
-
+        MonsterDict = LoadJson<Data.MonsterDatas, int, Data.MonsterData>("MonsterDatas").MakeDict();
+       
         KnightStats = LoadJson<Data.UnitStats<Knight>, int, Data.Knight>("Knight").MakeDict();
         SpearmanStats = LoadJson<Data.UnitStats<Spearman>, int, Data.Spearman>("Spearman").MakeDict();
         ArcherStats = LoadJson<Data.UnitStats<Archer>, int, Data.Archer>("Archer").MakeDict();
@@ -73,5 +75,10 @@ public class DataManager
             default:
                 return null;
         }
+    }
+
+    public MonsterData GetMonsterData(int stageNum)
+    {
+        return MonsterDict[stageNum + ConstantData.MonsterIDFirst];
     }
 }

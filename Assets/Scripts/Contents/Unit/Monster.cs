@@ -18,31 +18,32 @@ public class Monster : MonoBehaviour
     float[] _debuffTimes = new float[(int)DebuffState.Count];
     float[] _debuffRatios = new float[(int)DebuffState.Count];
 
+    MonsterData _monsterStat = new MonsterData();
+
     Vector3[] _movePoints;
     int _nextMovePoint;
 
     bool isStun = false;
 
-    [SerializeField]
+    // Stats
     float _moveSpeed;
-
     float _curMoveSpeed;
-
-    int _maxHp = 10;
-    [SerializeField]
     float _curHp;
+    int _defense;
 
     public void Init(int stageNum, Define.Map map)
     {
         SetMovePoint(map);
         _nextMovePoint = 0;
-
+        _monsterStat = Managers.Data.GetMonsterData(stageNum);
         SpriteRenderer spr = GetComponent<SpriteRenderer>();
         tColor = new Color(1f, 56 / 255f, 0f);
         spr.color = tColor;
 
-        _curHp = _maxHp;
         // stageNum에 따라서 유닛의 형태, 이동속도, 체력 등 초기화
+        _curHp = _monsterStat.maxHp;
+        _moveSpeed = _monsterStat.moveSpeed;
+        _defense = _monsterStat.defense;
     }
 
     private void SetMovePoint(Define.Map map)
@@ -161,7 +162,9 @@ public class Monster : MonoBehaviour
             }
         }
 
-        _curHp -= stat.attackDamage;
+        // 유닛의 공격력이 몬스터의 방어력보다 낮은 경우 1의 데미지를 받게 합니다.
+        int damage = stat.attackDamage - _defense > 1 ? stat.attackDamage - _defense : 1;
+        _curHp -= damage;
         if (_curHp <= 0)
         {
             Managers.Game.RegisterDyingMonster(this.gameObject);

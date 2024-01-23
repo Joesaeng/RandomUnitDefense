@@ -1,9 +1,7 @@
-using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.Image;
 
 public class GameManagerEx
 {
@@ -25,9 +23,22 @@ public class GameManagerEx
 
     public UnitAttackRange _unitAttackRange;
 
+    public int CurStage { get; set; }
+    public int CurStageMonsterCount { get; set; }
+
     public void Init()
     {
         _unitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
+        CurStage = 1;
+
+        Managers.Time.OnNextStage -= OnNextStageEvent;
+        Managers.Time.OnNextStage += OnNextStageEvent;
+    }
+
+    private void OnNextStageEvent()
+    {
+        CurStage++;
+        CurStageMonsterCount = 0;
     }
 
     public GameObject Spawn(string path, Transform parent = null, string newParentName = null)
@@ -35,7 +46,10 @@ public class GameManagerEx
         GameObject go = Managers.Resource.Instantiate(path, parent, newParentName);
 
         if(path == "Monster")
+        {
             _monsters.Add(go);
+            CurStageMonsterCount++;
+        }
 
         return go;
     }
@@ -47,9 +61,9 @@ public class GameManagerEx
             _monsters.Remove(go);
             if (OnSpawnEvent != null)
                 OnSpawnEvent.Invoke(-1);
+            Managers.Resource.Destroy(go);
         }
 
-        Managers.Resource.Destroy(go);
     }
 
     // 플레이어 유닛 이동 메서드

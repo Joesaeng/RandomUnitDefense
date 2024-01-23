@@ -21,8 +21,9 @@ public static class Language
         PosionDuration,
     }
 
-    public static string GetBaseUnitName(Data.BaseUnits unit, Define.GameLanguage language = Define.GameLanguage.English)
+    public static string GetBaseUnitName(Data.BaseUnits unit)
     {
+        Define.GameLanguage language = Managers.Game.GameLanguage;
         string[] englishName =
         {
             "Knight",
@@ -58,15 +59,16 @@ public static class Language
         }
     }
 
-    public static string GetUnitInfo(UnitInfos unitInfos, Define.GameLanguage language = Define.GameLanguage.English)
+    public static string GetUnitInfo(UnitInfos unitInfos)
     {
+        Define.GameLanguage language = Managers.Game.GameLanguage;
         string[] englishUnitInfos =
         {
             "Level",
             "AttackDamage",
             "AttackRange",
             "AttackRate",
-            "WideAttackArea",
+            "AttackArea",
             "SlowRatio",
             "Duration",
             "StunDuration",

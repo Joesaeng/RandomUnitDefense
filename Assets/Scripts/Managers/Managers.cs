@@ -20,6 +20,7 @@ public class Managers : MonoBehaviour
     ResourceManager _resource = new ResourceManager();
     SceneManagerEx _scene = new SceneManagerEx();
     SoundManager _sound = new SoundManager();
+    TimeManager _time = new TimeManager();
     UIManager _UI = new UIManager();
 
     public static DataManager Data { get { return Instance._data; } }
@@ -28,6 +29,7 @@ public class Managers : MonoBehaviour
     public static ResourceManager Resource { get { return Instance._resource; } }
     public static SceneManagerEx Scene { get { return Instance._scene; } }
     public static SoundManager Sound { get { return Instance._sound; } }
+    public static TimeManager Time { get { return Instance._time; } }
     public static UIManager UI { get { return Instance._UI; } }
     #endregion
 
@@ -39,6 +41,7 @@ public class Managers : MonoBehaviour
     void Update()
     {
         _input.OnUpdate();
+        _time.OnUpdate();
     }
 
     static void Init()

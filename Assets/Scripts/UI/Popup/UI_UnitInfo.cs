@@ -40,11 +40,11 @@ public class UI_UnitInfo : UI_Base
 
     private void SetInfo()
     {
-        GetTMPro((int)TMPros.TextName).text = Language.GetBaseUnitName(_unit.GetBaseUnit(),Managers.Game.GameLanguage);
-        GetTMPro((int)TMPros.TextLevel).text = $"{Language.GetUnitInfo(Language.UnitInfos.Level, Managers.Game.GameLanguage)} : {_unitStat.level}";
-        GetTMPro((int)TMPros.TextInfo1).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackDamage, Managers.Game.GameLanguage)} : {_unitStat.attackDamage}";
-        GetTMPro((int)TMPros.TextInfo2).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackRate, Managers.Game.GameLanguage)} : {_unitStat.attackRate}";
-        GetTMPro((int)TMPros.TextInfo3).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackRange, Managers.Game.GameLanguage)} : {_unitStat.attackRange}";
+        GetTMPro((int)TMPros.TextName).text = Language.GetBaseUnitName(_unit.GetBaseUnit());
+        GetTMPro((int)TMPros.TextLevel).text = $"{Language.GetUnitInfo(Language.UnitInfos.Level)} : {_unitStat.level}";
+        GetTMPro((int)TMPros.TextInfo1).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackDamage)} : {_unitStat.attackDamage}";
+        GetTMPro((int)TMPros.TextInfo2).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackRate)} : {_unitStat.attackRate}";
+        GetTMPro((int)TMPros.TextInfo3).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackRange)} : {_unitStat.attackRange}";
 
         switch (_unit.GetBaseUnit())
         {
@@ -58,7 +58,7 @@ public class UI_UnitInfo : UI_Base
             case BaseUnits.Warrior:
             {
                 if (_unitStat is AOE unitStat)
-                    GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.WideAttackArea, Managers.Game.GameLanguage)} : {unitStat.wideAttackArea}";
+                    GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.WideAttackArea)} : {unitStat.wideAttackArea}";
                 GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Textures/UnitIcon/AOE");
                 break;
             }
@@ -66,9 +66,9 @@ public class UI_UnitInfo : UI_Base
             {
                 if (_unitStat is SlowMagician unitStat)
                 {
-                    GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.WideAttackArea, Managers.Game.GameLanguage)} : {unitStat.wideAttackArea}";
-                    GetTMPro((int)TMPros.TextInfo5).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowRatio, Managers.Game.GameLanguage)} : {unitStat.slowRatio}";
-                    GetTMPro((int)TMPros.TextInfo6).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowDuration, Managers.Game.GameLanguage)} : {unitStat.slowDuration}";
+                    GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.WideAttackArea)} : {unitStat.wideAttackArea}";
+                    GetTMPro((int)TMPros.TextInfo5).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowRatio)} : {unitStat.slowRatio}";
+                    GetTMPro((int)TMPros.TextInfo6).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowDuration)} : {unitStat.slowDuration}";
                 }
                 GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Textures/UnitIcon/Debuffer");
                 break;
@@ -77,7 +77,7 @@ public class UI_UnitInfo : UI_Base
             {
                 if (_unitStat is StunGun unitStat)
                 {
-                    GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.StunDuration, Managers.Game.GameLanguage)} : {unitStat.stunDuration}";
+                    GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.StunDuration)} : {unitStat.stunDuration}";
                 }
                 GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Textures/UnitIcon/Debuffer");
                 break;
@@ -86,8 +86,8 @@ public class UI_UnitInfo : UI_Base
             {
                 if (_unitStat is PoisonBowMan unitStat)
                 {
-                    GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.PosionDamagePerSecond, Managers.Game.GameLanguage)} : {unitStat.poisonDamagePerSecond}";
-                    GetTMPro((int)TMPros.TextInfo5).text = $"{Language.GetUnitInfo(Language.UnitInfos.PosionDuration, Managers.Game.GameLanguage)} : {unitStat.poisonDuration}";
+                    GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.PosionDamagePerSecond)} : {unitStat.poisonDamagePerSecond}/s";
+                    GetTMPro((int)TMPros.TextInfo5).text = $"{Language.GetUnitInfo(Language.UnitInfos.PosionDuration)} : {unitStat.poisonDuration}";
                 }
                 GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Textures/UnitIcon/Debuffer");
                 break;
