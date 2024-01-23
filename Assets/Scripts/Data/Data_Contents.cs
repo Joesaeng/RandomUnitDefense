@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -40,15 +41,29 @@ namespace Data
     }
 
     [Serializable]
+    public class BaseUnit_Json
+    {
+        public int          id;                 // 아이디
+        public string       baseUnit;           // 베이스유닛
+        public string       type;               // 유닛 타입
+    }
+
+    [Serializable]
     public class BaseUnitDatas : ILoader<int, BaseUnit>
     {
-        public List<BaseUnit> baseUnits = new List<BaseUnit>();
+        public List<BaseUnit_Json> baseUnits = new List<BaseUnit_Json>();
 
         public Dictionary<int, BaseUnit> MakeDict()
         {
             Dictionary<int,BaseUnit> dict = new Dictionary<int,BaseUnit>();
-            foreach (BaseUnit data in baseUnits)
-                dict.Add(data.id, data);
+            foreach (BaseUnit_Json data in baseUnits)
+            {
+                BaseUnit baseUnitData = new BaseUnit();
+                baseUnitData.id = data.id;
+                baseUnitData.baseUnit = Util.Parse<BaseUnits>(data.baseUnit);
+                baseUnitData.type = Util.Parse<UnitType>(data.type);
+                dict.Add(data.id, baseUnitData);
+            }
             return dict;
         }
     }

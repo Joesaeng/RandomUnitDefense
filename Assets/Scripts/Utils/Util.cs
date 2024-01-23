@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -68,4 +69,8 @@ public class Util
         return (target.transform.position - go.transform.position).magnitude;
     }
 
+    public static T Parse<T>(string stringData)
+    {
+        return (T)Enum.Parse(typeof(T), stringData);
+    }
 }
