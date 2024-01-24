@@ -14,7 +14,7 @@ public class GameScene : BaseScene
     [SerializeField]
     Define.Map _curMap = Define.Map.Basic;
 
-    Dictionary<int,GameObject> _unitDict = new Dictionary<int,GameObject>();
+    Dictionary<int,Unit> _unitDict = new Dictionary<int,Unit>();
 
     UnitSlot[] _unitSlots = null;
 
@@ -24,6 +24,9 @@ public class GameScene : BaseScene
         SceneType = Define.Scene.Game;
 
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
+
+        Managers.Game._unitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
+
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
 
@@ -49,13 +52,13 @@ public class GameScene : BaseScene
 
         // 업데이트 순서가 꼬일 수 있기 때문에 게임신에서
         // 업데이트가 필요한 모든 오브젝트들의 업데이트를 관리한다.
-        foreach (KeyValuePair<int, GameObject> pair in _unitDict)
+        foreach (KeyValuePair<int, Unit> pair in _unitDict)
         {
-            pair.Value.GetComponent<Unit>().UnitUpdate();
+            pair.Value.UnitUpdate();
         }
-        foreach (GameObject monster in Managers.Game.Monsters)
+        foreach (Monster monster in Managers.Game.Monsters)
         {
-            monster.GetComponent<Monster>().MonsterUpdate();
+            monster.MonsterUpdate();
         }
         while (Managers.Game._dyingMonsters.Count > 0)
         {
@@ -77,9 +80,9 @@ public class GameScene : BaseScene
         // 이동할 슬롯에 유닛이 없다면
         if (_unitDict.ContainsKey(nextSlotIndex) == false)
         {
-            GameObject obj = _unitDict[curSlotIndex];
-            _unitDict[nextSlotIndex] = obj;
-            obj.GetComponent<Unit>().SlotChange(nextSlotIndex);
+            Unit unit = _unitDict[curSlotIndex];
+            _unitDict[nextSlotIndex] = unit.GetComponent<Unit>();
+            unit.SlotChange(nextSlotIndex);
             _unitDict.Remove(curSlotIndex);
 
             _unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
@@ -104,26 +107,24 @@ public class GameScene : BaseScene
             }
             else
             {
-                GameObject obj = _unitDict[nextSlotIndex];
+                Unit unit = _unitDict[nextSlotIndex];
 
                 _unitDict[nextSlotIndex] = _unitDict[curSlotIndex];
-                _unitDict[curSlotIndex] = obj;
+                _unitDict[curSlotIndex] = unit;
 
                 _unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
                 _unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
 
-                _unitDict[nextSlotIndex].GetComponent<Unit>().SlotChange(nextSlotIndex);
-                _unitDict[curSlotIndex].GetComponent<Unit>().SlotChange(curSlotIndex);
+                _unitDict[nextSlotIndex].SlotChange(nextSlotIndex);
+                _unitDict[curSlotIndex].SlotChange(curSlotIndex);
             }
         }
     }
 
     // 유닛 두개가 같고 합성이 가능한가?
-    private bool AreUnitsComposeable(GameObject obj1, GameObject obj2)
+    private bool AreUnitsComposeable(Unit left, Unit right)
     {
         bool isComposeable = false;
-        Unit left = obj1.GetComponent<Unit>();
-        Unit right = obj2.GetComponent<Unit>();
 
         if (left.ID == right.ID && left.Lv == right.Lv && left.Lv < ConstantData.PlayerUnitHighestLevel)
         {
@@ -173,22 +174,23 @@ public class GameScene : BaseScene
 
         obj.transform.position = GetUnitMovePos(slotIndex);
 
-        obj.GetOrAddComponent<Unit>().Init(slotIndex, id, level);
+        Unit unit = obj.GetOrAddComponent<Unit>();
+        unit.Init(slotIndex, id, level);
 
         obj.name = $"{Managers.Data.BaseUnitDict[id].baseUnit} Level [{level}]";
 
-        _unitDict.Add(slotIndex, obj);
+        _unitDict.Add(slotIndex, unit);
     }
 
     // 플레이어 유닛 제거 메서드
     private void DestroyPlayerUnit(int slotIndex)
     {
-        GameObject obj;
-        if (_unitDict.TryGetValue(slotIndex, out obj))
+        Unit unit;
+        if (_unitDict.TryGetValue(slotIndex, out unit))
         {
-            obj.name = "Unit";
+            unit.gameObject.name = "Unit";
 
-            Managers.Resource.Destroy(obj);
+            Managers.Resource.Destroy(unit.gameObject);
             _unitDict.Remove(slotIndex);
         }
     }
@@ -222,7 +224,8 @@ public class GameScene : BaseScene
     private void SpawnMonster(int stageNum)
     {
         GameObject monster = Managers.Game.Spawn("Monster",newParentName:"Monsters");
-        monster.GetOrAddComponent<Monster>().Init(stageNum, _curMap);
+        // monster.GetComponent<Monster>().Init(stageNum, _curMap);
+        monster.GetComponent<Monster>().Init(1, _curMap);
 
         monster.transform.position = _monsterSpawnPoint.position;
         // monsters의 Count 정보를 가지고 GameOver를 결정함.

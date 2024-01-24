@@ -39,16 +39,16 @@ public class UnitStateMachine
         switch (_baseUnit.type)
         {
             default:
-                foreach (GameObject obj in Managers.Game.Monsters)
+                foreach (Monster monster in Managers.Game.Monsters)
                 {
-                    if (Util.GetDistance(obj, _ownObj) <= _stat.attackRange)
+                    if (Util.GetDistance(monster.gameObject, _ownObj) <= _stat.attackRange)
                     {
                         if (_target == null)
-                            _target = obj;
+                            _target = monster.gameObject;
                         else if (Util.GetDistance(_target.gameObject, _ownObj)
-                            > Util.GetDistance(obj, _ownObj))
+                            > Util.GetDistance(monster.gameObject, _ownObj))
                         {
-                            _target = obj;
+                            _target = monster.gameObject;
                         }
                     }
                 }
@@ -95,12 +95,12 @@ public class UnitStateMachine
                 if (_stat is AOE stat)
                     wideAttackRange = stat.wideAttackArea;
 
-                HashSet<GameObject> monsters = Managers.Game.Monsters;
-                foreach (GameObject obj in monsters)
+                HashSet<Monster> monsters = Managers.Game.Monsters;
+                foreach (Monster monster in monsters)
                 {
-                    if (Util.GetDistance(_target, obj) <= wideAttackRange)
+                    if (Util.GetDistance(_target, monster.gameObject) <= wideAttackRange)
                     {
-                        obj.GetComponent<Monster>().TakeHit(Color.red, _stat);
+                        monster.gameObject.GetComponent<Monster>().TakeHit(Color.red, _stat);
                     }
                 }
                 break;
@@ -112,12 +112,12 @@ public class UnitStateMachine
                 if (_stat is AOE stat)
                     wideAttackRange = stat.wideAttackArea;
 
-                HashSet<GameObject> monsters = Managers.Game.Monsters;
-                foreach (GameObject obj in monsters)
+                HashSet<Monster> monsters = Managers.Game.Monsters;
+                foreach (Monster monster in monsters)
                 {
-                    if (Util.GetDistance(_target, obj) <= wideAttackRange)
+                    if (Util.GetDistance(_target, monster.gameObject) <= wideAttackRange)
                     {
-                        obj.GetComponent<Monster>().TakeHit(Color.green, _stat, Define.AttackType.SlowMagic);
+                        monster.gameObject.GetComponent<Monster>().TakeHit(Color.green, _stat, Define.AttackType.SlowMagic);
                     }
                 }
                 break;

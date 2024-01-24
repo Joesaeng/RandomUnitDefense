@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameManagerEx
@@ -9,8 +10,8 @@ public class GameManagerEx
 
     public Define.GameLanguage GameLanguage => _gameLanguage;
 
-    HashSet<GameObject> _monsters = new HashSet<GameObject>();
-    public HashSet<GameObject> Monsters { get { return _monsters; } }
+    HashSet<Monster> _monsters = new HashSet<Monster>();
+    public HashSet<Monster> Monsters { get { return _monsters; } }
 
     public Stack<GameObject> _dyingMonsters = new Stack<GameObject>();
 
@@ -28,7 +29,6 @@ public class GameManagerEx
 
     public void Init()
     {
-        _unitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
         CurStage = 1;
 
         Managers.Time.OnNextStage -= OnNextStageEvent;
@@ -47,7 +47,7 @@ public class GameManagerEx
 
         if(path == "Monster")
         {
-            _monsters.Add(go);
+            _monsters.Add(go.GetOrAddComponent<Monster>());
             CurStageMonsterCount++;
         }
 
@@ -56,13 +56,18 @@ public class GameManagerEx
 
     public void Despawn(GameObject go)
     {
-        if (_monsters.Contains(go))
+        Monster monster;
+        if(go.TryGetComponent<Monster>(out monster) == true)
         {
-            _monsters.Remove(go);
-            if (OnSpawnEvent != null)
-                OnSpawnEvent.Invoke(-1);
-            Managers.Resource.Destroy(go);
+            if (_monsters.Contains(monster))
+            {
+                _monsters.Remove(monster);
+                if (OnSpawnEvent != null)
+                    OnSpawnEvent.Invoke(-1);
+                Managers.Resource.Destroy(go);
+            }
         }
+        
 
     }
 
