@@ -16,6 +16,7 @@ public class ConstantData
     public static readonly float   MonsterRespawnTime = 0.5f;
     public static readonly float   OneStageTime = 15f;
     public static readonly int     OneStageSpawnCount = 20;
+    public static readonly int     MonsterCountForGameOver = 100;
 
     public static readonly int     InitialRuby = 60;
     public static readonly int     AmountRubyGivenByMonster = 1;

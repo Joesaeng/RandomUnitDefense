@@ -20,13 +20,14 @@ public class TimeManager
         if (Input.GetKeyDown(KeyCode.Tab))
             SetPause(!IsPause);
 
-        if(IsPause) return;
+        if (IsPause)
+            return;
 
         GameTime += Time.deltaTime;
         StageTime += Time.deltaTime;
         _curMonsterRespawnTime += Time.deltaTime;
 
-        if(_curMonsterRespawnTime >= ConstantData.MonsterRespawnTime)
+        if (_curMonsterRespawnTime >= ConstantData.MonsterRespawnTime)
         {
             if (OnMonsterRespawnTime != null)
                 OnMonsterRespawnTime.Invoke();
@@ -41,9 +42,23 @@ public class TimeManager
         }
     }
 
-    public string GetStageTimeByTimeDisplayFormat()
+    public enum StageTimeType
     {
-        return TimeSpan.FromSeconds(StageTime).ToString(@"mm\:ss");
+        LeftTime,
+        StageTime
+    }
+    public string GetStageTimeByTimeDisplayFormat(StageTimeType type)
+    {
+        switch (type)
+        {
+            case StageTimeType.LeftTime:
+                return TimeSpan.FromSeconds(ConstantData.OneStageTime - StageTime).ToString(@"mm\:ss");
+            case StageTimeType.StageTime:
+                return TimeSpan.FromSeconds(StageTime).ToString(@"mm\ : ss");
+            default:
+                return TimeSpan.FromSeconds(StageTime).ToString(@"mm\ : ss");
+
+        }
     }
 
     public string GetGameTimeByTimeDisplayFormat()

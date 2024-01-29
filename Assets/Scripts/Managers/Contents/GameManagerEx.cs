@@ -23,6 +23,8 @@ public class GameManagerEx
 
     public Action<int> OnChangedRuby;
 
+    public Action OnNextStage;
+
     public GameObject _selectedUnit;
     public UI_UnitInfo _selectUnitInfoUI;
 
@@ -55,6 +57,8 @@ public class GameManagerEx
     {
         CurStage++;
         CurStageMonsterCount = 0;
+        if (OnNextStage != null)
+            OnNextStage.Invoke();
     }
 
     public GameObject Spawn(string path, Transform parent = null, string newParentName = null)

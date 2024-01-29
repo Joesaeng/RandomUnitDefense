@@ -73,4 +73,12 @@ public class Util
     {
         return (T)Enum.Parse(typeof(T), stringData);
     }
+
+    public static float CalculatePercent(int left, int right)
+    {
+        if (left > right)
+            return (float)right / (float)left;
+        else
+            return (float)left / (float)right;
+    }
 }
