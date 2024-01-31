@@ -10,6 +10,8 @@ public class GameManagerEx
 
     public Define.GameLanguage GameLanguage => _gameLanguage;
 
+    public Define.Map CurMap { get; set; } = Define.Map.Basic;
+
     HashSet<Monster> _monsters = new HashSet<Monster>();
     public HashSet<Monster> Monsters { get { return _monsters; } }
 
@@ -67,7 +69,9 @@ public class GameManagerEx
 
         if (path == "Monster")
         {
-            _monsters.Add(go.GetOrAddComponent<Monster>());
+            Monster monster = go.GetOrAddComponent<Monster>();
+            monster.Init(1, CurMap);
+            _monsters.Add(monster);
             CurStageMonsterCount++;
         }
 
@@ -77,7 +81,7 @@ public class GameManagerEx
     public void Despawn(GameObject go)
     {
         Monster monster;
-        if (go.TryGetComponent<Monster>(out monster) == true)
+        if (go.TryGetComponent(out monster) == true)
         {
             if (_monsters.Contains(monster))
             {

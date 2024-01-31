@@ -7,6 +7,7 @@ public class ConstantData
     #region 상수 데이터
     public static readonly int PopupUISortOrder = 10;
     public static readonly int SceneUISortOrder = 9;
+    public static readonly int WorldSpaceUISortOrder = 8;
     #endregion
 
 
@@ -17,13 +18,14 @@ public class ConstantData
     public static readonly float   OneStageTime = 15f;
     public static readonly int     OneStageSpawnCount = 20;
     public static readonly int     MonsterCountForGameOver = 100;
-
+    public static readonly int     SelectableUnitCount = 5;
     public static readonly int     InitialRuby = 60;
     public static readonly int     AmountRubyGivenByMonster = 1;
     public static readonly int     RubyRequiredOneSpawnPlayerUnit = 20;
 
 
-    public static readonly int     MonsterIDFirst = 1000;
+    public static readonly int     FirstOfMonsterID = 1000;
+    public static readonly int     FirstOfUnitID = 100;
 
     #region 몬스터 이동 포인트 벡터
     // Basic Map

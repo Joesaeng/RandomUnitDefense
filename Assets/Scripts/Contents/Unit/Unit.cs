@@ -50,7 +50,7 @@ public class Unit : MonoBehaviour
     }    
     public BaseUnits GetBaseUnit()
     {
-        return _stateMachine.GetBaseUnit;
+        return _stateMachine._baseUnit.baseUnit;
     }    
     public void SlotChange(int slotIndex)
     {

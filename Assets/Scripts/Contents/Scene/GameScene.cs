@@ -18,10 +18,16 @@ public class GameScene : BaseScene
 
     UnitSlot[] _unitSlots = null;
 
+    int[] ids = {100,101,102,103,104,105,106,107,108};
+
+    [SerializeField]
+    int[] _selectedUnitIds;
+
     protected override void Init()
     {
         base.Init();
         SceneType = Define.Scene.Game;
+        Managers.Game.CurMap = _curMap;
 
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
         Managers.UI.ShowSceneUI<UI_GameScene>();
@@ -37,6 +43,21 @@ public class GameScene : BaseScene
 
         Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
         Managers.Game.OnSpawnButtonClickEvent += OnSpawnPlayerUnit;
+
+        _selectedUnitIds = new int[ConstantData.SelectableUnitCount];
+        HashSet<int> IdSet = new HashSet<int>();
+        for (int i = 0; i < _selectedUnitIds.Length; ++i)
+        {
+            while (true)
+            {
+                int randId = ids[UnityEngine.Random.Range(0,ids.Length)];
+                if(IdSet.Contains(randId))
+                    continue;
+                IdSet.Add(randId);
+                _selectedUnitIds[i] = randId;
+                break;
+            }
+        }
     }
 
     private void Update()
@@ -129,6 +150,7 @@ public class GameScene : BaseScene
         return isComposeable;
     }
 
+
     // 플레이어가 유닛 소환 버튼 클릭 시 호출되는 메서드
     private void OnSpawnPlayerUnit()
     {
@@ -158,9 +180,7 @@ public class GameScene : BaseScene
             Debug.Log("unitSlots is Full!");
             return;
         }
-        //int[] ids = {100,101,102,103,104,105,106,107,108};
-        int[] ids = {(int)BaseUnits.Archer + 100};
-        int randId = ids[UnityEngine.Random.Range(0, ids.Length)];
+        int randId = _selectedUnitIds[UnityEngine.Random.Range(0, _selectedUnitIds.Length)];
 
         // randId는 로비에서 등록한 유닛들의 Id를 가져와서 n개중 1개를 선택하는 방식으로 한다.
 
@@ -213,6 +233,15 @@ public class GameScene : BaseScene
         {
             DestroyPlayerUnit(i);
         }
+
+        Managers.Game._unitAttackRange = null;
+        Managers.Game.Ruby = 0;
+
+        Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
+
+        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
+
+        Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
     }
 
     // 몬스터를 리스폰할 시간이 되었다! 는 이벤트
@@ -226,8 +255,6 @@ public class GameScene : BaseScene
     private void SpawnMonster(int stageNum)
     {
         GameObject monster = Managers.Game.Spawn("Monster",newParentName:"Monsters");
-        // monster.GetComponent<Monster>().Init(stageNum, _curMap);
-        monster.GetComponent<Monster>().Init(1, _curMap);
 
         monster.transform.position = _monsterSpawnPoint.position;
         // monsters의 Count 정보를 가지고 GameOver를 결정함.

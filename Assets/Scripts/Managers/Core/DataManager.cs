@@ -79,6 +79,6 @@ public class DataManager
 
     public MonsterData GetMonsterData(int stageNum)
     {
-        return MonsterDict[stageNum + ConstantData.MonsterIDFirst];
+        return MonsterDict[stageNum + ConstantData.FirstOfMonsterID];
     }
 }

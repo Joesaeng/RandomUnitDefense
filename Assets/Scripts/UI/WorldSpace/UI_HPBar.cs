@@ -10,22 +10,21 @@ public class UI_HPBar : UI_Base
         HPBar
     }
 
-    // Stat _stat;
+    Monster _monster;
 
     public override void Init()
     {
         Bind<GameObject>(typeof(GameObjects));
-        // _stat = transform.parent.GetComponent<Stat>();
+        _monster = transform.parent.GetComponent<Monster>();
     }
 
     private void Update()
     {
         Transform parent = transform.parent;
-        transform.position = parent.position + Vector3.up * (parent.GetComponent<Collider>().bounds.size.y);
-        transform.rotation = Camera.main.transform.rotation;
+        transform.position = parent.position + Vector3.up * 0.5f;
 
-        // float ratio = _stat.Hp / (float)_stat.MaxHp;
-        // SetHpRatio(ratio);
+        float ratio = (float)_monster.CurHp / (float)_monster.MaxHp;
+        SetHpRatio(ratio);
     }
 
     public void SetHpRatio(float ratio)

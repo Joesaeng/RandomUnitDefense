@@ -3,34 +3,31 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define;
 
 public class Monster : MonoBehaviour
 {
-    public enum DebuffState
-    {
-        None,
-        Slow,
-        Poison,
-        Stun,
-        Count,
-    }
-    
-    float[] _debuffTimes = new float[(int)DebuffState.Count];
-    float[] _debuffRatios = new float[(int)DebuffState.Count];
-
     MonsterData _monsterStat = new MonsterData();
 
     Vector3[] _movePoints;
     int _nextMovePoint;
 
-    private bool isStun = false;
-    private bool isDead = false;
-    public bool IsDead => isDead;
+    [SerializeField]
+    private bool _isStun { get; set; }  = false;
+    [SerializeField]
+    private bool _isDead = false;
+    public bool IsDead => _isDead;
+
+    [SerializeField]
+    List<BaseDebuff> _debuffs;
+    public List<BaseDebuff> Debuffs => _debuffs;
 
     // Stats
     float _moveSpeed;
     float _curMoveSpeed;
     float _curHp;
+    public float CurHp => _curHp;
+    public float MaxHp { get;private set; }
     int _defense;
 
     public void Init(int stageNum, Define.Map map)
@@ -42,13 +39,21 @@ public class Monster : MonoBehaviour
         tColor = new Color(1f, 56 / 255f, 0f);
         spr.color = tColor;
 
+        if (gameObject.GetComponentInChildren<UI_HPBar>() == null)
+            Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
+
         // stageNum에 따라서 유닛의 형태, 이동속도, 체력 등 초기화
+        MaxHp = _monsterStat.maxHp;
         _curHp = _monsterStat.maxHp;
         _moveSpeed = _monsterStat.moveSpeed;
+        _curMoveSpeed = _moveSpeed;
         _defense = _monsterStat.defense;
 
-        isStun = false;
-        isDead = false;
+        _debuffs = new List<BaseDebuff>();
+
+        _debuffs.Clear();
+
+        _isDead = false;
     }
 
     private void SetMovePoint(Define.Map map)
@@ -65,60 +70,60 @@ public class Monster : MonoBehaviour
 
     public void MonsterUpdate()
     {
-        DeBuffUpdate();
-        Move();
-    }
-    private void DeBuffUpdate()
-    {
-        for(int i = (int)DebuffState.None; i < (int)DebuffState.Count; ++i)
+        for(int i = 0; i < Debuffs.Count; ++i)
         {
-            if (_debuffTimes[i] > -0.01f)
-                _debuffTimes[i] -= Time.deltaTime;
-            Debuff((DebuffState)i, _debuffTimes[i] > 0f);
-        }
-    }
-    private void Debuff(DebuffState debuffState, bool onOff)
-    {
-        if(onOff == true)
-        {
-            switch (debuffState)
-            {
-                case DebuffState.Slow:
-                    if(_curMoveSpeed >= _moveSpeed * _debuffRatios[(int)DebuffState.Slow])
-                        _curMoveSpeed = _moveSpeed * _debuffRatios[(int)DebuffState.Slow];
-                    break;
-                case DebuffState.Poison:
-                    _curHp -= _debuffRatios[(int)(DebuffState.Poison)] * Time.deltaTime;
-                    break;
-                case DebuffState.Stun:
-                    isStun = true;
-                    break;
-                default:
-                    break;
-            }
-        }
-        else
-        {
-            switch (debuffState)
-            {
-                case DebuffState.Slow:
-                    _curMoveSpeed = _moveSpeed;
-                    break;
-                case DebuffState.Poison:
-                    break;
-                case DebuffState.Stun:
-                    isStun = false;
-                    break;
-                default:
-                    break;
-            }
+            Debuffs[i].OnUpdate();
         }
         
-    }    
+        Move();
+    }
+
+    #region 디버프
+
+    public void ApplySlowDebuff(float ratio)
+    {
+        _curMoveSpeed = _moveSpeed * ratio;
+    }
+
+    public void QuitSlowDebuff()
+    {
+        _curMoveSpeed = _moveSpeed;
+    }
+
+    public void ApplyStunDebuff()
+    {
+        _isStun = true;
+    }
+
+    public void QuitStunDebuff()
+    {
+        _isStun = false;
+    }
+
+    private void ApplyDebuff(BaseDebuff debuff)
+    {
+        _debuffs.Add(debuff);
+    }
+
+    private void QuitAllDebuff()
+    {
+        _isStun = false;
+        for(int i = 0; i < Debuffs.Count;++i)
+        {
+            QuitDebuff(Debuffs[i]);
+        }    
+    }
+
+    public void QuitDebuff(BaseDebuff debuff)
+    {
+        _debuffs.Remove(debuff);
+    }
+
+    #endregion
 
     private void Move()
     {
-        if (isStun || isDead)
+        if (IsDead || _isStun)
             return;
         if (Vector3.Distance(transform.position, _movePoints[_nextMovePoint]) <= 0.01f)
         {
@@ -131,7 +136,7 @@ public class Monster : MonoBehaviour
     Color tColor;
     public void TakeHit(Color color, UnitStat_Base stat, Define.AttackType attackType = Define.AttackType.Common)
     {
-        if (isDead)
+        if (IsDead)
             return;
         SpriteRenderer spr = GetComponent<SpriteRenderer>();
 
@@ -145,8 +150,9 @@ public class Monster : MonoBehaviour
             {
                 if (stat is SlowMagician Stat)
                 {
-                    _debuffTimes[(int)DebuffState.Slow] = Stat.slowDuration;
-                    _debuffRatios[(int)DebuffState.Slow] = Stat.slowRatio;
+                    SlowDebuff slowDebuff = new SlowDebuff();
+                    slowDebuff.Init(this, Stat.slowDuration, Stat.slowRatio);
+                    ApplyDebuff(slowDebuff);
                 }
                 break;
             }
@@ -154,7 +160,9 @@ public class Monster : MonoBehaviour
             {
                 if (stat is StunGun Stat)
                 {
-                    _debuffTimes[(int)DebuffState.Stun] = Stat.stunDuration;
+                    StunDebuff stunDebuff = new StunDebuff();
+                    stunDebuff.Init(this, Stat.stunDuration);
+                    ApplyDebuff(stunDebuff);
                 }
                 break;
             }
@@ -162,26 +170,37 @@ public class Monster : MonoBehaviour
             {
                 if (stat is PoisonBowMan Stat)
                 {
-                    _debuffTimes[(int)DebuffState.Poison] = Stat.poisonDuration;
-                    _debuffRatios[(int)DebuffState.Poison] = Stat.poisonDamagePerSecond;
+                    PoisonDebuff poisonDebuff = new PoisonDebuff();
+                    poisonDebuff.Init(this, Stat.poisonDuration,Stat.poisonDamagePerSecond);
+                    ApplyDebuff(poisonDebuff);
                 }
                 break;
             }
         }
 
         // 유닛의 공격력이 몬스터의 방어력보다 낮은 경우 1의 데미지를 받게 합니다.
-        int damage = stat.attackDamage - _defense > 1 ? stat.attackDamage - _defense : 1;
-        _curHp -= damage;
+        float damage = stat.attackDamage - _defense > 1 ? stat.attackDamage - _defense : 1;
+        ReduceHp(damage);
         if (_curHp <= 0)
         {
-            isDead = true;
-            Managers.Game.RegisterDyingMonster(this.gameObject);
-            StopAllCoroutines();
+            
         }
         else
         {
             // TEMP
             StartCoroutine("CoColor");
+        }
+    }
+
+    public void ReduceHp(float damage)
+    {
+        _curHp -= damage;
+        if (_curHp <= 0)
+        {
+            _isDead = true;
+            Managers.Game.RegisterDyingMonster(this.gameObject);
+            QuitAllDebuff();
+            StopAllCoroutines();
         }
     }
 

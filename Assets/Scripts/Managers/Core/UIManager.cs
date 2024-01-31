@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 public class UIManager
@@ -71,6 +72,7 @@ public class UIManager
         Canvas canvas = go.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.WorldSpace;
         canvas.worldCamera = Camera.main;
+        canvas.sortingOrder = ConstantData.WorldSpaceUISortOrder;
 
         return Util.GetOrAddComponent<T>(go);
     }

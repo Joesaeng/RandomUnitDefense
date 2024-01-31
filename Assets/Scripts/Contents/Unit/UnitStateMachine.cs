@@ -16,14 +16,11 @@ public enum UnitState
 public class UnitStateMachine : MonoBehaviour
 {
     GameObject _ownObj;
-    [SerializeField]
-    GameObject _target;
+    
+    Monster _targetMonster;
 
-    BaseUnit _baseUnit;
-    public BaseUnits GetBaseUnit
-    {
-        get { return _baseUnit.baseUnit; }
-    }
+    public BaseUnit _baseUnit;
+    
     UnitStat_Base _stat;
 
     public UnitStat_Base Stat => _stat;
@@ -76,15 +73,15 @@ public class UnitStateMachine : MonoBehaviour
         {
             if (monster.IsDead)
                 continue;
-            float dist = Vector3.Distance(monster.transform.position,_ownObj.transform.position);
+            float dist = Util.GetDistance(monster,_ownObj);
             if (dist <= _stat.attackRange && dist <= closestDist)
             {
                 closestDist = dist;
-                _target = monster.gameObject;
+                _targetMonster = monster;
             }
         }
 
-        if (_target != null)
+        if (_targetMonster != null)
         {
             ChangeState(UnitState.SkillState);
             return;
@@ -93,18 +90,18 @@ public class UnitStateMachine : MonoBehaviour
 
     private void SkillStateM()
     {
-        if (_target == null ||
-            (_target != null && _target.GetComponent<Monster>().IsDead))
+        if (_targetMonster == null ||
+            (_targetMonster != null && _targetMonster.IsDead))
         {
-            _target = null;
+            _targetMonster = null;
             ChangeState(UnitState.SearchTarget);
             return;
         }
 
-        float dist = Util.GetDistance(_target,_ownObj);
+        float dist = Util.GetDistance(_targetMonster,_ownObj);
         if (dist > _stat.attackRange)
         {
-            _target = null;
+            _targetMonster = null;
             ChangeState(UnitState.SearchTarget);
             return;
         }
@@ -122,15 +119,15 @@ public class UnitStateMachine : MonoBehaviour
             {
                 if (monster.IsDead)
                     continue;
-                float dist = Vector3.Distance(monster.transform.position,_ownObj.transform.position);
+                float dist = Util.GetDistance(monster,_ownObj);
                 if (dist <= _stat.attackRange && dist <= closestDist)
                 {
                     closestDist = dist;
-                    _target = monster.gameObject;
+                    _targetMonster = monster;
                 }
             }
 
-            if (_target != null)
+            if (_targetMonster != null)
             {
                 ChangeState(UnitState.SkillState);
                 break;
@@ -144,18 +141,18 @@ public class UnitStateMachine : MonoBehaviour
     {
         while (true)
         {
-            if (_target == null ||
-                (_target != null && _target.GetComponent<Monster>().IsDead))
+            if (_targetMonster == null ||
+                (_targetMonster != null && _targetMonster.IsDead))
             {
-                _target = null;
+                _targetMonster = null;
                 ChangeState(UnitState.SearchTarget);
                 break;
             }
 
-            float dist = Util.GetDistance(_target,_ownObj);
+            float dist = Util.GetDistance(_targetMonster,_ownObj);
             if (dist > _stat.attackRange)
             {
-                _target = null;
+                _targetMonster = null;
                 ChangeState(UnitState.SearchTarget);
                 break;
             }
@@ -167,6 +164,10 @@ public class UnitStateMachine : MonoBehaviour
 
     private void Skill()
     {
+        GameObject bullet = Managers.Game.Spawn("UnitBullet");
+        bullet.transform.position = _ownObj.transform.position;
+        bullet.GetComponent<UnitBullet>().Init(_targetMonster, Stat, _baseUnit.baseUnit,_baseUnit.type);
+        /*
         switch (_baseUnit.baseUnit)
         {
             // Common
@@ -223,7 +224,7 @@ public class UnitStateMachine : MonoBehaviour
                 _target.GetComponent<Monster>().TakeHit(Color.black, _stat, Define.AttackType.Poison);
                 break;
             }
-        }
+        }*/ // Skill
         _curAttackRateTime = 0f;
     }
 }

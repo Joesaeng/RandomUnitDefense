@@ -60,13 +60,37 @@ public class Util
         return null;
     }
 
-    public static float GetDistance(GameObject target, GameObject go)
+    public static float GetDistance(UnityEngine.Object left, UnityEngine.Object right)
     {
-        if (target == go)
+        Vector3 leftVec = Vector3.zero;
+        Vector3 rightVec = Vector3.zero;
+        if (left is GameObject leftObj)
+        {
+            leftVec = leftObj.transform.position;
+        }
+        else if (left is UnityEngine.Component leftComp)
+        {
+            leftVec = leftComp.transform.position;
+        }
+        else
+        {
+            Debug.Log("GetDistance()에 오브젝트도, 컴포넌트도 아닌 것이 들어왔습니다");
             return 0f;
-        if (target == null || go == null)
+        }
+        if (right is GameObject rightObj)
+        {
+            rightVec = rightObj.transform.position;
+        }
+        else if (right is UnityEngine.Component rightComp)
+        {
+            rightVec = rightComp.transform.position;
+        }
+        else
+        {
+            Debug.Log("GetDistance()에 오브젝트도, 컴포넌트도 아닌 것이 들어왔습니다");
             return 0f;
-        return Vector3.Distance(target.transform.position, go.transform.position);
+        }
+        return Vector3.Distance(leftVec, rightVec);
     }
 
     public static T Parse<T>(string stringData)
