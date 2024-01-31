@@ -7,13 +7,6 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public enum UnitState
-    {
-        Idle,       // 대기 상태
-        Chase,      // 몬스터 추적 상태
-        Skill,      // 스킬 사용
-    }
-
     public int ID { get; private set; }
     public int Lv { get; private set; }
 
@@ -46,7 +39,8 @@ public class Unit : MonoBehaviour
         Lv = level;
         SlotChange(slotIndex);
         gameObject.GetOrAddComponent<DraggableUnit>();
-        _stateMachine = new UnitStateMachine(gameObject, id, level);
+        _stateMachine = gameObject.GetOrAddComponent<UnitStateMachine>();
+        _stateMachine.Init(gameObject, ID, Lv);
         BindToMouseEvent();
     }
 

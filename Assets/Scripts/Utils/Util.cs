@@ -66,7 +66,7 @@ public class Util
             return 0f;
         if (target == null || go == null)
             return 0f;
-        return (target.transform.position - go.transform.position).magnitude;
+        return Vector3.Distance(target.transform.position, go.transform.position);
     }
 
     public static T Parse<T>(string stringData)

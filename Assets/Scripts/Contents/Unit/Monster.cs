@@ -23,8 +23,9 @@ public class Monster : MonoBehaviour
     Vector3[] _movePoints;
     int _nextMovePoint;
 
-    bool isStun = false;
-    bool isDead = false;
+    private bool isStun = false;
+    private bool isDead = false;
+    public bool IsDead => isDead;
 
     // Stats
     float _moveSpeed;

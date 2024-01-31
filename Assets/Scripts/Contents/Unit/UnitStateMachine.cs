@@ -2,11 +2,18 @@ using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using static Unit;
 
+public enum UnitState
+{
+    SearchTarget,       // Å¸°Ù ½ºÄµ
+    SkillState,              // ½ºÅ³ »ç¿ë
+}
+
 [Serializable]
-public class UnitStateMachine
+public class UnitStateMachine : MonoBehaviour
 {
     GameObject _ownObj;
     [SerializeField]
@@ -21,76 +28,144 @@ public class UnitStateMachine
 
     public UnitStat_Base Stat => _stat;
 
-    private UnitState _state = UnitState.Idle;
-    public UnitState State { get { return _state; } set { _state = value; } }
+    private UnitState _state;
 
-    float _curSkillCoolTime;
+    [SerializeField]
+    float _curAttackRateTime;
+
+    WaitForSeconds _attackRate;
 
     public void OnUpdate()
     {
-        _curSkillCoolTime += Time.deltaTime;
-        switch (State)
+        _curAttackRateTime += Time.deltaTime;
+
+        switch (_state)
         {
-            case UnitState.Idle:
-                //Idle();
+            case UnitState.SearchTarget:
+                SearchTargetM();
                 break;
-            case UnitState.Chase:
-                Chase();
+            case UnitState.SkillState:
+                SkillStateM();
                 break;
-            case UnitState.Skill:
-                Skill();
-                break;
+
         }
     }
 
-    public UnitStateMachine(GameObject ownObj, int id, int level)
+    public void Init(GameObject ownObj, int id, int level)
     {
         _ownObj = ownObj;
         _baseUnit = Managers.Data.BaseUnitDict[id];
         _stat = Managers.Data.GetUnitData(_baseUnit.baseUnit, level);
-        State = UnitState.Chase;
+        _attackRate = new WaitForSeconds(_stat.attackRate);
+        ChangeState(UnitState.SearchTarget);
     }
 
-    public void TargetScan()
+    public void ChangeState(UnitState state)
     {
+        //StopCoroutine(_state.ToString());
+
+        _state = state;
+
+        //StartCoroutine(_state.ToString());
+    }
+
+    private void SearchTargetM()
+    {
+        float closestDist = Mathf.Infinity;
         foreach (Monster monster in Managers.Game.Monsters)
         {
-            if (Util.GetDistance(monster.gameObject, _ownObj) <= _stat.attackRange)
+            if (monster.IsDead)
+                continue;
+            float dist = Vector3.Distance(monster.transform.position,_ownObj.transform.position);
+            if (dist <= _stat.attackRange && dist <= closestDist)
             {
-                if (_target == null)
-                    _target = monster.gameObject;
-                else if (Util.GetDistance(_target.gameObject, _ownObj)
-                    > Util.GetDistance(monster.gameObject, _ownObj))
+                closestDist = dist;
+                _target = monster.gameObject;
+            }
+        }
+
+        if (_target != null)
+        {
+            ChangeState(UnitState.SkillState);
+            return;
+        }
+    }
+
+    private void SkillStateM()
+    {
+        if (_target == null ||
+            (_target != null && _target.GetComponent<Monster>().IsDead))
+        {
+            _target = null;
+            ChangeState(UnitState.SearchTarget);
+            return;
+        }
+
+        float dist = Util.GetDistance(_target,_ownObj);
+        if (dist > _stat.attackRange)
+        {
+            _target = null;
+            ChangeState(UnitState.SearchTarget);
+            return;
+        }
+
+        if (_curAttackRateTime > _stat.attackRate)
+            Skill();
+    }
+
+    private IEnumerator SearchTarget()
+    {
+        while (true)
+        {
+            float closestDist = Mathf.Infinity;
+            foreach (Monster monster in Managers.Game.Monsters)
+            {
+                if (monster.IsDead)
+                    continue;
+                float dist = Vector3.Distance(monster.transform.position,_ownObj.transform.position);
+                if (dist <= _stat.attackRange && dist <= closestDist)
                 {
+                    closestDist = dist;
                     _target = monster.gameObject;
                 }
             }
+
+            if (_target != null)
+            {
+                ChangeState(UnitState.SkillState);
+                break;
+            }
+
+            yield return null;
         }
     }
 
-    public void Chase()
+    private IEnumerator SkillState()
     {
-        if (NeedToTargetScan())
+        while (true)
         {
-            TargetScan();
-        }
-        if (_target != null && _curSkillCoolTime > _stat.attackRate)
-        {
-            State = Unit.UnitState.Skill;
+            if (_target == null ||
+                (_target != null && _target.GetComponent<Monster>().IsDead))
+            {
+                _target = null;
+                ChangeState(UnitState.SearchTarget);
+                break;
+            }
+
+            float dist = Util.GetDistance(_target,_ownObj);
+            if (dist > _stat.attackRange)
+            {
+                _target = null;
+                ChangeState(UnitState.SearchTarget);
+                break;
+            }
+
+            Skill();
+            yield return _attackRate;
         }
     }
 
-    private bool NeedToTargetScan()
-    {
-        // Å¸°ÙÀÌ null ÀÌ°Å³ª, Å¸°ÙÀÌ unactive(pool¿¡ µé¾î°¨) ÀÌ°Å³ª,
-        // Å¸°ÙÀÌ °ø°Ý ¹üÀ§¸¦ ¹þ¾î³µ°Å³ª
-        bool ret = (_target == null || _target.gameObject.activeSelf == false ||
-            ((_target != null && _target.gameObject.activeSelf == true)
-            && Util.GetDistance(_target.gameObject, _ownObj) > _stat.attackRange));
-        return ret;
-    }
-
-    public void Skill()
+    private void Skill()
     {
         switch (_baseUnit.baseUnit)
         {
@@ -116,7 +191,7 @@ public class UnitStateMachine
                 {
                     if (Util.GetDistance(_target, monster.gameObject) <= wideAttackRange)
                     {
-                        monster.gameObject.GetComponent<Monster>().TakeHit(Color.red, _stat);
+                        monster.TakeHit(Color.red, _stat);
                     }
                 }
                 break;
@@ -133,7 +208,7 @@ public class UnitStateMachine
                 {
                     if (Util.GetDistance(_target, monster.gameObject) <= wideAttackRange)
                     {
-                        monster.gameObject.GetComponent<Monster>().TakeHit(Color.green, _stat, Define.AttackType.SlowMagic);
+                        monster.TakeHit(Color.green, _stat, Define.AttackType.SlowMagic);
                     }
                 }
                 break;
@@ -149,7 +224,6 @@ public class UnitStateMachine
                 break;
             }
         }
-        _curSkillCoolTime = 0f;
-        State = Unit.UnitState.Chase;
+        _curAttackRateTime = 0f;
     }
 }

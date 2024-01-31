@@ -46,13 +46,13 @@ public class GameScene : BaseScene
 
         // 업데이트 순서가 꼬일 수 있기 때문에 게임신에서
         // 업데이트가 필요한 모든 오브젝트들의 업데이트를 관리한다.
-        foreach (KeyValuePair<int, Unit> pair in _unitDict)
-        {
-            pair.Value.UnitUpdate();
-        }
         foreach (Monster monster in Managers.Game.Monsters)
         {
             monster.MonsterUpdate();
+        }
+        foreach (KeyValuePair<int, Unit> pair in _unitDict)
+        {
+            pair.Value.UnitUpdate();
         }
         while (Managers.Game._dyingMonsters.Count > 0)
         {
