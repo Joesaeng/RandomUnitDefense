@@ -19,9 +19,9 @@ namespace Data
     }
 
     [Serializable]
-    public enum BaseUnits
+    public enum UnitNames
     {
-        Knight,
+        Knight = ConstantData.FirstOfUnitID,
         Spearman,
         Archer,
         FireMagician,
@@ -36,7 +36,7 @@ namespace Data
     public class BaseUnit
     {
         public int          id;                 // 아이디
-        public BaseUnits    baseUnit;           // 베이스유닛
+        public UnitNames    baseUnit;           // 베이스유닛
         public UnitType     type;               // 유닛 타입
     }
 
@@ -60,7 +60,7 @@ namespace Data
             {
                 BaseUnit baseUnitData = new BaseUnit();
                 baseUnitData.id = data.id;
-                baseUnitData.baseUnit = Util.Parse<BaseUnits>(data.baseUnit);
+                baseUnitData.baseUnit = Util.Parse<UnitNames>(data.baseUnit);
                 baseUnitData.type = Util.Parse<UnitType>(data.type);
                 dict.Add(data.id, baseUnitData);
             }

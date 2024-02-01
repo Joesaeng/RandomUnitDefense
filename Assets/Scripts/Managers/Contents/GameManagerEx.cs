@@ -1,3 +1,4 @@
+using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,6 +31,9 @@ public class GameManagerEx
     public GameObject _selectedUnit;
     public UI_UnitInfo _selectUnitInfoUI;
 
+    public int[] _selectedUnitIds;
+    public int[] _upgradeCostOfUnits;
+
     public UnitAttackRange _unitAttackRange;
 
     public int CurStage { get; set; }
@@ -53,6 +57,24 @@ public class GameManagerEx
 
         Managers.Time.OnNextStage -= OnNextStageEvent;
         Managers.Time.OnNextStage += OnNextStageEvent;
+
+        Managers.UnitStatus.OnUnitUpgrade -= OnUnitUpgrade;
+        Managers.UnitStatus.OnUnitUpgrade += OnUnitUpgrade;
+    }
+
+    public bool CanUnitUpgrade(int slot)
+    {
+        if(Ruby >= _upgradeCostOfUnits[slot])
+        {
+            Ruby -= _upgradeCostOfUnits[slot];
+            return true;
+        }
+        return false;
+    }
+
+    private void OnUnitUpgrade(int slot)
+    {
+        _upgradeCostOfUnits[slot] = Managers.UnitStatus.UnitUpgradLv[(UnitNames)_selectedUnitIds[slot]] * ConstantData.BaseUpgradeCost;
     }
 
     private void OnNextStageEvent()

@@ -8,29 +8,39 @@ using static Unit;
 
 public enum UnitState
 {
-    SearchTarget,       // 타겟 스캔
-    SkillState,              // 스킬 사용
+    SearchTarget,           // 타겟 스캔
+    SkillState,             // 스킬 사용
 }
 
 [Serializable]
-public class UnitStateMachine : MonoBehaviour
+public class UnitStateMachine //: MonoBehaviour
 {
     GameObject _ownObj;
     
     Monster _targetMonster;
 
-    public BaseUnit _baseUnit;
-    
-    UnitStat_Base _stat;
+    //public BaseUnit _baseUnit;
 
-    public UnitStat_Base Stat => _stat;
+    //UnitStat_Base _stat;
+
+    //public UnitStat_Base Stat => _stat;
+
+    private UnitNames       _baseUnit;
+    private UnitType        _attackType;
+    private int             _unitId;
+    private int             _unitLv;
+    private float           _attackRate;
+    private float           _attackRange;
+
+    public  float           AttackRange => _attackRange;
+    public  UnitNames       BaseUnit => _baseUnit;
 
     private UnitState _state;
 
     [SerializeField]
     float _curAttackRateTime;
 
-    WaitForSeconds _attackRate;
+    // WaitForSeconds _attackRate;
 
     public void OnUpdate()
     {
@@ -48,12 +58,19 @@ public class UnitStateMachine : MonoBehaviour
         }
     }
 
-    public void Init(GameObject ownObj, int id, int level)
+    public void Init(GameObject ownObj, int unitId, int level)
     {
         _ownObj = ownObj;
-        _baseUnit = Managers.Data.BaseUnitDict[id];
-        _stat = Managers.Data.GetUnitData(_baseUnit.baseUnit, level);
-        _attackRate = new WaitForSeconds(_stat.attackRate);
+        _baseUnit = (UnitNames)unitId;
+        _unitId = unitId;
+        _unitLv = level;
+
+        UnitStatus unitStatus = Managers.UnitStatus.GetUnitStatus(_baseUnit, _unitLv);
+        _attackType = unitStatus.unitType;
+        _attackRange = unitStatus.attackRange;
+        _attackRate = unitStatus.attackRate;
+
+        // _attackRate = new WaitForSeconds(_stat.attackRate);
         ChangeState(UnitState.SearchTarget);
     }
 
@@ -74,7 +91,7 @@ public class UnitStateMachine : MonoBehaviour
             if (monster.IsDead)
                 continue;
             float dist = Util.GetDistance(monster,_ownObj);
-            if (dist <= _stat.attackRange && dist <= closestDist)
+            if (dist <= _attackRange && dist <= closestDist)
             {
                 closestDist = dist;
                 _targetMonster = monster;
@@ -99,17 +116,17 @@ public class UnitStateMachine : MonoBehaviour
         }
 
         float dist = Util.GetDistance(_targetMonster,_ownObj);
-        if (dist > _stat.attackRange)
+        if (dist > _attackRange)
         {
             _targetMonster = null;
             ChangeState(UnitState.SearchTarget);
             return;
         }
 
-        if (_curAttackRateTime > _stat.attackRate)
+        if (_curAttackRateTime > _attackRate)
             Skill();
     }
-
+    /*
     private IEnumerator SearchTarget()
     {
         while (true)
@@ -158,15 +175,16 @@ public class UnitStateMachine : MonoBehaviour
             }
 
             Skill();
-            yield return _attackRate;
+            // yield return _attackRate;
         }
     }
+    */ // 코루틴 스테이트머신
 
     private void Skill()
     {
         GameObject bullet = Managers.Game.Spawn("UnitBullet");
         bullet.transform.position = _ownObj.transform.position;
-        bullet.GetComponent<UnitBullet>().Init(_targetMonster, Stat, _baseUnit.baseUnit,_baseUnit.type);
+        bullet.GetComponent<UnitBullet>().Init(_targetMonster, _baseUnit,_unitLv);
         /*
         switch (_baseUnit.baseUnit)
         {

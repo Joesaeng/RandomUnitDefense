@@ -30,7 +30,6 @@ public class GameScene : BaseScene
         Managers.Game.CurMap = _curMap;
 
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
-        Managers.UI.ShowSceneUI<UI_GameScene>();
 
         Managers.Game._unitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
         Managers.Game.Ruby = ConstantData.InitialRuby;
@@ -38,11 +37,11 @@ public class GameScene : BaseScene
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
 
-        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
-        Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
-
         Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
         Managers.Game.OnSpawnButtonClickEvent += OnSpawnPlayerUnit;
+
+        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
+        Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
 
         _selectedUnitIds = new int[ConstantData.SelectableUnitCount];
         HashSet<int> IdSet = new HashSet<int>();
@@ -58,6 +57,14 @@ public class GameScene : BaseScene
                 break;
             }
         }
+        Managers.Game._selectedUnitIds = _selectedUnitIds;
+        Managers.Game._upgradeCostOfUnits = new int[ConstantData.SelectableUnitCount];
+        for(int i = 0; i < Managers.Game._upgradeCostOfUnits.Length; ++i)
+        {
+            Managers.Game._upgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
+        }
+        Managers.UnitStatus.Init();
+        Managers.UI.ShowSceneUI<UI_GameScene>();
     }
 
     private void Update()

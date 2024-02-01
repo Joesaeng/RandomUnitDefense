@@ -1,6 +1,7 @@
 using Data;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,14 +9,13 @@ using UnityEngine.UI;
 
 public class UI_GameScene : UI_Scene
 {
+    enum GameObjects
+    {
+        PanelUpgrade,
+    }
     enum Buttons
     {
         BtnSpawn,
-        BtnSlot1,
-        BtnSlot2,
-        BtnSlot3,
-        BtnSlot4,
-        BtnSlot5,
     }
     enum TMPros
     {
@@ -30,17 +30,13 @@ public class UI_GameScene : UI_Scene
 
     enum Images
     {
-        UnitImage1,
-        UnitImage2,
-        UnitImage3,
-        UnitImage4,
-        UnitImage5,
         FillMonsterGageBar
     }
 
     public override void Init()
     {
         base.Init();
+        Bind<GameObject>(typeof(GameObjects));
         Bind<Button>(typeof(Buttons));
         Bind<TextMeshProUGUI>(typeof(TMPros));
         Bind<Image>(typeof(Images));
@@ -55,6 +51,18 @@ public class UI_GameScene : UI_Scene
         OnNextStageEvent();
         Managers.Game.OnNextStage -= OnNextStageEvent;
         Managers.Game.OnNextStage += OnNextStageEvent;
+
+        GameObject panelUpgrade = Get<GameObject>((int)GameObjects.PanelUpgrade);
+        foreach (Transform child in panelUpgrade.transform)
+            Managers.Resource.Destroy(child.gameObject);
+
+        int unitCount = Managers.Game._selectedUnitIds.Length;
+        for(int i = 0; i < unitCount; i++)
+        {
+            GameObject upgradeBtn = Managers.UI.MakeSubItem<UI_BtnUpgrade>(parent : panelUpgrade.transform).gameObject;
+            upgradeBtn.transform.localScale = new Vector3(1f, 1f, 1f);
+            upgradeBtn.GetComponent<UI_BtnUpgrade>().SetInfo(i, Managers.Game._selectedUnitIds[i]);
+        }
     }
 
     private void Update()
@@ -68,7 +76,6 @@ public class UI_GameScene : UI_Scene
     public void OnNextStageEvent()
     {
         GetTMPro((int)TMPros.TextStage).text = $"STAGE {Managers.Game.CurStage}";
-        //MonsterData monsterData = Managers.Data.GetMonsterData(Managers.Game.CurStage);
         MonsterData monsterData = Managers.Data.GetMonsterData(1);
         GetTMPro((int)TMPros.TextMonsterInfo).text = 
             $"<sprite=46> : {monsterData.maxHp}\n" +

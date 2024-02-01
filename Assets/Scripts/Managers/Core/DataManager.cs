@@ -27,7 +27,7 @@ public class DataManager
     public Dictionary<int, Data.Warrior> WarriorStats { get; private set; } = new Dictionary<int, Data.Warrior>();
     public Dictionary<int, Data.PoisonBowMan> PoisonBowManStats { get; private set; } = new Dictionary<int, Data.PoisonBowMan>();
 
-    public Dictionary<BaseUnits, Dictionary<int, UnitStat_Base>> UnitStatDict { get; private set; } = new Dictionary<BaseUnits, Dictionary<int, UnitStat_Base>>();
+    public Dictionary<UnitNames, Dictionary<int, UnitStat_Base>> UnitStatDict { get; private set; } = new Dictionary<UnitNames, Dictionary<int, UnitStat_Base>>();
     public void Init()
     {
         BaseUnitDict = LoadJson<Data.BaseUnitDatas, int, Data.BaseUnit>("BaseUnits").MakeDict();
@@ -50,27 +50,27 @@ public class DataManager
         return JsonUtility.FromJson<Loader>(textAsset.text);
     }
 
-    public UnitStat_Base GetUnitData(BaseUnits unit, int level)
+    public UnitStat_Base GetUnitData(UnitNames unit, int level)
     {
         switch (unit)
         {
-            case BaseUnits.Knight:
+            case UnitNames.Knight:
                 return KnightStats[level];
-            case BaseUnits.Spearman:
+            case UnitNames.Spearman:
                 return SpearmanStats[level];
-            case BaseUnits.Archer:
+            case UnitNames.Archer:
                 return ArcherStats[level];
-            case BaseUnits.FireMagician:
+            case UnitNames.FireMagician:
                 return FireMagicianStats[level];
-            case BaseUnits.SlowMagician:
+            case UnitNames.SlowMagician:
                 return SlowMagicianStats[level];
-            case BaseUnits.StunGun:
+            case UnitNames.StunGun:
                 return StunGunStats[level];
-            case BaseUnits.Viking:
+            case UnitNames.Viking:
                 return VikingStats[level];
-            case BaseUnits.Warrior:
+            case UnitNames.Warrior:
                 return WarriorStats[level];
-            case BaseUnits.PoisonBowMan:
+            case UnitNames.PoisonBowMan:
                 return PoisonBowManStats[level];
             default:
                 return null;

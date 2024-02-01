@@ -14,7 +14,7 @@ public class UnitAttackRange : MonoBehaviour
         gameObject.SetActive(true);
 
         // 공격 범위 크기
-        float diameter = unit.GetComponent<Unit>().GetUnitStatus().attackRange * 2.0f;
+        float diameter = unit.GetComponent<Unit>().StateMachine.AttackRange * 2.0f;
         transform.localScale = Vector3.one * diameter;
         transform.position = unit.transform.position;
     }

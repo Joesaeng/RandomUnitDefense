@@ -13,7 +13,7 @@ public class Monster : MonoBehaviour
     int _nextMovePoint;
 
     [SerializeField]
-    private bool _isStun { get; set; }  = false;
+    private bool _isStun { get; set; } = false;
     [SerializeField]
     private bool _isDead = false;
     public bool IsDead => _isDead;
@@ -27,7 +27,7 @@ public class Monster : MonoBehaviour
     float _curMoveSpeed;
     float _curHp;
     public float CurHp => _curHp;
-    public float MaxHp { get;private set; }
+    public float MaxHp { get; private set; }
     int _defense;
 
     public void Init(int stageNum, Define.Map map)
@@ -35,9 +35,6 @@ public class Monster : MonoBehaviour
         SetMovePoint(map);
         _nextMovePoint = 0;
         _monsterStat = Managers.Data.GetMonsterData(stageNum);
-        SpriteRenderer spr = GetComponent<SpriteRenderer>();
-        tColor = new Color(1f, 56 / 255f, 0f);
-        spr.color = tColor;
 
         if (gameObject.GetComponentInChildren<UI_HPBar>() == null)
             Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
@@ -70,11 +67,11 @@ public class Monster : MonoBehaviour
 
     public void MonsterUpdate()
     {
-        for(int i = 0; i < Debuffs.Count; ++i)
+        for (int i = 0; i < Debuffs.Count; ++i)
         {
             Debuffs[i].OnUpdate();
         }
-        
+
         Move();
     }
 
@@ -108,10 +105,10 @@ public class Monster : MonoBehaviour
     private void QuitAllDebuff()
     {
         _isStun = false;
-        for(int i = 0; i < Debuffs.Count;++i)
+        for (int i = 0; i < Debuffs.Count; ++i)
         {
             QuitDebuff(Debuffs[i]);
-        }    
+        }
     }
 
     public void QuitDebuff(BaseDebuff debuff)
@@ -133,63 +130,42 @@ public class Monster : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, _movePoints[_nextMovePoint], _curMoveSpeed * Time.deltaTime);
     }
 
-    Color tColor;
-    public void TakeHit(Color color, UnitStat_Base stat, Define.AttackType attackType = Define.AttackType.Common)
+    public void TakeHit(UnitStatus attackerStat)
     {
         if (IsDead)
             return;
-        SpriteRenderer spr = GetComponent<SpriteRenderer>();
-
-        spr.color = color;
+        UnitNames unit = attackerStat.unit;
 
         // 히트 이펙트 실행(Image, Sound 등)
 
-        switch (attackType)
+        switch (unit)
         {
-            case Define.AttackType.SlowMagic:
+            case UnitNames.SlowMagician:
             {
-                if (stat is SlowMagician Stat)
-                {
-                    SlowDebuff slowDebuff = new SlowDebuff();
-                    slowDebuff.Init(this, Stat.slowDuration, Stat.slowRatio);
-                    ApplyDebuff(slowDebuff);
-                }
+                SlowDebuff slowDebuff = new SlowDebuff();
+                slowDebuff.Init(this, attackerStat.debuffDuration, attackerStat.debuffRatio);
+                ApplyDebuff(slowDebuff);
                 break;
             }
-            case Define.AttackType.Stun:
+            case UnitNames.StunGun:
             {
-                if (stat is StunGun Stat)
-                {
-                    StunDebuff stunDebuff = new StunDebuff();
-                    stunDebuff.Init(this, Stat.stunDuration);
-                    ApplyDebuff(stunDebuff);
-                }
+                StunDebuff stunDebuff = new StunDebuff();
+                stunDebuff.Init(this, attackerStat.debuffDuration);
+                ApplyDebuff(stunDebuff);
                 break;
             }
-            case Define.AttackType.Poison:
+            case UnitNames.PoisonBowMan:
             {
-                if (stat is PoisonBowMan Stat)
-                {
-                    PoisonDebuff poisonDebuff = new PoisonDebuff();
-                    poisonDebuff.Init(this, Stat.poisonDuration,Stat.poisonDamagePerSecond);
-                    ApplyDebuff(poisonDebuff);
-                }
+                PoisonDebuff poisonDebuff = new PoisonDebuff();
+                poisonDebuff.Init(this, attackerStat.debuffDuration, attackerStat.damagePerSecond);
+                ApplyDebuff(poisonDebuff);
                 break;
             }
         }
 
         // 유닛의 공격력이 몬스터의 방어력보다 낮은 경우 1의 데미지를 받게 합니다.
-        float damage = stat.attackDamage - _defense > 1 ? stat.attackDamage - _defense : 1;
+        float damage = attackerStat.attackDamage - _defense > 1 ? attackerStat.attackDamage - _defense : 1;
         ReduceHp(damage);
-        if (_curHp <= 0)
-        {
-            
-        }
-        else
-        {
-            // TEMP
-            StartCoroutine("CoColor");
-        }
     }
 
     public void ReduceHp(float damage)
@@ -202,12 +178,5 @@ public class Monster : MonoBehaviour
             QuitAllDebuff();
             StopAllCoroutines();
         }
-    }
-
-    IEnumerator CoColor()
-    {
-        yield return new WaitForSeconds(0.1f);
-        SpriteRenderer spr = GetComponent<SpriteRenderer>();
-        spr.color = tColor;
     }
 }

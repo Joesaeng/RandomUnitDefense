@@ -22,14 +22,6 @@ public class Define
         Monster
     }
 
-    public enum AttackType
-    {
-        Common,
-        SlowMagic,
-        Stun,
-        Poison,
-    }
-
     public enum Layer
     {
         Unit = 3,

@@ -2,30 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConstantData
+public static class ConstantData
 {
     #region 상수 데이터
-    public static readonly int PopupUISortOrder = 10;
-    public static readonly int SceneUISortOrder = 9;
-    public static readonly int WorldSpaceUISortOrder = 8;
+    public const int    PopupUISortOrder = 10;
+    public const int    SceneUISortOrder = 9;
+    public const int    WorldSpaceUISortOrder = 8;
     #endregion
 
 
     // ▽▽▽▽▽▽▽▽▽▽ Contents 데이터 ▽▽▽▽▽▽▽▽▽▽▽
 
-    public static readonly int     PlayerUnitHighestLevel = 3;
-    public static readonly float   MonsterRespawnTime = 0.5f;
-    public static readonly float   OneStageTime = 15f;
-    public static readonly int     OneStageSpawnCount = 20;
-    public static readonly int     MonsterCountForGameOver = 100;
-    public static readonly int     SelectableUnitCount = 5;
-    public static readonly int     InitialRuby = 60;
-    public static readonly int     AmountRubyGivenByMonster = 1;
-    public static readonly int     RubyRequiredOneSpawnPlayerUnit = 20;
+    public const int     PlayerUnitHighestLevel = 3;
+    public const float   MonsterRespawnTime = 0.5f;
+    public const float   OneStageTime = 15f;
+    public const int     OneStageSpawnCount = 20;
+    public const int     MonsterCountForGameOver = 100;
+    public const int     SelectableUnitCount = 5;
+    public const int     InitialRuby = 60;
+    public const int     AmountRubyGivenByMonster = 1;
+    public const int     RubyRequiredOneSpawnPlayerUnit = 20;
 
 
-    public static readonly int     FirstOfMonsterID = 1000;
-    public static readonly int     FirstOfUnitID = 100;
+    public const int     FirstOfMonsterID = 1000;
+    public const int     FirstOfUnitID = 100;
+
+    public const int     BaseUpgradeCost = 10;
+    // 유닛 업그레이드 당 증가량
+    public const float   IncreaseAttackRate = 0.95f;
+    public const float   IncreaseDebuffDuration = 1.1f;
+    public const float   IncreaseDebuffRatio = 1.1f;
 
     #region 몬스터 이동 포인트 벡터
     // Basic Map

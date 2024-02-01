@@ -10,8 +10,8 @@ public class Unit : MonoBehaviour
     public int ID { get; private set; }
     public int Lv { get; private set; }
 
-    [SerializeField]
     private UnitStateMachine _stateMachine;
+    public UnitStateMachine StateMachine => _stateMachine;
 
     private int _slotIndex;
     private int _moveSlotIndex;
@@ -39,19 +39,17 @@ public class Unit : MonoBehaviour
         Lv = level;
         SlotChange(slotIndex);
         gameObject.GetOrAddComponent<DraggableUnit>();
-        _stateMachine = gameObject.GetOrAddComponent<UnitStateMachine>();
+        //_stateMachine = gameObject.GetOrAddComponent<UnitStateMachine>();
+        _stateMachine = new UnitStateMachine();
         _stateMachine.Init(gameObject, ID, Lv);
         BindToMouseEvent();
     }
+ 
+    public UnitNames GetBaseUnit()
+    {
+        return _stateMachine.BaseUnit;
+    }    
 
-    public UnitStat_Base GetUnitStatus()
-    {
-        return _stateMachine.Stat;
-    }    
-    public BaseUnits GetBaseUnit()
-    {
-        return _stateMachine._baseUnit.baseUnit;
-    }    
     public void SlotChange(int slotIndex)
     {
         this._slotIndex = slotIndex;

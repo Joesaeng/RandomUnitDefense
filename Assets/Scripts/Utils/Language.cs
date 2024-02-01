@@ -21,8 +21,9 @@ public static class Language
         PosionDuration,
     }
 
-    public static string GetBaseUnitName(Data.BaseUnits unit)
+    public static string GetBaseUnitName(Data.UnitNames unit)
     {
+        int unitIndex = (int)unit - ConstantData.FirstOfUnitID;
         Define.GameLanguage language = Managers.Game.GameLanguage;
         string[] englishName =
         {
@@ -51,11 +52,11 @@ public static class Language
         switch (language)
         {
             case Define.GameLanguage.English:
-                return englishName[(int)unit];
+                return englishName[unitIndex];
             case Define.GameLanguage.Korean:
-                return koreanName[(int)unit];
+                return koreanName[unitIndex];
             default:
-                return englishName[(int)unit];
+                return englishName[unitIndex];
         }
     }
 
