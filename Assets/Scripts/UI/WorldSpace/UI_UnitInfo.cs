@@ -1,6 +1,7 @@
 using Data;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,7 +11,10 @@ public class UI_UnitInfo : UI_Base
 {
     Unit _unit;
     UnitStatus _unitStatus;
-
+    enum Buttons
+    {
+        BtnSell
+    }
     enum Images
     {
         TypeImage,
@@ -25,10 +29,14 @@ public class UI_UnitInfo : UI_Base
         TextInfo4,
         TextInfo5,
         TextInfo6,
+        TextSellBtn,
     }
+
+    int sellCost;
 
     public override void Init()
     {
+        Bind<Button>(typeof(Buttons));
         Bind<Image>(typeof(Images));
         Bind<TextMeshProUGUI>(typeof(TMPros));
         _unit = transform.parent.GetComponent<Unit>();
@@ -36,6 +44,8 @@ public class UI_UnitInfo : UI_Base
         SetInfo();
 
         transform.position = transform.parent.position + new Vector3(-2.5f, 2, 0f);
+
+        GetButton((int)Buttons.BtnSell).gameObject.AddUIEvent(ClickedSellButton);
     }
 
     private void SetInfo()
@@ -83,5 +93,13 @@ public class UI_UnitInfo : UI_Base
                 break;
             }
         }
+        int[] sellCosts = new int[3]{10,20,40};
+        sellCost = sellCosts[_unit.Lv - 1];
+        GetTMPro((int)TMPros.TextSellBtn).text = $"{Language.Sell} <sprite=25>{sellCost}";
+    }
+
+    private void ClickedSellButton(PointerEventData data)
+    {
+        Managers.Game.ClickedSellButton(sellCost);
     }
 }

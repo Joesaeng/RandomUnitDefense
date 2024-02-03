@@ -2,6 +2,7 @@ using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -14,6 +15,7 @@ public class GameScene : BaseScene
     [SerializeField]
     Define.Map _curMap = Define.Map.Basic;
 
+    // SlotIndex,Unit
     Dictionary<int,Unit> _unitDict = new Dictionary<int,Unit>();
 
     UnitSlot[] _unitSlots = null;
@@ -39,6 +41,9 @@ public class GameScene : BaseScene
 
         Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
         Managers.Game.OnSpawnButtonClickEvent += OnSpawnPlayerUnit;
+
+        Managers.Game.OnClickedSellButton -= OnSellAUnit;
+        Managers.Game.OnClickedSellButton += OnSellAUnit;
 
         Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
         Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
@@ -209,6 +214,16 @@ public class GameScene : BaseScene
         obj.name = $"{Managers.Data.BaseUnitDict[id].baseUnit} Level [{level}]";
 
         _unitDict.Add(slotIndex, unit);
+    }
+
+    private void OnSellAUnit(Unit unit,int sellCost)
+    {
+        int slotIndex;
+        if(_unitDict.FindKeyByValueInDictionary(unit, out slotIndex))
+        {
+            DestroyPlayerUnit(slotIndex);
+            Managers.Game.Ruby += sellCost;
+        }
     }
 
     // 플레이어 유닛 제거 메서드

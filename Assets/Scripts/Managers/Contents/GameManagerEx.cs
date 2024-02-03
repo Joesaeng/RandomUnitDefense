@@ -27,6 +27,7 @@ public class GameManagerEx
     public Action<int> OnChangedRuby;
 
     public Action OnNextStage;
+    public Action<Unit,int> OnClickedSellButton;
 
     public GameObject _selectedUnit;
     public UI_UnitInfo _selectUnitInfoUI;
@@ -147,6 +148,18 @@ public class GameManagerEx
         _selectedUnit = unit;
         _selectUnitInfoUI = Managers.UI.MakeWorldSpaceUI<UI_UnitInfo>(unit.transform);
         _unitAttackRange.ActiveAttackRange(unit);
+    }
+
+    public void ClickedSellButton(int sellCost)
+    {
+        if (_selectedUnit != null && _selectUnitInfoUI != null)
+        {
+            if (OnClickedSellButton != null)
+            {
+                OnClickedSellButton.Invoke(_selectedUnit.GetComponent<Unit>(),sellCost);
+                UnSelectUnit();
+            }
+        }
     }
 
     public void UnSelectUnit()

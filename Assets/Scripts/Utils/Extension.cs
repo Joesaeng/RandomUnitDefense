@@ -20,4 +20,18 @@ public static class Extension
     {
         return go != null && go.activeSelf;
     }
+
+    public static bool FindKeyByValueInDictionary<K, V>(this Dictionary<K,V> dict, V value, out K key)
+    {
+        foreach(KeyValuePair<K,V> pair in dict)
+        {
+            if (EqualityComparer<V>.Default.Equals(pair.Value, value))
+            {
+                key = pair.Key;
+                return true;
+            }
+        }
+        key = default(K);
+        return false;
+    }
 }
