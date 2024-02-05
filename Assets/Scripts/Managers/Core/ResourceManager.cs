@@ -23,6 +23,18 @@ public class ResourceManager
         return Resources.Load<T>(path);
     }
 
+    public RuntimeAnimatorController LoadAnimator(string path)
+    {
+        RuntimeAnimatorController animator = null;
+        animator = Load<RuntimeAnimatorController>($"Animations/Units/Animator/{path}");
+        if(animator == null)
+        {
+            Debug.Log($"Failed to load animator : {path}");
+            return null;
+        }
+        return animator;
+    }
+
     /// <summary>
     /// 리소스>프리펩 폴더에 있는 프리펩을 주소값으로 불러 반환합니다.
     /// path => Resources/Prefabs/{path}

@@ -13,6 +13,8 @@ public class Unit : MonoBehaviour
     private UnitStateMachine _stateMachine;
     public UnitStateMachine StateMachine => _stateMachine;
 
+    Animator _animator;
+
     private int _slotIndex;
     private int _moveSlotIndex;
 
@@ -32,7 +34,7 @@ public class Unit : MonoBehaviour
         _stateMachine.OnUpdate();
     }
 
-    public void Init(int slotIndex, int id, int level)
+    public void Init(int slotIndex, int id, int level,string unitname)
     {
         IsDraging = false;
         ID = id;
@@ -43,6 +45,10 @@ public class Unit : MonoBehaviour
         _stateMachine = new UnitStateMachine();
         _stateMachine.Init(gameObject, ID, Lv);
         BindToMouseEvent();
+
+        _animator = GetComponentInChildren<Animator>();
+        _animator.runtimeAnimatorController =
+            Managers.Resource.LoadAnimator($"{unitname}_{level}");
     }
  
     public UnitNames GetBaseUnit()

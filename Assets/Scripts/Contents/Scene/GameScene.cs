@@ -209,9 +209,11 @@ public class GameScene : BaseScene
         obj.transform.position = GetUnitMovePos(slotIndex);
 
         Unit unit = obj.GetOrAddComponent<Unit>();
-        unit.Init(slotIndex, id, level);
 
-        obj.name = $"{Managers.Data.BaseUnitDict[id].baseUnit} Level [{level}]";
+        string unitname = Managers.Data.BaseUnitDict[id].baseUnit.ToString();
+        unit.Init(slotIndex, id, level, unitname);
+
+        obj.name = $"{unitname} Level [{level}]";
 
         _unitDict.Add(slotIndex, unit);
     }

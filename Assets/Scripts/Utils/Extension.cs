@@ -21,6 +21,9 @@ public static class Extension
         return go != null && go.activeSelf;
     }
 
+    /// <summary>
+    /// Dictionary에서 value값으로 key를 찾습니다.
+    /// </summary>
     public static bool FindKeyByValueInDictionary<K, V>(this Dictionary<K,V> dict, V value, out K key)
     {
         foreach(KeyValuePair<K,V> pair in dict)
