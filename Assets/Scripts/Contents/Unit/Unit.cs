@@ -11,13 +11,10 @@ public class Unit : MonoBehaviour
     public int Lv { get; private set; }
 
     private UnitStateMachine _stateMachine;
-    public UnitStateMachine StateMachine => _stateMachine;
-
-    Animator _animator;
+    public UnitStateMachine StateMachine { get { return _stateMachine; } }
 
     private int _slotIndex;
     private int _moveSlotIndex;
-
 
     private bool _isDraging;
     public bool IsDraging { get { return _isDraging; } set { _isDraging = value; } }
@@ -41,16 +38,12 @@ public class Unit : MonoBehaviour
         Lv = level;
         SlotChange(slotIndex);
         gameObject.GetOrAddComponent<DraggableUnit>();
-        //_stateMachine = gameObject.GetOrAddComponent<UnitStateMachine>();
-        _stateMachine = new UnitStateMachine();
-        _stateMachine.Init(gameObject, ID, Lv);
-        BindToMouseEvent();
-
-        _animator = GetComponentInChildren<Animator>();
-        _animator.runtimeAnimatorController =
-            Managers.Resource.LoadAnimator($"{unitname}_{level}");
+        _stateMachine = gameObject.GetOrAddComponent<UnitStateMachine>();
+        //_stateMachine = new UnitStateMachine();
+        _stateMachine.Init(gameObject, ID, Lv, unitname);
+        BindEvent();
     }
- 
+
     public UnitNames GetBaseUnit()
     {
         return _stateMachine.BaseUnit;
@@ -61,7 +54,7 @@ public class Unit : MonoBehaviour
         this._slotIndex = slotIndex;
     }
 
-    private void BindToMouseEvent()
+    private void BindEvent()
     {
         DraggableUnit draggableUnit = gameObject.GetComponent<DraggableUnit>();
         draggableUnit.OnMouseUpEvent -= MouseUpEventReader;

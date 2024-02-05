@@ -36,7 +36,7 @@ public class UnitStatusManager
 
     public void Init()
     {
-        SetUnitStatusDict();
+        MakeUnitStatusDict();
     }
 
     public void ClickedUnitUpgrade(UnitNames baseunit,int slot)
@@ -72,7 +72,7 @@ public class UnitStatusManager
         status.debuffRatio      = (float)Math.Round(status.debuffRatio, 2);
     }
 
-    private void SetUnitStatusDict()
+    private void MakeUnitStatusDict()
     {
         if(_unitStatusDict != null)
             _unitStatusDict.Clear();

@@ -33,7 +33,7 @@ public class GameScene : BaseScene
 
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
 
-        Managers.Game._unitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
+        Managers.Game.UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
         Managers.Game.Ruby = ConstantData.InitialRuby;
 
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
@@ -62,11 +62,11 @@ public class GameScene : BaseScene
                 break;
             }
         }
-        Managers.Game._selectedUnitIds = _selectedUnitIds;
-        Managers.Game._upgradeCostOfUnits = new int[ConstantData.SelectableUnitCount];
-        for(int i = 0; i < Managers.Game._upgradeCostOfUnits.Length; ++i)
+        Managers.Game.SelectedUnitIds = _selectedUnitIds;
+        Managers.Game.UpgradeCostOfUnits = new int[ConstantData.SelectableUnitCount];
+        for(int i = 0; i < Managers.Game.UpgradeCostOfUnits.Length; ++i)
         {
-            Managers.Game._upgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
+            Managers.Game.UpgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
         }
         Managers.UnitStatus.Init();
         Managers.UI.ShowSceneUI<UI_GameScene>();
@@ -258,7 +258,7 @@ public class GameScene : BaseScene
             DestroyPlayerUnit(i);
         }
 
-        Managers.Game._unitAttackRange = null;
+        Managers.Game.UnitAttackRange = null;
         Managers.Game.Ruby = 0;
 
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;

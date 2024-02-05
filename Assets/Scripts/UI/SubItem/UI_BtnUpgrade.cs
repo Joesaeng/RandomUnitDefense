@@ -39,13 +39,17 @@ public class UI_BtnUpgrade : UI_Base
     {
         Slot = slot;
         ID = (UnitNames)id;
+        string imagePath = $"{ID.ToString()}_1_Idle";
+        Image image = GetImage((int)Images.ImageUnit);
+        image.sprite = Managers.Resource.Load<Sprite>($"Art/Units/{imagePath}");
+        image.transform.localScale = Vector3.one * 2;
         SetText();
     }
 
     private void SetText()
     {
         GetTMPro((int)TMPros.TextUpgradeLevel).text = $"Lv.{Managers.UnitStatus.UnitUpgradLv[ID]}";
-        GetTMPro((int)TMPros.TextUpgradeCost).text = $"<sprite=25> {Managers.Game._upgradeCostOfUnits[Slot]}";
+        GetTMPro((int)TMPros.TextUpgradeCost).text = $"<sprite=25> {Managers.Game.UpgradeCostOfUnits[Slot]}";
     }
 
     public void ClickedUpgradeButton(PointerEventData data)

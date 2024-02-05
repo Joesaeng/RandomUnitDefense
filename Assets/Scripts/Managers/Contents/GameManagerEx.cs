@@ -8,8 +8,7 @@ using UnityEngine;
 public class GameManagerEx
 {
     private Define.GameLanguage _gameLanguage = Define.GameLanguage.Korean;
-
-    public Define.GameLanguage GameLanguage => _gameLanguage;
+    public Define.GameLanguage GameLanguage { get { return _gameLanguage; } }
 
     public Define.Map CurMap { get; set; } = Define.Map.Basic;
 
@@ -17,6 +16,7 @@ public class GameManagerEx
     public HashSet<Monster> Monsters { get { return _monsters; } }
 
     public Stack<GameObject> _dyingMonsters = new Stack<GameObject>();
+    public Stack<GameObject> DyingMonsters { get { return _dyingMonsters; } }
 
     public Action<int> OnSpawnEvent;
 
@@ -29,13 +29,13 @@ public class GameManagerEx
     public Action OnNextStage;
     public Action<Unit,int> OnClickedSellButton;
 
-    public GameObject _selectedUnit;
-    public UI_UnitInfo _selectUnitInfoUI;
+    public GameObject SelectedUnit { get; set; }
+    public UI_UnitInfo SelectUnitInfoUI { get; set; }
 
-    public int[] _selectedUnitIds;
-    public int[] _upgradeCostOfUnits;
+    public int[] SelectedUnitIds { get; set; }
+    public int[] UpgradeCostOfUnits { get; set; }
 
-    public UnitAttackRange _unitAttackRange;
+    public UnitAttackRange UnitAttackRange { get; set; }
 
     public int CurStage { get; set; }
     public int CurStageMonsterCount { get; set; }
@@ -63,19 +63,19 @@ public class GameManagerEx
         Managers.UnitStatus.OnUnitUpgrade += OnUnitUpgrade;
     }
 
-    public bool CanUnitUpgrade(int slot)
+    public bool CanUnitUpgrade(int upgradeSlot)
     {
-        if(Ruby >= _upgradeCostOfUnits[slot])
+        if(Ruby >= UpgradeCostOfUnits[upgradeSlot])
         {
-            Ruby -= _upgradeCostOfUnits[slot];
+            Ruby -= UpgradeCostOfUnits[upgradeSlot];
             return true;
         }
         return false;
     }
 
-    private void OnUnitUpgrade(int slot)
+    private void OnUnitUpgrade(int upgradeSlot)
     {
-        _upgradeCostOfUnits[slot] = Managers.UnitStatus.UnitUpgradLv[(UnitNames)_selectedUnitIds[slot]] * ConstantData.BaseUpgradeCost;
+        UpgradeCostOfUnits[upgradeSlot] = Managers.UnitStatus.UnitUpgradLv[(UnitNames)SelectedUnitIds[upgradeSlot]] * ConstantData.BaseUpgradeCost;
     }
 
     private void OnNextStageEvent()
@@ -140,23 +140,23 @@ public class GameManagerEx
     // 유닛 선택 메서드(공격범위 및 UI_UnitInfo 생성)
     public void SelectUnit(GameObject unit)
     {
-        if (_selectedUnit != null && _selectUnitInfoUI != null)
+        if (SelectedUnit != null && SelectUnitInfoUI != null)
         {
-            Managers.UI.CloseWorldSpaceUI(_selectUnitInfoUI.gameObject);
+            Managers.UI.CloseWorldSpaceUI(SelectUnitInfoUI.gameObject);
         }
 
-        _selectedUnit = unit;
-        _selectUnitInfoUI = Managers.UI.MakeWorldSpaceUI<UI_UnitInfo>(unit.transform);
-        _unitAttackRange.ActiveAttackRange(unit);
+        SelectedUnit = unit;
+        SelectUnitInfoUI = Managers.UI.MakeWorldSpaceUI<UI_UnitInfo>(unit.transform);
+        UnitAttackRange.ActiveAttackRange(unit);
     }
 
     public void ClickedSellButton(int sellCost)
     {
-        if (_selectedUnit != null && _selectUnitInfoUI != null)
+        if (SelectedUnit != null && SelectUnitInfoUI != null)
         {
             if (OnClickedSellButton != null)
             {
-                OnClickedSellButton.Invoke(_selectedUnit.GetComponent<Unit>(),sellCost);
+                OnClickedSellButton.Invoke(SelectedUnit.GetComponent<Unit>(),sellCost);
                 UnSelectUnit();
             }
         }
@@ -164,13 +164,13 @@ public class GameManagerEx
 
     public void UnSelectUnit()
     {
-        if (_selectedUnit != null && _selectUnitInfoUI != null)
+        if (SelectedUnit != null && SelectUnitInfoUI != null)
         {
-            Managers.UI.CloseWorldSpaceUI(_selectUnitInfoUI.gameObject);
-            _selectedUnit = null;
-            if (_unitAttackRange.enabled == true)
+            Managers.UI.CloseWorldSpaceUI(SelectUnitInfoUI.gameObject);
+            SelectedUnit = null;
+            if (UnitAttackRange.enabled == true)
             {
-                _unitAttackRange.UnActiveAttackRange();
+                UnitAttackRange.UnActiveAttackRange();
             }
         }
     }

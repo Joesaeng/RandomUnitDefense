@@ -56,12 +56,12 @@ public class UI_GameScene : UI_Scene
         foreach (Transform child in panelUpgrade.transform)
             Managers.Resource.Destroy(child.gameObject);
 
-        int unitCount = Managers.Game._selectedUnitIds.Length;
+        int unitCount = Managers.Game.SelectedUnitIds.Length;
         for(int i = 0; i < unitCount; i++)
         {
             GameObject upgradeBtn = Managers.UI.MakeSubItem<UI_BtnUpgrade>(parent : panelUpgrade.transform).gameObject;
             upgradeBtn.transform.localScale = new Vector3(1f, 1f, 1f);
-            upgradeBtn.GetComponent<UI_BtnUpgrade>().SetInfo(i, Managers.Game._selectedUnitIds[i]);
+            upgradeBtn.GetComponent<UI_BtnUpgrade>().SetInfo(i, Managers.Game.SelectedUnitIds[i]);
         }
     }
 

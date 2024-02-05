@@ -2,6 +2,7 @@ using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using static Unit;
@@ -13,11 +14,15 @@ public enum UnitState
 }
 
 [Serializable]
-public class UnitStateMachine //: MonoBehaviour
+public class UnitStateMachine : MonoBehaviour
 {
     GameObject _ownObj;
     
     Monster _targetMonster;
+
+    Animator _animator;
+
+    UnitStatus unitStatus;
 
     //public BaseUnit _baseUnit;
 
@@ -29,7 +34,6 @@ public class UnitStateMachine //: MonoBehaviour
     private UnitType        _attackType;
     private int             _unitId;
     private int             _unitLv;
-    private float           _attackRate;
     private float           _attackRange;
 
     public  float           AttackRange => _attackRange;
@@ -58,17 +62,20 @@ public class UnitStateMachine //: MonoBehaviour
         }
     }
 
-    public void Init(GameObject ownObj, int unitId, int level)
+    public void Init(GameObject ownObj, int unitId, int level, string unitname)
     {
         _ownObj = ownObj;
         _baseUnit = (UnitNames)unitId;
         _unitId = unitId;
         _unitLv = level;
+        _animator = _ownObj.GetComponentInChildren<Animator>();
+        _animator.runtimeAnimatorController =
+            Managers.Resource.LoadAnimator($"{unitname}_{level}");
 
-        UnitStatus unitStatus = Managers.UnitStatus.GetUnitStatus(_baseUnit, _unitLv);
+
+        unitStatus = Managers.UnitStatus.GetUnitStatus(_baseUnit, _unitLv);
         _attackType = unitStatus.unitType;
         _attackRange = unitStatus.attackRange;
-        _attackRate = unitStatus.attackRate;
 
         // _attackRate = new WaitForSeconds(_stat.attackRate);
         ChangeState(UnitState.SearchTarget);
@@ -123,7 +130,7 @@ public class UnitStateMachine //: MonoBehaviour
             return;
         }
 
-        if (_curAttackRateTime > _attackRate)
+        if (_curAttackRateTime > unitStatus.attackRate)
             Skill();
     }
     /*
@@ -182,9 +189,8 @@ public class UnitStateMachine //: MonoBehaviour
 
     private void Skill()
     {
-        GameObject bullet = Managers.Game.Spawn("UnitBullet");
-        bullet.transform.position = _ownObj.transform.position;
-        bullet.GetComponent<UnitBullet>().Init(_targetMonster, _baseUnit,_unitLv);
+        _animator.Play("Attack");
+        Invoke("CreateBullet", 0.3f);
         /*
         switch (_baseUnit.baseUnit)
         {
@@ -244,5 +250,12 @@ public class UnitStateMachine //: MonoBehaviour
             }
         }*/ // Skill
         _curAttackRateTime = 0f;
+    }
+
+    public void CreateBullet()
+    {
+        GameObject bullet = Managers.Game.Spawn("UnitBullet");
+        bullet.transform.position = _ownObj.transform.position;
+        bullet.GetComponent<UnitBullet>().Init(_targetMonster, _baseUnit, _unitLv);
     }
 }
