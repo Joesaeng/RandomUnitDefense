@@ -22,6 +22,8 @@ public class UnitStateMachine : MonoBehaviour
 
     Animator _animator;
 
+    SpriteRenderer _spriteRenderer;
+
     UnitStatus unitStatus;
 
     //public BaseUnit _baseUnit;
@@ -69,6 +71,7 @@ public class UnitStateMachine : MonoBehaviour
         _unitId = unitId;
         _unitLv = level;
         _animator = _ownObj.GetComponentInChildren<Animator>();
+        _spriteRenderer = _ownObj.GetComponentInChildren<SpriteRenderer>();
         _animator.runtimeAnimatorController =
             Managers.Resource.LoadAnimator($"{unitname}_{level}");
 
@@ -189,66 +192,14 @@ public class UnitStateMachine : MonoBehaviour
 
     private void Skill()
     {
+        _spriteRenderer.flipX = transform.position.x < _targetMonster.transform.position.x;
         _animator.Play("Attack");
-        Invoke("CreateBullet", 0.3f);
-        /*
-        switch (_baseUnit.baseUnit)
-        {
-            // Common
-            case BaseUnits.Knight:
-            case BaseUnits.Spearman:
-            case BaseUnits.Archer:
-            {
-                _target.GetComponent<Monster>().TakeHit(Color.black, _stat);
-                break;
-            }
-            // AOE
-            case BaseUnits.FireMagician:
-            case BaseUnits.Viking:
-            case BaseUnits.Warrior:
-            {
-                float wideAttackRange = 0f;
-                if (_stat is AOE stat)
-                    wideAttackRange = stat.wideAttackArea;
+        float attackAnimSpeed = 1 / unitStatus.attackRate;
+        attackAnimSpeed = attackAnimSpeed < 1 ? 1 : attackAnimSpeed;
+        _animator.SetFloat("AttackAnimSpeed", attackAnimSpeed);
 
-                HashSet<Monster> monsters = Managers.Game.Monsters;
-                foreach (Monster monster in monsters)
-                {
-                    if (Util.GetDistance(_target, monster.gameObject) <= wideAttackRange)
-                    {
-                        monster.TakeHit(Color.red, _stat);
-                    }
-                }
-                break;
-            }
-            // Debuffer
-            case BaseUnits.SlowMagician:
-            {
-                float wideAttackRange = 0f;
-                if (_stat is AOE stat)
-                    wideAttackRange = stat.wideAttackArea;
-
-                HashSet<Monster> monsters = Managers.Game.Monsters;
-                foreach (Monster monster in monsters)
-                {
-                    if (Util.GetDistance(_target, monster.gameObject) <= wideAttackRange)
-                    {
-                        monster.TakeHit(Color.green, _stat, Define.AttackType.SlowMagic);
-                    }
-                }
-                break;
-            }
-            case BaseUnits.StunGun:
-            {
-                _target.GetComponent<Monster>().TakeHit(Color.yellow, _stat, Define.AttackType.Stun);
-                break;
-            }
-            case BaseUnits.PoisonBowMan:
-            {
-                _target.GetComponent<Monster>().TakeHit(Color.black, _stat, Define.AttackType.Poison);
-                break;
-            }
-        }*/ // Skill
+        float bullettime = ConstantData.UnitAttackAnimLength / attackAnimSpeed * 0.66f;
+        Invoke("CreateBullet", bullettime);
         _curAttackRateTime = 0f;
     }
 

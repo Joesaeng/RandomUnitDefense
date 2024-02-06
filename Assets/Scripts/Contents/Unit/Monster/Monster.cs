@@ -8,6 +8,7 @@ using static Define;
 public class Monster : MonoBehaviour
 {
     MonsterData _monsterStat = new MonsterData();
+    SpriteRenderer _spriteRenderer;
 
     Vector3[] _movePoints;
     int _nextMovePoint;
@@ -35,6 +36,7 @@ public class Monster : MonoBehaviour
         SetMovePoint(map);
         _nextMovePoint = 0;
         _monsterStat = Managers.Data.GetMonsterData(stageNum);
+        _spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (gameObject.GetComponentInChildren<UI_HPBar>() == null)
             Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
@@ -126,8 +128,10 @@ public class Monster : MonoBehaviour
         {
             _nextMovePoint++;
             _nextMovePoint %= _movePoints.Length;
+            _spriteRenderer.flipX = transform.position.x < _movePoints[_nextMovePoint].x;
         }
         transform.position = Vector3.MoveTowards(transform.position, _movePoints[_nextMovePoint], _curMoveSpeed * Time.deltaTime);
+        
     }
 
     public void TakeHit(UnitStatus attackerStat)
