@@ -47,6 +47,7 @@ public class Monster : MonoBehaviour
         _moveSpeed = _monsterStat.moveSpeed;
         _curMoveSpeed = _moveSpeed;
         _defense = _monsterStat.defense;
+        _spriteRenderer.flipX = transform.position.x < _movePoints[_nextMovePoint].x;
 
         _debuffs = new List<BaseDebuff>();
 

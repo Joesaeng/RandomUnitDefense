@@ -33,11 +33,20 @@ namespace Data
     }
 
     [Serializable]
+    public enum Job
+    {
+        Normal,
+        Bow,
+        Magic,
+    }
+
+    [Serializable]
     public class BaseUnit
     {
         public int          id;                 // 아이디
         public UnitNames    baseUnit;           // 베이스유닛
         public UnitType     type;               // 유닛 타입
+        public Job          job;                // 애니메이션 재생용 이넘타입      
     }
 
     [Serializable]
@@ -46,6 +55,7 @@ namespace Data
         public int          id;                 // 아이디
         public string       baseUnit;           // 베이스유닛
         public string       type;               // 유닛 타입
+        public string       job;                // 애니메이션 재생용 이넘타입
     }
 
     [Serializable]
@@ -62,6 +72,7 @@ namespace Data
                 baseUnitData.id = data.id;
                 baseUnitData.baseUnit = Util.Parse<UnitNames>(data.baseUnit);
                 baseUnitData.type = Util.Parse<UnitType>(data.type);
+                baseUnitData.job = Util.Parse<Job>(data.job);
                 dict.Add(data.id, baseUnitData);
             }
             return dict;

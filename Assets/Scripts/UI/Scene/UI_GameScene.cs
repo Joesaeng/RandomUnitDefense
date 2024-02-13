@@ -76,7 +76,7 @@ public class UI_GameScene : UI_Scene
     public void OnNextStageEvent()
     {
         GetTMPro((int)TMPros.TextStage).text = $"STAGE {Managers.Game.CurStage}";
-        MonsterData monsterData = Managers.Data.GetMonsterData(1);
+        MonsterData monsterData = Managers.Data.GetMonsterData(Managers.Game.CurStage);
         GetTMPro((int)TMPros.TextMonsterInfo).text = 
             $"<sprite=46> : {monsterData.maxHp}\n" +
             $"<sprite=50> : {monsterData.defense}";

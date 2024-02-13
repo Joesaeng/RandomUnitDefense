@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using static PlayerObj;
 using static Unit;
 
 public enum UnitState
@@ -13,11 +14,15 @@ public enum UnitState
     SkillState,             // 스킬 사용
 }
 
+
+
 [Serializable]
 public class UnitStateMachine : MonoBehaviour
 {
     GameObject _ownObj;
-    
+
+    UnitAnimaitor _unitAnimator;
+
     Monster _targetMonster;
 
     Animator _animator;
@@ -26,13 +31,22 @@ public class UnitStateMachine : MonoBehaviour
 
     UnitStatus unitStatus;
 
-    //public BaseUnit _baseUnit;
+    private Define.UnitAnimationState _currentAnimState;
+    public Define.UnitAnimationState CurrentAnimState
+    {
+        get => _currentAnimState;
+        set
+        {
+            if (OnAnimStateChanged != null)
+            { OnAnimStateChanged.Invoke(value); }
+            _currentAnimState = value;
+        }
+    }
 
-    //UnitStat_Base _stat;
-
-    //public UnitStat_Base Stat => _stat;
+    private Action<Define.UnitAnimationState> OnAnimStateChanged;
 
     private UnitNames       _baseUnit;
+    private Job             _job;
     private UnitType        _attackType;
     private int             _unitId;
     private int             _unitLv;
@@ -70,18 +84,27 @@ public class UnitStateMachine : MonoBehaviour
         _baseUnit = (UnitNames)unitId;
         _unitId = unitId;
         _unitLv = level;
-        _animator = _ownObj.GetComponentInChildren<Animator>();
+        /*_animator = _ownObj.GetComponentInChildren<Animator>();
         _spriteRenderer = _ownObj.GetComponentInChildren<SpriteRenderer>();
         _animator.runtimeAnimatorController =
-            Managers.Resource.LoadAnimator($"{unitname}_{level}");
+            Managers.Resource.LoadAnimator($"{unitname}_{level}");*/
+        if(_unitAnimator != null)
+        {
+            GameObject go = Managers.Resource.Instantiate($"{unitname}_{level}",_ownObj.transform);
+            _unitAnimator = go.GetComponent<UnitAnimaitor>();
+        }
 
-
+        _job = Managers.Data.BaseUnitDict[unitId].job;
         unitStatus = Managers.UnitStatus.GetUnitStatus(_baseUnit, _unitLv);
         _attackType = unitStatus.unitType;
         _attackRange = unitStatus.attackRange;
 
+        _curAttackRateTime = 10f; // 생성되자마자 공격할수 있게
+
         // _attackRate = new WaitForSeconds(_stat.attackRate);
         ChangeState(UnitState.SearchTarget);
+        CurrentAnimState = Define.UnitAnimationState.Idle;
+        PlayStateAnimation(CurrentAnimState);
     }
 
     public void ChangeState(UnitState state)
@@ -91,6 +114,18 @@ public class UnitStateMachine : MonoBehaviour
         _state = state;
 
         //StartCoroutine(_state.ToString());
+    }
+
+    private void PlayStateAnimation(Define.UnitAnimationState animstate)
+    {
+        if(animstate == Define.UnitAnimationState.Attack)
+        {
+            _unitAnimator.PlayAnimation($"{animstate.ToString()}_{_job.ToString()}");
+        }
+        else
+        {
+            _unitAnimator.PlayAnimation($"{animstate.ToString()}");
+        }
     }
 
     private void SearchTargetM()

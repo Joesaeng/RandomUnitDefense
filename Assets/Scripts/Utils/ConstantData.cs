@@ -14,13 +14,13 @@ public static class ConstantData
     // °‰°‰°‰°‰°‰°‰°‰°‰°‰°‰ Contents µ•¿Ã≈Õ °‰°‰°‰°‰°‰°‰°‰°‰°‰°‰°‰
 
     public const int     PlayerUnitHighestLevel = 3;
-    public const float   MonsterRespawnTime = 0.25f;
-    public const float   OneStageTime = 15f;
-    public const int     OneStageSpawnCount = 40;
+    public const float   MonsterRespawnTime = 0.3f;
+    public const float   OneStageTime = 20f;
+    public const int     OneStageSpawnCount = 30;
     public const int     MonsterCountForGameOver = 100;
     public const int     SelectableUnitCount = 5;
     public const int     InitialRuby = 60;
-    public const int     AmountRubyGivenByMonster = 1;
+    public const int     AmountRubyGivenByMonster = 2;
     public const int     RubyRequiredOneSpawnPlayerUnit = 20;
 
     public const float   UnitAttackAnimLength = 0.5f;

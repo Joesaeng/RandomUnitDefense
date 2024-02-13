@@ -12,6 +12,8 @@ public class TimeManager
     public float StageTime { get; private set; } = 0f;
     private float _curMonsterRespawnTime = 0f;
 
+    public float CurTimeScale { get; private set; } = 1f;
+
     public Action OnNextStage;
     public Action OnMonsterRespawnTime;
 
@@ -19,6 +21,12 @@ public class TimeManager
     {
         if (Input.GetKeyDown(KeyCode.Tab))
             SetPause(!IsPause);
+
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            CurTimeScale = CurTimeScale == 1f ? 2f : 1f;
+            Time.timeScale = CurTimeScale;
+        }
 
         if (IsPause)
             return;

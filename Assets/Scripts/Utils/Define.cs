@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class Define
 {
+    public enum UnitAnimationState
+    {
+        Idle,
+        Run,
+        Attack,
+        Death,
+        Stun,
+    }
+
     public enum GameLanguage
     {
         English,

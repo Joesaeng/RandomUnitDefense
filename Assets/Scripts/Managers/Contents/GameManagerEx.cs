@@ -93,7 +93,7 @@ public class GameManagerEx
         if (path == "Monster")
         {
             Monster monster = go.GetOrAddComponent<Monster>();
-            monster.Init(1, CurMap);
+            monster.Init(CurStage, CurMap);
             _monsters.Add(monster);
             CurStageMonsterCount++;
         }
