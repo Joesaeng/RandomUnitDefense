@@ -23,7 +23,7 @@ public static class ConstantData
     public const int     AmountRubyGivenByMonster = 2;
     public const int     RubyRequiredOneSpawnPlayerUnit = 20;
 
-    public const float   UnitAttackAnimLength = 0.5f;
+    public const float   UnitAttackAnimLength = 0.417f;
 
 
     public const int     FirstOfMonsterID = 1000;

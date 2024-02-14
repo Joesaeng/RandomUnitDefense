@@ -52,8 +52,8 @@ public class UnitStateMachine : MonoBehaviour
     private int             _unitLv;
     private float           _attackRange;
 
-    public  float           AttackRange => _attackRange;
-    public  UnitNames       BaseUnit => _baseUnit;
+    public float AttackRange => _attackRange;
+    public UnitNames BaseUnit => _baseUnit;
 
     private UnitState _state;
 
@@ -88,10 +88,18 @@ public class UnitStateMachine : MonoBehaviour
         _spriteRenderer = _ownObj.GetComponentInChildren<SpriteRenderer>();
         _animator.runtimeAnimatorController =
             Managers.Resource.LoadAnimator($"{unitname}_{level}");*/
-        if(_unitAnimator != null)
+        if (_unitAnimator != null)
         {
-            GameObject go = Managers.Resource.Instantiate($"{unitname}_{level}",_ownObj.transform);
-            _unitAnimator = go.GetComponent<UnitAnimaitor>();
+            Managers.Resource.Destroy(_unitAnimator.gameObject);
+        }
+        {
+            // 애니메이터 프리펩 초기화
+            GameObject go = Managers.Resource.Instantiate($"Units/{unitname}_{level}",_ownObj.transform);
+            go.transform.localPosition = new Vector3(0, -0.2f, 0);
+            go.transform.localScale = new Vector3(1.3f, 1.3f, 1);
+            _unitAnimator = go.GetOrAddComponent<UnitAnimaitor>();
+            _unitAnimator.Init();
+            _animator = Util.FindChild<Animator>(go);
         }
 
         _job = Managers.Data.BaseUnitDict[unitId].job;
@@ -103,7 +111,6 @@ public class UnitStateMachine : MonoBehaviour
 
         // _attackRate = new WaitForSeconds(_stat.attackRate);
         ChangeState(UnitState.SearchTarget);
-        CurrentAnimState = Define.UnitAnimationState.Idle;
         PlayStateAnimation(CurrentAnimState);
     }
 
@@ -112,13 +119,24 @@ public class UnitStateMachine : MonoBehaviour
         //StopCoroutine(_state.ToString());
 
         _state = state;
+        switch (_state)
+        {
+            case UnitState.SearchTarget:
+                CurrentAnimState = Define.UnitAnimationState.Idle;
+                break;
+            case UnitState.SkillState:
+                CurrentAnimState = Define.UnitAnimationState.Attack;
+                break;
+        }
+
+
 
         //StartCoroutine(_state.ToString());
     }
 
     private void PlayStateAnimation(Define.UnitAnimationState animstate)
     {
-        if(animstate == Define.UnitAnimationState.Attack)
+        if (animstate == Define.UnitAnimationState.Attack)
         {
             _unitAnimator.PlayAnimation($"{animstate.ToString()}_{_job.ToString()}");
         }
@@ -157,6 +175,7 @@ public class UnitStateMachine : MonoBehaviour
         {
             _targetMonster = null;
             ChangeState(UnitState.SearchTarget);
+            PlayStateAnimation(CurrentAnimState);
             return;
         }
 
@@ -165,6 +184,7 @@ public class UnitStateMachine : MonoBehaviour
         {
             _targetMonster = null;
             ChangeState(UnitState.SearchTarget);
+            PlayStateAnimation(CurrentAnimState);
             return;
         }
 
@@ -227,11 +247,14 @@ public class UnitStateMachine : MonoBehaviour
 
     private void Skill()
     {
-        _spriteRenderer.flipX = transform.position.x < _targetMonster.transform.position.x;
-        _animator.Play("Attack");
+        // _spriteRenderer.flipX = transform.position.x < _targetMonster.transform.position.x;
+        float flipX = transform.position.x < _targetMonster.transform.position.x ? -1.3f : 1.3f;
+        _unitAnimator.transform.localScale = new Vector3(flipX, 1.3f, 1);
         float attackAnimSpeed = 1 / unitStatus.attackRate;
         attackAnimSpeed = attackAnimSpeed < 1 ? 1 : attackAnimSpeed;
         _animator.SetFloat("AttackAnimSpeed", attackAnimSpeed);
+
+        PlayStateAnimation(CurrentAnimState);
 
         float bullettime = ConstantData.UnitAttackAnimLength / attackAnimSpeed * 0.66f;
         Invoke("CreateBullet", bullettime);

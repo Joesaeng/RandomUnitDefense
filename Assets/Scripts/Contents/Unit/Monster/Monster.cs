@@ -2,16 +2,21 @@ using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static Define;
 
 public class Monster : MonoBehaviour
 {
     MonsterData _monsterStat = new MonsterData();
-    SpriteRenderer _spriteRenderer;
+
+    UnitAnimaitor _unitAnimator;
+
+    Transform _animatorTF;
 
     Vector3[] _movePoints;
     int _nextMovePoint;
+    int _previousMovePoint;
 
     [SerializeField]
     private bool _isStun { get; set; } = false;
@@ -35,11 +40,28 @@ public class Monster : MonoBehaviour
     {
         SetMovePoint(map);
         _nextMovePoint = 0;
+        _previousMovePoint = 3;
         _monsterStat = Managers.Data.GetMonsterData(stageNum);
-        _spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (gameObject.GetComponentInChildren<UI_HPBar>() == null)
             Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
+
+        if (_unitAnimator != null)
+        {
+            Managers.Resource.Destroy(_unitAnimator.gameObject);
+        }
+        {
+            // 애니메이터 프리펩 초기화
+            string stage = stageNum.ToString();
+            string tstage = stage.PadLeft(3, '0');
+
+            GameObject go = Managers.Resource.Instantiate($"Monsters/Monster{tstage}",transform);
+            _animatorTF = go.transform;
+            _animatorTF.localPosition = new Vector3(0, -0.5f, 0);
+            _unitAnimator = go.GetOrAddComponent<UnitAnimaitor>();
+            _unitAnimator.Init();
+        }
+        _unitAnimator.PlayAnimation("Run");
 
         // stageNum에 따라서 유닛의 형태, 이동속도, 체력 등 초기화
         MaxHp = _monsterStat.maxHp;
@@ -47,7 +69,6 @@ public class Monster : MonoBehaviour
         _moveSpeed = _monsterStat.moveSpeed;
         _curMoveSpeed = _moveSpeed;
         _defense = _monsterStat.defense;
-        _spriteRenderer.flipX = transform.position.x < _movePoints[_nextMovePoint].x;
 
         _debuffs = new List<BaseDebuff>();
 
@@ -93,11 +114,13 @@ public class Monster : MonoBehaviour
     public void ApplyStunDebuff()
     {
         _isStun = true;
+        _unitAnimator.PlayAnimation("Debuff_Stun");
     }
 
     public void QuitStunDebuff()
     {
         _isStun = false;
+        _unitAnimator.PlayAnimation("Run");
     }
 
     private void ApplyDebuff(BaseDebuff debuff)
@@ -127,9 +150,15 @@ public class Monster : MonoBehaviour
             return;
         if (Vector3.Distance(transform.position, _movePoints[_nextMovePoint]) <= 0.01f)
         {
+            _previousMovePoint = _nextMovePoint;
             _nextMovePoint++;
             _nextMovePoint %= _movePoints.Length;
-            _spriteRenderer.flipX = transform.position.x < _movePoints[_nextMovePoint].x;
+            float fiipX;
+            if (_movePoints[_previousMovePoint].x != _movePoints[_nextMovePoint].x)
+            {
+                fiipX = _movePoints[_previousMovePoint].x < _movePoints[_nextMovePoint].x ? -2.5f:2.5f;
+                _animatorTF.localScale = new Vector3(fiipX, 2.5f, 1);
+            }
         }
         transform.position = Vector3.MoveTowards(transform.position, _movePoints[_nextMovePoint], _curMoveSpeed * Time.deltaTime);
         
@@ -180,8 +209,8 @@ public class Monster : MonoBehaviour
         {
             _isDead = true;
             Managers.Game.RegisterDyingMonster(this.gameObject);
+            _unitAnimator.PlayAnimation("Death");
             QuitAllDebuff();
-            StopAllCoroutines();
         }
     }
 }

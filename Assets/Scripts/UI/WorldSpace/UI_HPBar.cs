@@ -21,7 +21,7 @@ public class UI_HPBar : UI_Base
     private void Update()
     {
         Transform parent = transform.parent;
-        transform.position = parent.position + Vector3.up * 0.5f;
+        transform.position = parent.position + Vector3.up * 0.7f;
 
         float ratio = (float)_monster.CurHp / (float)_monster.MaxHp;
         SetHpRatio(ratio);
