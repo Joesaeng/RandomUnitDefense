@@ -107,5 +107,31 @@ public class Util
             return (float)left / (float)right;
     }
 
-    
+    public static string ChangeNumber(string number)
+    {
+        char[] unitAlphabet = new char[3] { 'K', 'M', 'B' };
+        int unit = 0;
+        while (number.Length > 6)
+        {
+            unit++;
+            number = number.Substring(0, number.Length - 3);
+        }
+        if (number.Length > 3)
+        {
+            int newInt = int.Parse(number);
+            if (number.Length > 4)
+            {
+                return (newInt / 1000).ToString() + unitAlphabet[unit];
+            }
+            else
+            {
+                return (newInt / 1000f).ToString("0.0") + unitAlphabet[unit];
+            }
+        }
+        else
+        {
+            int newInt = int.Parse(number);
+            return (newInt).ToString();
+        }
+    }
 }

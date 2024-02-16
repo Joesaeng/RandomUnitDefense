@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class Define
 {
+    public enum ItemName
+    {
+        None,
+        increaseDamageItem,
+        attackRateItem,
+        attackRangeItem,
+        AOEAreaItem,
+        addedDamageItem
+    }
+
     public enum UnitAnimationState
     {
         Idle,

@@ -2,9 +2,10 @@ using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class UnitStatus
+public class UnitStatus : ICloneable
 {
     public UnitNames    unit = UnitNames.Knight;
     public UnitType     unitType = UnitType.Common;
@@ -15,6 +16,16 @@ public class UnitStatus
     public float        debuffDuration = 0;
     public float        debuffRatio = 0;
     public float        damagePerSecond = 0;
+
+    public UnitStatus MyClone()
+    {
+        return (UnitStatus)Clone();
+    }
+
+    public object Clone()
+    {
+        return this.MemberwiseClone();
+    }
 }
 
 public class UnitStatusManager
@@ -25,13 +36,16 @@ public class UnitStatusManager
     // <Id<Lv,Info>> µñ¼Å³Ê¸® 
     Dictionary<UnitNames,Dictionary<int,UnitStatus>> _unitStatusDict;
     Dictionary<UnitNames,int> _unitUpgradLv;
+
     public Dictionary<UnitNames,int> UnitUpgradLv => _unitUpgradLv;
 
     public Action<int> OnUnitUpgrade;
 
     public UnitStatus GetUnitStatus(UnitNames baseUnit, int unitLv)
     {
-        return _unitStatusDict[baseUnit][unitLv];
+        UnitStatus status = _unitStatusDict[baseUnit][unitLv];
+
+        return ApplyEquipedItemStatus(status);
     }
 
     public void Init()
@@ -49,6 +63,7 @@ public class UnitStatusManager
         if (OnUnitUpgrade != null)
             OnUnitUpgrade.Invoke(slot);
     }
+
     private void Upgrade(UnitStatus status,int lv)
     {
         int basicAttackDamage = Managers.Data.GetUnitData(status.unit,lv).attackDamage;
@@ -70,6 +85,24 @@ public class UnitStatusManager
         status.attackRate       = (float)Math.Round(status.attackRate, 2);
         status.debuffDuration   = (float)Math.Round(status.debuffDuration, 2);
         status.debuffRatio      = (float)Math.Round(status.debuffRatio, 2);
+    }
+
+    private UnitStatus ApplyEquipedItemStatus(UnitStatus status)
+    {
+        UnitStatus _status = status.MyClone();
+
+        EquipedItemStatus equipedItemStatus = Managers.InGameItem.CurrentStatusOnEquipedItem;
+        float attackDamage = _status.attackDamage * equipedItemStatus.increaseDamage;
+        _status.attackDamage = (int)attackDamage;
+        _status.attackRate /= equipedItemStatus.decreaseAttackRate;
+        _status.attackRange *= equipedItemStatus.increaseAttackRange;
+        _status.wideAttackArea *= equipedItemStatus.increaseAOEArea;
+
+        _status.attackRate = (float)Math.Round(_status.attackRate, 2);
+        _status.attackRange = (float)Math.Round(_status.attackRange, 2);
+        _status.wideAttackArea = (float)Math.Round(_status.wideAttackArea, 2);
+
+        return _status;
     }
 
     private void MakeUnitStatusDict()
@@ -192,4 +225,6 @@ public class UnitStatusManager
 
         return status;
     }
+
+
 }

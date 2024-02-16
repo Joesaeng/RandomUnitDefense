@@ -12,14 +12,20 @@ public class UI_GameScene : UI_Scene
     enum GameObjects
     {
         PanelUpgrade,
+        PanelItem,
     }
+
+    GameObject _panelItem;
+
     enum Buttons
     {
         BtnSpawn,
+        BtnGamble
     }
     enum TMPros
     {
         TextSpawn,
+        TextGambleRuby,
         TextTheAmountOfRuby,
         TextStage,
         TextMonsterInfo,
@@ -42,6 +48,7 @@ public class UI_GameScene : UI_Scene
         Bind<Image>(typeof(Images));
 
         GetButton((int)Buttons.BtnSpawn).gameObject.AddUIEvent(OnSpawnButtonClicked);
+        GetButton((int)Buttons.BtnGamble).gameObject.AddUIEvent(OnGambleButtonClicked);
         GetTMPro((int)TMPros.TextFixedMonsterCount).text = ConstantData.MonsterCountForGameOver.ToString();
 
         OnChangeAmountOfRuby(Managers.Game.Ruby);
@@ -52,9 +59,18 @@ public class UI_GameScene : UI_Scene
         Managers.Game.OnNextStage -= OnNextStageEvent;
         Managers.Game.OnNextStage += OnNextStageEvent;
 
+        OnChangeItems(Managers.InGameItem.GambleCost);
+        Managers.InGameItem.OnGambleItem -= OnChangeItems;
+        Managers.InGameItem.OnGambleItem += OnChangeItems;
+
         GameObject panelUpgrade = Get<GameObject>((int)GameObjects.PanelUpgrade);
         foreach (Transform child in panelUpgrade.transform)
             Managers.Resource.Destroy(child.gameObject);
+
+        _panelItem = Get<GameObject>((int)GameObjects.PanelItem);
+        foreach (Transform child in _panelItem.transform)
+            Managers.Resource.Destroy(child.gameObject);
+
 
         int unitCount = Managers.Game.SelectedUnitIds.Length;
         for(int i = 0; i < unitCount; i++)
@@ -77,9 +93,13 @@ public class UI_GameScene : UI_Scene
     {
         GetTMPro((int)TMPros.TextStage).text = $"STAGE {Managers.Game.CurStage}";
         MonsterData monsterData = Managers.Data.GetMonsterData(Managers.Game.CurStage);
+        string hp = monsterData.maxHp.ToString();
+        hp = Util.ChangeNumber(hp);
+        string defense = monsterData.defense.ToString();
+        defense = Util.ChangeNumber(defense);
         GetTMPro((int)TMPros.TextMonsterInfo).text = 
-            $"<sprite=46> : {monsterData.maxHp}\n" +
-            $"<sprite=50> : {monsterData.defense}";
+            $"<sprite=46> : {hp}\n" +
+            $"<sprite=50> : {defense}";
 
     }
 
@@ -88,8 +108,23 @@ public class UI_GameScene : UI_Scene
         Managers.Game.OnSpawnButtonClicked();
     }
 
+    public void OnGambleButtonClicked(PointerEventData data)
+    {
+        Managers.InGameItem.GambleItem();
+    }
+
     public void OnChangeAmountOfRuby(int value)
     {
         GetTMPro((int)TMPros.TextTheAmountOfRuby).text = $"<sprite=25> {value}";
+    }
+
+    public void OnChangeItems(int value,InGameItemData itemdata = null)
+    {
+        GetTMPro((int)TMPros.TextGambleRuby).text = $"<sprite=25> {value}";
+        if(itemdata != null)
+        {
+            GameObject item = Managers.UI.MakeSubItem<UI_Item>(parent : _panelItem.transform).gameObject;
+            item.GetComponent<UI_Item>().SetInfo(itemdata);
+        }
     }
 }

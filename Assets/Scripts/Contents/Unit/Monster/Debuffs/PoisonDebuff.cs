@@ -20,11 +20,7 @@ public class PoisonDebuff : BaseDebuff
     {
         base.OnUpdate();
         _posionDamageTime += Time.deltaTime;
-        if (_posionDamageTime > 1)
-        {
-            _monster.ReduceHp(_damagePerSecond);
-            _posionDamageTime = 0;
-        }
+        _monster.ReduceHp(_damagePerSecond * Time.deltaTime);
     }
 
     protected override void QuitDebuff()

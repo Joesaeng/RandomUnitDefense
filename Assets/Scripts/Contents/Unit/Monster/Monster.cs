@@ -200,10 +200,12 @@ public class Monster : MonoBehaviour
         // 유닛의 공격력이 몬스터의 방어력보다 낮은 경우 1의 데미지를 받게 합니다.
         float damage = attackerStat.attackDamage - _defense > 1 ? attackerStat.attackDamage - _defense : 1;
         ReduceHp(damage);
+        ReduceHp(Managers.InGameItem.CurrentStatusOnEquipedItem.addedDamage); // 추뎀
     }
 
     public void ReduceHp(float damage)
     {
+        if(IsDead) return;
         _curHp -= damage;
         if (_curHp <= 0)
         {

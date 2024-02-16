@@ -1,4 +1,5 @@
 using Data;
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ public class DataManager
 {
     public Dictionary<int, Data.BaseUnit> BaseUnitDict { get; private set; } = new Dictionary<int, Data.BaseUnit>();
     public Dictionary<int, Data.MonsterData> MonsterDict { get; private set; } = new Dictionary<int, Data.MonsterData>();
+    public Dictionary<int, Data.InGameItemData> InGameItemDict { get; private set; } = new Dictionary<int, Data.InGameItemData>();
 
     public Dictionary<int, Data.Knight> KnightStats { get; private set; } = new Dictionary<int, Data.Knight>();
     public Dictionary<int, Data.Spearman> SpearmanStats { get; private set; } = new Dictionary<int, Data.Spearman>();
@@ -32,6 +34,7 @@ public class DataManager
     {
         BaseUnitDict = LoadJson<Data.BaseUnitDatas, int, Data.BaseUnit>("BaseUnits").MakeDict();
         MonsterDict = LoadJson<Data.MonsterDatas, int, Data.MonsterData>("MonsterDatas").MakeDict();
+        InGameItemDict = LoadJson<Data.InGameItemDatas, int, Data.InGameItemData>("InGameItemDatas").MakeDict();
        
         KnightStats = LoadJson<Data.UnitStats<Knight>, int, Data.Knight>("Knight").MakeDict();
         SpearmanStats = LoadJson<Data.UnitStats<Spearman>, int, Data.Spearman>("Spearman").MakeDict();
@@ -80,5 +83,11 @@ public class DataManager
     public MonsterData GetMonsterData(int stageNum)
     {
         return MonsterDict[stageNum + ConstantData.FirstOfMonsterID];
+    }
+
+    public InGameItemData GetInGameItemData(InGameItemID inGameItemID)
+    {
+        int id = (int)inGameItemID;
+        return InGameItemDict[id];
     }
 }

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static Define;
+using static Language;
 using static UnityEngine.UI.CanvasScaler;
 
 public static class Language
@@ -115,4 +117,38 @@ public static class Language
             }
         }
     }
+
+    public static string GetItemInfo(ItemName itemname)
+    {
+        Define.GameLanguage language = Managers.Game.GameLanguage;
+        string[] englishItemInfos =
+        {
+            "",
+            "Increase Damage",
+            "Decrease Attack Rate",
+            "Increase Attack Range",
+            "Increase AOE Area",
+            "Add Damage"
+
+        };
+        string[] koreanItemInfos =
+        {
+            "",
+            "공격력 증가",
+            "공격 주기 감소",
+            "공격범위 증가",
+            "광역공격범위 증가",
+            "추가 데미지"
+        };
+        switch (language)
+        {
+            case Define.GameLanguage.English:
+                return englishItemInfos[(int)itemname];
+            case Define.GameLanguage.Korean:
+                return koreanItemInfos[(int)itemname];
+            default:
+                return englishItemInfos[(int)itemname];
+        }
+    }
+    
 }

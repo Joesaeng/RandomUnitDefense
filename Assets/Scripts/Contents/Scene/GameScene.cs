@@ -68,6 +68,7 @@ public class GameScene : BaseScene
         {
             Managers.Game.UpgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
         }
+        Managers.InGameItem.Init();
         Managers.UnitStatus.Init();
         Managers.UI.ShowSceneUI<UI_GameScene>();
     }

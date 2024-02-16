@@ -30,6 +30,7 @@ namespace Data
         Viking,
         Warrior,
         PoisonBowMan,
+        Count,
     }
 
     [Serializable]
@@ -179,6 +180,67 @@ namespace Data
         {
             Dictionary<int,MonsterData> dict = new Dictionary<int,MonsterData>();
             foreach (MonsterData data in monsters)
+            {
+                dict.Add(data.id, data);
+            }
+            return dict;
+        }
+    }
+    #endregion
+
+    #region InGameItems
+
+    public enum InGameItemID
+    {
+        increaseDamageItem_1 = 2000,
+        increaseDamageItem_2,
+        increaseDamageItem_3,
+        increaseDamageItem_4,
+        increaseDamageItem_5,
+        attackRateItem_1,
+        attackRateItem_2,
+        attackRateItem_3,
+        attackRateItem_4,
+        attackRateItem_5,
+        attackRangeItem_1,
+        attackRangeItem_2,
+        attackRangeItem_3,
+        attackRangeItem_4,
+        attackRangeItem_5,
+        AOEAreaItem_1,
+        AOEAreaItem_2,
+        AOEAreaItem_3,
+        AOEAreaItem_4,
+        AOEAreaItem_5,
+        addedDamageItem_1,
+        addedDamageItem_2,
+        addedDamageItem_3,
+        addedDamageItem_4,
+        addedDamageItem_5,
+    }
+
+    [Serializable]
+    public class InGameItemData
+    {
+        public int          id;                 // 아이디
+        public int          itemLevel;          // 아이템레벨
+        public string       itemName;           // 아이템이름
+        public float        increaseDamage;
+        public float        decreaseAttackRate;
+        public float        increaseAttackRange;
+        public float        increaseAOEArea;
+        public int          addedDamage;
+    }
+
+    [Serializable]
+    public class InGameItemDatas : ILoader<int, InGameItemData>
+    {
+        public List<InGameItemData> InGameItems = new List<InGameItemData>();
+
+        public Dictionary<int, InGameItemData> MakeDict()
+        {
+            Dictionary<int,InGameItemData> dict = new Dictionary<int,InGameItemData>();
+            foreach (InGameItemData data in InGameItems)
             {
                 dict.Add(data.id, data);
             }

@@ -10,9 +10,13 @@ public class Managers : MonoBehaviour
 
     #region Contents
     GameManagerEx _game = new GameManagerEx();
-    public static GameManagerEx Game { get { return Instance._game; } }
     UnitStatusManager _unitStatus = new UnitStatusManager();
+    InGameItemManager _inGameItem = new InGameItemManager();
+
+
+    public static GameManagerEx Game { get { return Instance._game; } }
     public static UnitStatusManager UnitStatus { get {  return Instance._unitStatus; } }
+    public static InGameItemManager InGameItem { get {  return Instance._inGameItem; } }
     #endregion
 
     #region Core

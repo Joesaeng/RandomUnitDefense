@@ -52,7 +52,9 @@ public class UI_UnitInfo : UI_Base
     {
         GetTMPro((int)TMPros.TextName).text = Language.GetBaseUnitName(_unitStatus.unit);
         GetTMPro((int)TMPros.TextLevel).text = $"{Language.GetUnitInfo(Language.UnitInfos.Level)} : {_unit.Lv}";
-        GetTMPro((int)TMPros.TextInfo1).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackDamage)} : {_unitStatus.attackDamage}";
+        string damage = _unitStatus.attackDamage.ToString();
+        damage = Util.ChangeNumber(damage);
+        GetTMPro((int)TMPros.TextInfo1).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackDamage)} : {damage}";
         GetTMPro((int)TMPros.TextInfo2).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackRate)} : {_unitStatus.attackRate}";
         GetTMPro((int)TMPros.TextInfo3).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackRange)} : {_unitStatus.attackRange}";
 
