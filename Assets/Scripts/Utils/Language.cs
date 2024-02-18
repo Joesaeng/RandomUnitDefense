@@ -128,7 +128,7 @@ public static class Language
             "Decrease Attack Rate",
             "Increase Attack Range",
             "Increase AOE Area",
-            "Add Damage"
+            "Added Damage"
 
         };
         string[] koreanItemInfos =
@@ -150,5 +150,35 @@ public static class Language
                 return englishItemInfos[(int)itemname];
         }
     }
-    
+
+    public static string GetEquipStatusName(EquipItemStatus equipItemStatus)
+    {
+        Define.GameLanguage language = Managers.Game.GameLanguage;
+        string[] englishItemInfos =
+        {
+            "Increase Damage",
+            "Decrease Attack Rate",
+            "Increase Attack Range",
+            "Increase AOE Area",
+            "Added Damage"
+
+        };
+        string[] koreanItemInfos =
+        {
+            "공격력 증가",
+            "공격 주기 감소",
+            "공격범위 증가",
+            "광역공격범위 증가",
+            "추가 데미지"
+        };
+        switch (language)
+        {
+            case Define.GameLanguage.English:
+                return englishItemInfos[(int)equipItemStatus];
+            case Define.GameLanguage.Korean:
+                return koreanItemInfos[(int)equipItemStatus];
+            default:
+                return englishItemInfos[(int)equipItemStatus];
+        }
+    }
 }

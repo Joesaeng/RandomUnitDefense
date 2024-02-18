@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class Define
 {
+    public enum EquipItemStatus
+    {
+        increaseDamage,
+        decreaseAttackRate,
+        increaseAttackRange,
+        increaseAOEArea,
+        addedDamage,
+        Count,
+    }
+
     public enum ItemName
     {
         None,

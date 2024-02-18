@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static Define;
 
 public class UI_GameScene : UI_Scene
 {
@@ -13,14 +14,23 @@ public class UI_GameScene : UI_Scene
     {
         PanelUpgrade,
         PanelItem,
+        PanelEquipStatusName,
+        PanelEquipStatusValue,
     }
 
     GameObject _panelItem;
 
+    GameObject _panelEquipStatusName;
+    GameObject _panelEquipStatusValue;
+    List<UI_TextEquipStatusValue> _ui_textEquipStatusValues;
+
+    List<UI_Item> _ui_items;
+
     enum Buttons
     {
         BtnSpawn,
-        BtnGamble
+        BtnGamble,
+        BtnEquipInfo
     }
     enum TMPros
     {
@@ -49,8 +59,10 @@ public class UI_GameScene : UI_Scene
 
         GetButton((int)Buttons.BtnSpawn).gameObject.AddUIEvent(OnSpawnButtonClicked);
         GetButton((int)Buttons.BtnGamble).gameObject.AddUIEvent(OnGambleButtonClicked);
+        GetButton((int)Buttons.BtnEquipInfo).gameObject.AddUIEvent(OnEquipInfoButtonClicked);
         GetTMPro((int)TMPros.TextFixedMonsterCount).text = ConstantData.MonsterCountForGameOver.ToString();
 
+        #region 버튼 이벤트 바인딩
         OnChangeAmountOfRuby(Managers.Game.Ruby);
         Managers.Game.OnChangedRuby -= OnChangeAmountOfRuby;
         Managers.Game.OnChangedRuby += OnChangeAmountOfRuby;
@@ -62,15 +74,52 @@ public class UI_GameScene : UI_Scene
         OnChangeItems(Managers.InGameItem.GambleCost);
         Managers.InGameItem.OnGambleItem -= OnChangeItems;
         Managers.InGameItem.OnGambleItem += OnChangeItems;
+        #endregion
 
-        GameObject panelUpgrade = Get<GameObject>((int)GameObjects.PanelUpgrade);
-        foreach (Transform child in panelUpgrade.transform)
+        #region 현재 장비 스테이터스 초기화
+
+        _panelEquipStatusName = Get<GameObject>((int)GameObjects.PanelEquipStatusName);
+        foreach (Transform child in _panelEquipStatusName.transform)
             Managers.Resource.Destroy(child.gameObject);
 
+        _panelEquipStatusValue = Get<GameObject>((int)GameObjects.PanelEquipStatusValue);
+        foreach (Transform child in _panelEquipStatusValue.transform)
+            Managers.Resource.Destroy(child.gameObject);
+
+        if (_ui_textEquipStatusValues != null)
+            _ui_textEquipStatusValues.Clear();
+        _ui_textEquipStatusValues = new List<UI_TextEquipStatusValue>();
+
+        for (int equipStatus = 0; equipStatus < (int)Define.EquipItemStatus.Count; ++equipStatus)
+        {
+            GameObject equipStatusName = Managers.UI.MakeSubItem<UI_TextEquipStatusName>(parent : _panelEquipStatusName.transform).gameObject;
+            GameObject equipStatusValue = Managers.UI.MakeSubItem<UI_TextEquipStatusValue>(parent : _panelEquipStatusValue.transform).gameObject;
+            equipStatusName.transform.localScale = Vector3.one;
+            equipStatusValue.transform.localScale = Vector3.one;
+            equipStatusName.GetComponent<UI_TextEquipStatusName>().SetUp((EquipItemStatus)equipStatus);
+            equipStatusValue.GetComponent<UI_TextEquipStatusValue>().SetValue((EquipItemStatus)equipStatus);
+            _ui_textEquipStatusValues.Add(equipStatusValue.GetComponent<UI_TextEquipStatusValue>());
+        }
+
+        _panelEquipStatusName.SetActive(false);
+        _panelEquipStatusValue.SetActive(false);
+
+        #endregion
+
+        #region 장비창 초기화
         _panelItem = Get<GameObject>((int)GameObjects.PanelItem);
         foreach (Transform child in _panelItem.transform)
             Managers.Resource.Destroy(child.gameObject);
 
+        if (_ui_items != null)
+            _ui_items.Clear();
+        _ui_items = new List<UI_Item>();
+        #endregion
+
+        #region 유닛 업그레이드 초기화
+        GameObject panelUpgrade = Get<GameObject>((int)GameObjects.PanelUpgrade);
+        foreach (Transform child in panelUpgrade.transform)
+            Managers.Resource.Destroy(child.gameObject);
 
         int unitCount = Managers.Game.SelectedUnitIds.Length;
         for(int i = 0; i < unitCount; i++)
@@ -79,6 +128,7 @@ public class UI_GameScene : UI_Scene
             upgradeBtn.transform.localScale = new Vector3(1f, 1f, 1f);
             upgradeBtn.GetComponent<UI_BtnUpgrade>().SetInfo(i, Managers.Game.SelectedUnitIds[i]);
         }
+        #endregion
     }
 
     private void Update()
@@ -124,7 +174,30 @@ public class UI_GameScene : UI_Scene
         if(itemdata != null)
         {
             GameObject item = Managers.UI.MakeSubItem<UI_Item>(parent : _panelItem.transform).gameObject;
-            item.GetComponent<UI_Item>().SetInfo(itemdata);
+            UI_Item ui_item = item.GetComponent<UI_Item>();
+            ui_item.SetInfo(itemdata);
+            ui_item.OnClickedItemButton -= OnClickedItemButton;
+            ui_item.OnClickedItemButton += OnClickedItemButton;
+            _ui_items.Add(ui_item);
+
+            for (int equipStatus = 0; equipStatus < (int)EquipItemStatus.Count; ++equipStatus)
+            {
+                _ui_textEquipStatusValues[equipStatus].SetValue((EquipItemStatus)equipStatus);
+            }
         }
+    }
+
+    public void OnClickedItemButton()
+    {
+        foreach(UI_Item item in _ui_items)
+        {
+            item.DeactiveInfoObject();
+        }
+    }
+
+    public void OnEquipInfoButtonClicked(PointerEventData data)
+    {
+        _panelEquipStatusName.SetActive(!_panelEquipStatusName.activeSelf);
+        _panelEquipStatusValue.SetActive(!_panelEquipStatusValue.activeSelf);
     }
 }

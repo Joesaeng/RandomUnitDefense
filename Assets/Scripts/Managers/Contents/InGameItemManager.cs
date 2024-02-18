@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define;
 
 public class EquipedItemStatus
 {
@@ -35,6 +36,7 @@ public class InGameItemManager
         { return _currentStatusOnEquipedItem; }
         set{ _currentStatusOnEquipedItem = value;}
     }
+
     public void Init()
     {
         if (_inGameItemDatas != null)
@@ -82,7 +84,6 @@ public class InGameItemManager
         }
         int randPick = UnityEngine.Random.Range(0, list.Count);
         AcquiredItem((InGameItemID)list[randPick].id);
-        Debug.Log(randValue+"%");
         Managers.Game.Ruby -= _gambleCost;
         _gambleCost += ConstantData.IncreaseGambleCost;
         if (OnGambleItem != null)
@@ -107,5 +108,23 @@ public class InGameItemManager
         {
             OnCalculateEquipItem.Invoke();
         }
+    }
+
+    public float GetCurrentEquipedStatus(EquipItemStatus equipItemStatus)
+    {
+        switch (equipItemStatus)
+        {
+            case EquipItemStatus.increaseDamage:
+                return CurrentStatusOnEquipedItem.increaseDamage;
+            case EquipItemStatus.decreaseAttackRate:
+                return CurrentStatusOnEquipedItem.decreaseAttackRate;
+            case EquipItemStatus.increaseAttackRange:
+                return CurrentStatusOnEquipedItem.increaseAttackRange;
+            case EquipItemStatus.increaseAOEArea:
+                return CurrentStatusOnEquipedItem.increaseAOEArea;
+            case EquipItemStatus.addedDamage:
+                return CurrentStatusOnEquipedItem.addedDamage;
+        }
+        return 0f;
     }
 }

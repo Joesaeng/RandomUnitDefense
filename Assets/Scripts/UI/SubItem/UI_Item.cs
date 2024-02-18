@@ -1,4 +1,5 @@
 using Data;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -31,6 +32,7 @@ public class UI_Item : UI_Base
     }
 
     InGameItemData _itemdata;
+    public Action OnClickedItemButton;
 
     public override void Init()
     {
@@ -46,7 +48,6 @@ public class UI_Item : UI_Base
         infoObject.SetActive(true);
         _itemdata = itemdata;
         string itemImagePath = $"{_itemdata.itemName}_{_itemdata.itemLevel}";
-
         gameObject.GetComponent<Image>().sprite =
             Managers.Resource.Load<Sprite>($"Art/InGameItems/{itemImagePath}");
 
@@ -80,8 +81,7 @@ public class UI_Item : UI_Base
 
     enum ItemLevelString
     {
-        None,
-        Common,
+        Common = 1,
         UnCommon,
         Rare,
         Unique,
@@ -93,6 +93,19 @@ public class UI_Item : UI_Base
     public void ClickedItem(PointerEventData data)
     {
         GameObject infoObject = Get<GameObject>((int)GameObjects.ImageItemInfo);
-        infoObject.SetActive(!infoObject.activeSelf);
+        if(infoObject.activeSelf)
+        {
+            infoObject.SetActive(false);
+            return;
+        }
+        if (OnClickedItemButton != null)
+            OnClickedItemButton.Invoke();
+        infoObject.SetActive(true);
+    }
+
+    public void DeactiveInfoObject()
+    {
+        GameObject infoObject = Get<GameObject>((int)GameObjects.ImageItemInfo);
+        infoObject.SetActive(false);
     }
 }
