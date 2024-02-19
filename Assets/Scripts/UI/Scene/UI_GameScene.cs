@@ -129,13 +129,20 @@ public class UI_GameScene : UI_Scene
             upgradeBtn.GetComponent<UI_BtnUpgrade>().SetInfo(i, Managers.Game.SelectedUnitIds[i]);
         }
         #endregion
+
+        _text_stageTime = GetTMPro((int)TMPros.TextLeftTimeStage);
+        _text_monsterCount = GetTMPro((int)TMPros.TextChangeMonsterCount);
+        _image_monsterGageBar = GetImage((int)Images.FillMonsterGageBar);
     }
+    TextMeshProUGUI _text_stageTime;
+    TextMeshProUGUI _text_monsterCount;
+    Image _image_monsterGageBar;
 
     private void Update()
     {
-        GetTMPro((int)TMPros.TextLeftTimeStage).text = Managers.Time.GetStageTimeByTimeDisplayFormat(TimeManager.StageTimeType.LeftTime);
-        GetTMPro((int)TMPros.TextChangeMonsterCount).text = $"{Managers.Game.Monsters.Count}";
-        GetImage((int)Images.FillMonsterGageBar).fillAmount =
+        _text_stageTime.text = Managers.Time.GetStageTimeByTimeDisplayFormat(TimeManager.StageTimeType.LeftTime);
+        _text_monsterCount.text = $"{Managers.Game.Monsters.Count}";
+        _image_monsterGageBar.fillAmount =
             Util.CalculatePercent(Managers.Game.Monsters.Count, ConstantData.MonsterCountForGameOver);
     }
 

@@ -15,7 +15,7 @@ public static class ConstantData
 
     public const int     PlayerUnitHighestLevel = 3;
     public const float   MonsterRespawnTime = 0.3f;
-    public const float   OneStageTime = 20f;
+    public const float   OneStageTime = 15f;
     public const int     OneStageSpawnCount = 50;
     public const int     MonsterCountForGameOver = 100;
     public const int     SelectableUnitCount = 5;

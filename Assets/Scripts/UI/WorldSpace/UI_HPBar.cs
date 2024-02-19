@@ -7,15 +7,18 @@ public class UI_HPBar : UI_Base
 {
     enum GameObjects
     {
-        HPBar
+        Fill
     }
 
     Monster _monster;
+    Image _fill;
 
     public override void Init()
     {
         Bind<GameObject>(typeof(GameObjects));
         _monster = transform.parent.GetComponent<Monster>();
+        if (_fill == null)
+            _fill = GetObject((int)GameObjects.Fill).GetComponent<Image>();
     }
 
     private void Update()
@@ -29,6 +32,6 @@ public class UI_HPBar : UI_Base
 
     public void SetHpRatio(float ratio)
     {
-        GetObject((int)GameObjects.HPBar).GetComponent<Slider>().value = ratio;
+        _fill.fillAmount = ratio;
     }
 }

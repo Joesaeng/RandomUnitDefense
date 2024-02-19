@@ -164,7 +164,7 @@ public class Monster : MonoBehaviour
         
     }
 
-    public void TakeHit(UnitStatus attackerStat)
+    public void TakeHit(UnitStatus attackerStat,float damageRatio = 1)
     {
         if (IsDead)
             return;
@@ -198,9 +198,10 @@ public class Monster : MonoBehaviour
         }
 
         // 유닛의 공격력이 몬스터의 방어력보다 낮은 경우 1의 데미지를 받게 합니다.
-        float damage = attackerStat.attackDamage - _defense > 1 ? attackerStat.attackDamage - _defense : 1;
+        float damage = attackerStat.attackDamage * damageRatio - _defense > 1 ? attackerStat.attackDamage * damageRatio - _defense : 1;
+        float addedDamage = Managers.InGameItem.CurrentStatusOnEquipedItem.addedDamage * damageRatio;
         ReduceHp(damage);
-        ReduceHp(Managers.InGameItem.CurrentStatusOnEquipedItem.addedDamage); // 추뎀
+        ReduceHp(addedDamage); // 추뎀
     }
 
     public void ReduceHp(float damage)

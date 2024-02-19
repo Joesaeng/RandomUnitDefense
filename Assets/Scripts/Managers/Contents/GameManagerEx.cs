@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 public class GameManagerEx
 {
@@ -61,6 +62,8 @@ public class GameManagerEx
 
         Managers.UnitStatus.OnUnitUpgrade -= OnUnitUpgrade;
         Managers.UnitStatus.OnUnitUpgrade += OnUnitUpgrade;
+
+        GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
     }
 
     public bool CanUnitUpgrade(int upgradeSlot)

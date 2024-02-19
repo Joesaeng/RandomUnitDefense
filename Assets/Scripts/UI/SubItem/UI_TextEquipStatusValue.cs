@@ -20,7 +20,8 @@ public class UI_TextEquipStatusValue : UI_Base
         }
         else
         {
-            valueText += ((value -1) * 100) + "%";
+            valueText += (int)((value - 1) * 100) + "%";
+            
         }
         GetComponent<TextMeshProUGUI>().text = valueText;
     }
