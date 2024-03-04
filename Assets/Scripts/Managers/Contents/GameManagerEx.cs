@@ -128,7 +128,6 @@ public class GameManagerEx
         if (OnMoveUnitEvent != null)
             OnMoveUnitEvent.Invoke(curSlotIndex, moveSlotIndex);
     }
-
     // 현재 프레임에 사망하는 몬스터들을 등록하는 메서드
     public void RegisterDyingMonster(GameObject monster)
     {
@@ -140,7 +139,6 @@ public class GameManagerEx
         if(OnSpawnButtonClickEvent != null)
             OnSpawnButtonClickEvent.Invoke();
     }
-
     // 유닛 선택 메서드(공격범위 및 UI_UnitInfo 생성)
     public void SelectUnit(GameObject unit)
     {

@@ -30,11 +30,14 @@ public class UI_GameScene : UI_Scene
     {
         BtnSpawn,
         BtnGamble,
-        BtnEquipInfo
+        BtnEquipInfo,
+        BtnPause,
+        BtnGameSpeed,
     }
     enum TMPros
     {
         TextSpawn,
+        TextGamble,
         TextGambleRuby,
         TextTheAmountOfRuby,
         TextStage,
@@ -48,7 +51,8 @@ public class UI_GameScene : UI_Scene
     {
         FillMonsterGageBar,
         ImageSpawnUnable,
-        ImageGambleUnable
+        ImageGambleUnable,
+        ImageGameSpeedValue
     }
 
     public override void Init()
@@ -62,7 +66,11 @@ public class UI_GameScene : UI_Scene
         GetButton((int)Buttons.BtnSpawn).gameObject.AddUIEvent(OnSpawnButtonClicked);
         GetButton((int)Buttons.BtnGamble).gameObject.AddUIEvent(OnGambleButtonClicked);
         GetButton((int)Buttons.BtnEquipInfo).gameObject.AddUIEvent(OnEquipInfoButtonClicked);
+        GetButton((int)Buttons.BtnGameSpeed).gameObject.AddUIEvent(OnGameSpeedButtonClicked);
+        GetButton((int)Buttons.BtnPause).gameObject.AddUIEvent(OnPauseButtonClicked);
         GetTMPro((int)TMPros.TextFixedMonsterCount).text = ConstantData.MonsterCountForGameOver.ToString();
+        GetTMPro((int)TMPros.TextSpawn).text = Language.Spawn;
+        GetTMPro((int)TMPros.TextGamble).text = Language.GambleItem;
 
         #region 버튼 이벤트 바인딩
         OnChangeAmountOfRuby(Managers.Game.Ruby);
@@ -172,6 +180,21 @@ public class UI_GameScene : UI_Scene
         Managers.InGameItem.GambleItem();
     }
 
+    public void OnGameSpeedButtonClicked(PointerEventData data)
+    {
+        Managers.Sound.Play("Click");
+        GetImage((int)Images.ImageGameSpeedValue).sprite =
+            Managers.Resource.Load<Sprite>($"Art/UIImages/UI_{Managers.Time.ChangeTimeScale()}");
+    }
+
+    public void OnPauseButtonClicked(PointerEventData data)
+    {
+        Managers.Sound.Play("Click");
+        Managers.Time.GamePause();
+        // 일시정지 UI 키기
+        Managers.UI.ShowPopupUI<UI_PauseMenu>();
+    }
+
     public void OnChangeAmountOfRuby(int value)
     {
         GetTMPro((int)TMPros.TextTheAmountOfRuby).text = $"<sprite=25> {value}";
@@ -186,11 +209,13 @@ public class UI_GameScene : UI_Scene
         if(itemdata != null)
         {
             GameObject item = Managers.UI.MakeSubItem<UI_Item>(parent : _panelItem.transform).gameObject;
+            item.transform.localScale = Vector3.one;
             UI_Item ui_item = item.GetComponent<UI_Item>();
             ui_item.SetInfo(itemdata);
             ui_item.OnClickedItemButton -= OnClickedItemButton;
             ui_item.OnClickedItemButton += OnClickedItemButton;
             _ui_items.Add(ui_item);
+            Managers.Sound.Play("GetTheItem");
 
             for (int equipStatus = 0; equipStatus < (int)EquipItemStatus.Count; ++equipStatus)
             {

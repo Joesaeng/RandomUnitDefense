@@ -1,11 +1,5 @@
 using Data;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
 using static Define;
-using static Language;
-using static UnityEngine.UI.CanvasScaler;
 
 public static class Language
 {
@@ -102,22 +96,6 @@ public static class Language
         }
     }
 
-    public static string Sell
-    {
-        get {
-            Define.GameLanguage language = Managers.Game.GameLanguage;
-            switch (language)
-            {
-                case Define.GameLanguage.English:
-                    return "SELL";
-                case Define.GameLanguage.Korean:
-                    return "판매";
-                default:
-                    return "SELL";
-            }
-        }
-    }
-
     public static string GetItemInfo(ItemName itemname)
     {
         Define.GameLanguage language = Managers.Game.GameLanguage;
@@ -179,6 +157,127 @@ public static class Language
                 return koreanItemInfos[(int)equipItemStatus];
             default:
                 return englishItemInfos[(int)equipItemStatus];
+        }
+    }
+
+    public static string Sell
+    {
+        get {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "SELL";
+                case Define.GameLanguage.Korean:
+                    return "판매";
+                default:
+                    return "SELL";
+            }
+        }
+    }
+
+    public static string Spawn
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "SPAWN";
+                case Define.GameLanguage.Korean:
+                    return "유닛소환";
+                default:
+                    return "SPAWN";
+            }
+        }
+    }
+
+    public static string GambleItem
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Gamble\n" +
+                            "Item";
+                case Define.GameLanguage.Korean:
+                    return "아이템\n" +
+                            "뽑기";
+                default:
+                    return "Gamble\n" +
+                            "Item";
+            }
+        }
+    }
+
+    public static string BGM
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "BGM";
+                case Define.GameLanguage.Korean:
+                    return "배경음악";
+                default:
+                    return "BGM";
+            }
+        }
+    }
+
+    public static string SFX
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "SFX";
+                case Define.GameLanguage.Korean:
+                    return "효과음";
+                default:
+                    return "SFX";
+            }
+        }
+    }
+
+    public static string ExitToLobby
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Exit To Lobby";
+                case Define.GameLanguage.Korean:
+                    return "로비로 나가기";
+                default:
+                    return "Exit To Lobby";
+            }
+        }
+    }
+
+    public static string ResumeToGame
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Resume To Game";
+                case Define.GameLanguage.Korean:
+                    return "게임으로 돌아가기";
+                default:
+                    return "Resume To Game";
+            }
         }
     }
 }

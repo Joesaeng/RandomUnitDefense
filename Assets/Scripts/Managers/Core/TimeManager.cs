@@ -12,7 +12,7 @@ public class TimeManager
     public float StageTime { get; private set; } = 0f;
     private float _curMonsterRespawnTime = 0f;
 
-    public float CurTimeScale { get; private set; } = 1f;
+    public int CurTimeScale { get; private set; } = 1;
 
     public Action OnNextStage;
     public Action OnMonsterRespawnTime;
@@ -65,8 +65,35 @@ public class TimeManager
         return TimeSpan.FromSeconds(GameTime).ToString(@"mm\:ss");
     }
 
-    public void SetPause(bool value)
+    public void GamePause()
     {
-        IsPause = value;
+        Time.timeScale = 0f;
+        IsPause = true;
+    }
+
+    public void GameResume()
+    {
+        Time.timeScale = CurTimeScale;
+        IsPause = false;
+    }
+
+    public int ChangeTimeScale()
+    {
+        switch (CurTimeScale)
+        {
+            case 1:
+                Time.timeScale = 2f;
+                CurTimeScale = 2;
+                break;
+            case 2:
+                Time.timeScale = 3f;
+                CurTimeScale = 3;
+                break;
+            case 3:
+                Time.timeScale = 1f;
+                CurTimeScale = 1;
+                break;
+        }
+        return CurTimeScale;
     }
 }

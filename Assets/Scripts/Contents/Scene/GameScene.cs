@@ -71,6 +71,8 @@ public class GameScene : BaseScene
         Managers.InGameItem.Init();
         Managers.UnitStatus.Init();
         Managers.UI.ShowSceneUI<UI_GameScene>();
+
+        Managers.Sound.Play("GameScene",Define.Sound.Bgm);
     }
 
     private void Update()
@@ -192,6 +194,8 @@ public class GameScene : BaseScene
 
         CreatePlayerUnit(randSlotIndex, randId);
         Managers.Game.Ruby -= ConstantData.RubyRequiredOneSpawnPlayerUnit;
+
+        Managers.Sound.Play("SpawnUnit");
     }
 
     // 플레이어 유닛 생성 메서드

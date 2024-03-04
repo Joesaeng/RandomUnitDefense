@@ -31,6 +31,14 @@ public class UnitBullet : MonoBehaviour
 
         _ownUnitStatus = Managers.UnitStatus.GetUnitStatus(baseUnit, unitLv);
         wideAttackArea = _ownUnitStatus.wideAttackArea;
+        if(wideAttackArea> 0)
+        {
+            Managers.Sound.Play("AOE");
+        }
+        else
+        {
+            Managers.Sound.Play("Normal");
+        }
     }
 
     void Update()

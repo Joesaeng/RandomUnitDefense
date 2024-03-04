@@ -43,7 +43,8 @@ public class DraggableUnit : MonoBehaviour
     {
         if (_pressed)
         {
-            if (Time.time > _pressedTime + 0.2f)
+            float clickTime = 0.2f * Managers.Time.CurTimeScale;
+            if (Time.time > _pressedTime + clickTime)
                 Managers.Game.UnSelectUnit();
         }
         transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition - _mousePos);
@@ -53,7 +54,8 @@ public class DraggableUnit : MonoBehaviour
     {
         if (_pressed)
         {
-            if (Time.time < _pressedTime + 0.2f)
+            float clickTime = 0.2f * Managers.Time.CurTimeScale;
+            if (Time.time < _pressedTime + clickTime)
                 OnMouseClickEvent.Invoke();
         }
         _pressed = false;

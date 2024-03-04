@@ -56,6 +56,7 @@ public class UI_BtnUpgrade : UI_Base
     {
         if(Managers.Game.CanUnitUpgrade(Slot))
         {
+            Managers.Sound.Play("UnitUpgrade");
             Managers.UnitStatus.ClickedUnitUpgrade(ID, Slot);
             SetText();
         }

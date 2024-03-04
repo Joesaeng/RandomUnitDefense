@@ -92,8 +92,9 @@ public class UI_Item : UI_Base
 
     public void ClickedItem(PointerEventData data)
     {
+        Managers.Sound.Play("Click");
         GameObject infoObject = Get<GameObject>((int)GameObjects.ImageItemInfo);
-        if(infoObject.activeSelf)
+        if (infoObject.activeSelf)
         {
             infoObject.SetActive(false);
             return;
