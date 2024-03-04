@@ -15,7 +15,7 @@ public class UnitBullet : MonoBehaviour
     private UnitStatus _ownUnitStatus;
     private float wideAttackArea;
 
-    public void Init(Monster targetMonster, UnitNames baseUnit, int unitLv, float bulletSpeed = 10f)
+    public void Init(Monster targetMonster, UnitNames baseUnit, int unitLv, float bulletSpeed = 20f)
     {
         GetComponent<SpriteRenderer>().sprite =
             Managers.Resource.Load<Sprite>($"Art/Bullets/{unitLv}");
@@ -70,7 +70,7 @@ public class UnitBullet : MonoBehaviour
             {
                 _targetMonster.TakeHit(_ownUnitStatus);
                 GameObject effect = Managers.Resource.Instantiate("HitEffect_2");
-                effect.GetComponent<HitEffect>().Init(_targetPosition);
+                effect.GetComponent<HitEffect>().Init(_targetMonster.transform.position);
 
                 DestroyBullet();
             }

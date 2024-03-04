@@ -18,7 +18,7 @@ public class DraggableUnit : MonoBehaviour
 
     private void Start()
     {
-        _unit = transform.GetComponent<Unit>();
+        _unit = GetComponent<Unit>();
     }
 
     private Vector3 GetMousePos()
@@ -28,7 +28,9 @@ public class DraggableUnit : MonoBehaviour
 
     public void OnMouseDown()
     {
-        if(!_pressed)
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+        if (!_pressed)
         {
             _pressedTime = Time.time;
             _pressed = true;
@@ -39,7 +41,7 @@ public class DraggableUnit : MonoBehaviour
 
     public void OnMouseDrag()
     {
-        if(_pressed)
+        if (_pressed)
         {
             if (Time.time > _pressedTime + 0.2f)
                 Managers.Game.UnSelectUnit();
@@ -49,7 +51,7 @@ public class DraggableUnit : MonoBehaviour
 
     public void OnMouseUp()
     {
-        if(_pressed)
+        if (_pressed)
         {
             if (Time.time < _pressedTime + 0.2f)
                 OnMouseClickEvent.Invoke();

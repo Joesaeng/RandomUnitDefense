@@ -5,17 +5,19 @@ using UnityEngine;
 
 public class DamageText : MonoBehaviour
 {
+    float resTime;
     public void SetText(float damage, Vector3 pos)
     {
         transform.position = pos;
         string text = ((int)damage).ToString();
         GetComponent<TextMeshPro>().text = text;
-        StartCoroutine("CoDestroyThisObject");
+        resTime = 0.5f;
     }
 
-    IEnumerator CoDestroyThisObject()
+    private void Update()
     {
-        yield return new WaitForSeconds(0.5f);
-        Managers.Resource.Destroy(gameObject);
+        if(resTime < 0)
+            Managers.Resource.Destroy(gameObject);
+        resTime -= Time.deltaTime;
     }
 }

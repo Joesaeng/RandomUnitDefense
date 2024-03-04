@@ -168,16 +168,11 @@ public class GameScene : BaseScene
     private void OnSpawnPlayerUnit()
     {
         if (Managers.Game.Ruby < ConstantData.RubyRequiredOneSpawnPlayerUnit)
-        {
-            Debug.Log("루비가 부족합니다!");
             return;
-        }
         List<int> randIndexList = new List<int>();
         int randSlotIndex = -1;
         for (int i = 0; i < _unitSlots.Length; ++i)
         {
-            // 0부터 unitSlots.Length 까지의 숫자 중에서, 이미 선택된 숫자는 제외한다.
-            //int rand = UnityEngine.Random.Range(0, _unitSlots.Length);
             if (_unitDict.ContainsKey(i) == true)
                 continue;
 
@@ -194,9 +189,6 @@ public class GameScene : BaseScene
             return;
         }
         int randId = _selectedUnitIds[UnityEngine.Random.Range(0, _selectedUnitIds.Length)];
-
-        // randId는 로비에서 등록한 유닛들의 Id를 가져와서 n개중 1개를 선택하는 방식으로 한다.
-
 
         CreatePlayerUnit(randSlotIndex, randId);
         Managers.Game.Ruby -= ConstantData.RubyRequiredOneSpawnPlayerUnit;
@@ -282,10 +274,6 @@ public class GameScene : BaseScene
         GameObject monster = Managers.Game.Spawn("Monster",newParentName:"Monsters");
 
         monster.transform.position = _monsterSpawnPoint.position;
-        // monsters의 Count 정보를 가지고 GameOver를 결정함.
-        // if(monsters.Count >= gameOverCount)
-        //    GameOver(); 뭐 이런거?
-
     }
 
     // 몬스터 유닛 제거 메서드

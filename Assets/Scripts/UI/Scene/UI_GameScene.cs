@@ -46,7 +46,9 @@ public class UI_GameScene : UI_Scene
 
     enum Images
     {
-        FillMonsterGageBar
+        FillMonsterGageBar,
+        ImageSpawnUnable,
+        ImageGambleUnable
     }
 
     public override void Init()
@@ -173,6 +175,9 @@ public class UI_GameScene : UI_Scene
     public void OnChangeAmountOfRuby(int value)
     {
         GetTMPro((int)TMPros.TextTheAmountOfRuby).text = $"<sprite=25> {value}";
+        GetImage((int)Images.ImageSpawnUnable).enabled = value <= ConstantData.RubyRequiredOneSpawnPlayerUnit;
+        GetImage((int)Images.ImageGambleUnable).enabled = Managers.InGameItem.CanGamble();
+
     }
 
     public void OnChangeItems(int value,InGameItemData itemdata = null)

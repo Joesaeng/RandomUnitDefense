@@ -9,7 +9,7 @@ public class EquipedItemStatus
 {
     public float        increaseDamage = 1;
     public float        decreaseAttackRate = 1;
-    public float        increaseAttackRange = 1;
+    public float        increaseAttackRange = 0;
     public float        increaseAOEArea = 1;
     public int          addedDamage = 0;
 }
@@ -60,9 +60,14 @@ public class InGameItemManager
         CalculateStatusApplyEquip();
     }
 
+    public bool CanGamble()
+    {
+        return Managers.Game.Ruby < _gambleCost;
+    }
+
     public void GambleItem()
     {
-        if (Managers.Game.Ruby < _gambleCost)
+        if (CanGamble())
             return;
 
         float randValue = UnityEngine.Random.value;

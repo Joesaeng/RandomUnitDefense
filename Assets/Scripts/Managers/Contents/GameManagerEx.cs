@@ -19,6 +19,9 @@ public class GameManagerEx
     public Stack<GameObject> _dyingMonsters = new Stack<GameObject>();
     public Stack<GameObject> DyingMonsters { get { return _dyingMonsters; } }
 
+    public Stack<DamageText> _damageTextPool = new Stack<DamageText>();
+    public Stack<DamageText> DamageTextPool {get{return _damageTextPool;}}
+
     public Action<int> OnSpawnEvent;
 
     public Action<int,int> OnMoveUnitEvent;
@@ -60,10 +63,8 @@ public class GameManagerEx
         Managers.Time.OnNextStage -= OnNextStageEvent;
         Managers.Time.OnNextStage += OnNextStageEvent;
 
-        Managers.UnitStatus.OnUnitUpgrade -= OnUnitUpgrade;
-        Managers.UnitStatus.OnUnitUpgrade += OnUnitUpgrade;
-
-        GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
+        Managers.UnitStatus.OnUnitUpgradeSlot -= OnUnitUpgrade;
+        Managers.UnitStatus.OnUnitUpgradeSlot += OnUnitUpgrade;
     }
 
     public bool CanUnitUpgrade(int upgradeSlot)

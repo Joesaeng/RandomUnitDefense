@@ -27,9 +27,7 @@ public class UnitStateMachine : MonoBehaviour
 
     Animator _animator;
 
-    SpriteRenderer _spriteRenderer;
-
-    UnitStatus unitStatus;
+    UnitStatus _unitStatus;
 
     private Define.UnitAnimationState _currentAnimState;
     public Define.UnitAnimationState CurrentAnimState
@@ -46,21 +44,19 @@ public class UnitStateMachine : MonoBehaviour
     private Action<Define.UnitAnimationState> OnAnimStateChanged;
 
     private UnitNames       _baseUnit;
-    private Job             _job;
+    private string          _job;
     private UnitType        _attackType;
     private int             _unitId;
     private int             _unitLv;
     private float           _attackRange;
 
-    public float AttackRange => _attackRange;
+    public float AttackRange => _unitStatus.attackRange;
     public UnitNames BaseUnit => _baseUnit;
 
     private UnitState _state;
 
     [SerializeField]
     float _curAttackRateTime;
-
-    // WaitForSeconds _attackRate;
 
     public void OnUpdate()
     {
@@ -102,10 +98,16 @@ public class UnitStateMachine : MonoBehaviour
             _animator = Util.FindChild<Animator>(go);
         }
 
-        _job = Managers.Data.BaseUnitDict[unitId].job;
-        unitStatus = Managers.UnitStatus.GetUnitStatus(_baseUnit, _unitLv);
-        _attackType = unitStatus.unitType;
-        _attackRange = unitStatus.attackRange;
+        _job = Managers.Data.BaseUnitDict[unitId].job.ToString();
+        UpdateUnitStatus();
+        Managers.InGameItem.OnCalculateEquipItem -= UpdateUnitStatus;
+        Managers.InGameItem.OnCalculateEquipItem += UpdateUnitStatus;
+
+        Managers.UnitStatus.OnUnitUpgrade -= UpdateUnitStatus;
+        Managers.UnitStatus.OnUnitUpgrade += UpdateUnitStatus;
+
+        _attackType = _unitStatus.unitType;
+        _attackRange = _unitStatus.attackRange;
 
         _curAttackRateTime = 10f; // 생성되자마자 공격할수 있게
 
@@ -114,10 +116,13 @@ public class UnitStateMachine : MonoBehaviour
         PlayStateAnimation(CurrentAnimState);
     }
 
+    private void UpdateUnitStatus()
+    {
+        _unitStatus = Managers.UnitStatus.GetUnitStatus(_baseUnit, _unitLv);
+    }
+
     public void ChangeState(UnitState state)
     {
-        //StopCoroutine(_state.ToString());
-
         _state = state;
         switch (_state)
         {
@@ -128,17 +133,13 @@ public class UnitStateMachine : MonoBehaviour
                 CurrentAnimState = Define.UnitAnimationState.Attack;
                 break;
         }
-
-
-
-        //StartCoroutine(_state.ToString());
     }
 
     private void PlayStateAnimation(Define.UnitAnimationState animstate)
     {
         if (animstate == Define.UnitAnimationState.Attack)
         {
-            _unitAnimator.PlayAnimation($"{animstate.ToString()}_{_job.ToString()}");
+            _unitAnimator.PlayAnimation($"Attack_{_job}");
         }
         else
         {
@@ -175,7 +176,7 @@ public class UnitStateMachine : MonoBehaviour
         {
             _targetMonster = null;
             ChangeState(UnitState.SearchTarget);
-            PlayStateAnimation(CurrentAnimState);
+            //PlayStateAnimation(CurrentAnimState);
             return;
         }
 
@@ -184,11 +185,11 @@ public class UnitStateMachine : MonoBehaviour
         {
             _targetMonster = null;
             ChangeState(UnitState.SearchTarget);
-            PlayStateAnimation(CurrentAnimState);
+            //PlayStateAnimation(CurrentAnimState);
             return;
         }
 
-        if (_curAttackRateTime > unitStatus.attackRate)
+        if (_curAttackRateTime > _unitStatus.attackRate)
             Skill();
     }
     /*
@@ -247,14 +248,14 @@ public class UnitStateMachine : MonoBehaviour
 
     private void Skill()
     {
-        // _spriteRenderer.flipX = transform.position.x < _targetMonster.transform.position.x;
         float flipX = transform.position.x < _targetMonster.transform.position.x ? -1.3f : 1.3f;
         _unitAnimator.transform.localScale = new Vector3(flipX, 1.3f, 1);
-        float attackAnimSpeed = 1 / unitStatus.attackRate;
+        float attackAnimSpeed = 1 / _unitStatus.attackRate;
         attackAnimSpeed = attackAnimSpeed < 1 ? 1 : attackAnimSpeed;
         _animator.SetFloat("AttackAnimSpeed", attackAnimSpeed);
 
-        PlayStateAnimation(CurrentAnimState);
+        // PlayStateAnimation(CurrentAnimState);
+        _unitAnimator.PlayAnimation($"Attack_{_job}");
 
         float bullettime = ConstantData.UnitAttackAnimLength / attackAnimSpeed * 0.66f;
         Invoke("CreateBullet", bullettime);

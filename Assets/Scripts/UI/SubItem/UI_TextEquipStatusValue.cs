@@ -14,13 +14,14 @@ public class UI_TextEquipStatusValue : UI_Base
     {
         float value = Managers.InGameItem.GetCurrentEquipedStatus(equipItemStatus);
         string valueText = " : ";
-        if(equipItemStatus == EquipItemStatus.addedDamage)
+        if(equipItemStatus == EquipItemStatus.addedDamage
+            || equipItemStatus == EquipItemStatus.increaseAttackRange)
         {
-            valueText += (int)value;
+            valueText += value;
         }
         else
         {
-            valueText += (int)((value - 1) * 100) + "%";
+            valueText += (Mathf.Round((value - 1) * 100)) + "%";
             
         }
         GetComponent<TextMeshProUGUI>().text = valueText;

@@ -19,21 +19,12 @@ public class TimeManager
 
     public void OnUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
-            SetPause(!IsPause);
-
-        if(Input.GetKeyDown(KeyCode.T))
-        {
-            CurTimeScale = CurTimeScale == 1f ? 2f : 1f;
-            Time.timeScale = CurTimeScale;
-        }
-
         if (IsPause)
             return;
-
-        GameTime += Time.deltaTime;
-        StageTime += Time.deltaTime;
-        _curMonsterRespawnTime += Time.deltaTime;
+        float deltatime = Time.deltaTime;
+        GameTime += deltatime;
+        StageTime += deltatime;
+        _curMonsterRespawnTime += deltatime;
 
         if (_curMonsterRespawnTime >= ConstantData.MonsterRespawnTime)
         {

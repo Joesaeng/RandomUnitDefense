@@ -65,7 +65,7 @@ public class UI_Item : UI_Base
                 itemInfoValue = $"{(int)(_itemdata.decreaseAttackRate * 100)}%";
                 break;
             case ItemName.attackRangeItem:
-                itemInfoValue = $"{(int)(_itemdata.increaseAttackRange * 100)}%";
+                itemInfoValue = $"{(_itemdata.increaseAttackRange)}";
                 break;
             case ItemName.AOEAreaItem:
                 itemInfoValue = $"{(int)(_itemdata.increaseAOEArea * 100)}%";

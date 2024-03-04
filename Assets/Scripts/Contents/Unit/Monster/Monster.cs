@@ -28,6 +28,8 @@ public class Monster : MonoBehaviour
     List<BaseDebuff> _debuffs;
     public List<BaseDebuff> Debuffs => _debuffs;
 
+    UI_HPBar _hpBar;
+
     // Stats
     float _moveSpeed;
     float _curMoveSpeed;
@@ -43,8 +45,8 @@ public class Monster : MonoBehaviour
         _previousMovePoint = 3;
         _monsterStat = Managers.Data.GetMonsterData(stageNum);
 
-        if (gameObject.GetComponentInChildren<UI_HPBar>() == null)
-            Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
+        if (_hpBar == null)
+            _hpBar = Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
 
         if (_unitAnimator != null)
         {
@@ -170,8 +172,6 @@ public class Monster : MonoBehaviour
             return;
         UnitNames unit = attackerStat.unit;
 
-        // 히트 이펙트 실행(Image, Sound 등)
-
         switch (unit)
         {
             case UnitNames.SlowMagician:
@@ -202,6 +202,9 @@ public class Monster : MonoBehaviour
         float addedDamage = Managers.InGameItem.CurrentStatusOnEquipedItem.addedDamage * damageRatio;
         ReduceHp(damage);
         ReduceHp(addedDamage); // 추뎀
+
+        GameObject damageText = Managers.Resource.Instantiate("DamageText");
+        damageText.GetComponent<DamageText>().SetText(damage + addedDamage, transform.position);
     }
 
     public void ReduceHp(float damage)
@@ -212,7 +215,6 @@ public class Monster : MonoBehaviour
         {
             _isDead = true;
             Managers.Game.RegisterDyingMonster(this.gameObject);
-            _unitAnimator.PlayAnimation("Death");
             QuitAllDebuff();
         }
     }

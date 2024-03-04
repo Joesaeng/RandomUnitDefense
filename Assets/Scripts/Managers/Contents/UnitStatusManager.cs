@@ -39,7 +39,8 @@ public class UnitStatusManager
 
     public Dictionary<UnitNames,int> UnitUpgradLv => _unitUpgradLv;
 
-    public Action<int> OnUnitUpgrade;
+    public Action<int> OnUnitUpgradeSlot;
+    public Action OnUnitUpgrade;
 
     public UnitStatus GetUnitStatus(UnitNames baseUnit, int unitLv)
     {
@@ -60,8 +61,14 @@ public class UnitStatusManager
             Upgrade(_unitStatusDict[baseunit][lv],lv);
         }
         _unitUpgradLv[baseunit]++;
+        if (OnUnitUpgradeSlot != null)
+        {
+            OnUnitUpgradeSlot.Invoke(slot);
+        }
         if (OnUnitUpgrade != null)
-            OnUnitUpgrade.Invoke(slot);
+        {
+            OnUnitUpgrade.Invoke();
+        }
     }
 
     private void Upgrade(UnitStatus status,int lv)
@@ -95,7 +102,7 @@ public class UnitStatusManager
         float attackDamage = _status.attackDamage * equipedItemStatus.increaseDamage;
         _status.attackDamage = (int)attackDamage;
         _status.attackRate /= equipedItemStatus.decreaseAttackRate;
-        _status.attackRange *= equipedItemStatus.increaseAttackRange;
+        _status.attackRange += equipedItemStatus.increaseAttackRange;
         _status.wideAttackArea *= equipedItemStatus.increaseAOEArea;
 
         _status.attackRate = (float)Math.Round(_status.attackRate, 2);
