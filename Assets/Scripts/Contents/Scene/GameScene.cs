@@ -29,12 +29,9 @@ public class GameScene : BaseScene
     {
         base.Init();
         SceneType = Define.Scene.Game;
-        Managers.Game.CurMap = _curMap;
 
+        Managers.Game.InitForGameScene(_curMap);
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
-
-        Managers.Game.UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
-        Managers.Game.Ruby = ConstantData.InitialRuby;
 
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
@@ -47,6 +44,8 @@ public class GameScene : BaseScene
 
         Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
         Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
+
+        #region TEMP // 로비 씬에서 선택한 유닛을 게임 씬으로 가져와야함
 
         _selectedUnitIds = new int[ConstantData.SelectableUnitCount];
         HashSet<int> IdSet = new HashSet<int>();
@@ -63,13 +62,14 @@ public class GameScene : BaseScene
             }
         }
         Managers.Game.SelectedUnitIds = _selectedUnitIds;
-        Managers.Game.UpgradeCostOfUnits = new int[ConstantData.SelectableUnitCount];
-        for(int i = 0; i < Managers.Game.UpgradeCostOfUnits.Length; ++i)
-        {
-            Managers.Game.UpgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
-        }
+        
+
+        #endregion
+
         Managers.InGameItem.Init();
         Managers.UnitStatus.Init();
+        Managers.Time.Init();
+
         Managers.UI.ShowSceneUI<UI_GameScene>();
 
         Managers.Sound.Play("GameScene",Define.Sound.Bgm);
@@ -90,13 +90,9 @@ public class GameScene : BaseScene
         {
             pair.Value.UnitUpdate();
         }
-        while (Managers.Game._dyingMonsters.Count > 0)
+        if(Managers.Game._dyingMonsters.Count > 0)
         {
-            GameObject dyingMonster = Managers.Game._dyingMonsters.Pop();
-            DestroyMonster(dyingMonster);
-            // TODO
-            // 몬스터 카운트 줄이기, 몬스터 처치 재화 획득 등 몬스터가 사망할 때 생기는 이벤트들 실행
-            Managers.Game.Ruby += ConstantData.AmountRubyGivenByMonster;
+            Managers.Game.DyingMonsterDespawn();
         }
     }
 
@@ -263,26 +259,21 @@ public class GameScene : BaseScene
         Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
 
         Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
+
+        Managers.Game.OnClickedSellButton -= OnSellAUnit;
     }
 
     // 몬스터를 리스폰할 시간이 되었다! 는 이벤트
     private void TheRespawnTime()
     {
         if (Managers.Game.CurStageMonsterCount < ConstantData.OneStageSpawnCount)
-            SpawnMonster(Managers.Game.CurStage);
+            SpawnMonster();
     }
 
     // 몬스터 유닛 소환 메서드
-    private void SpawnMonster(int stageNum)
+    private void SpawnMonster()
     {
-        GameObject monster = Managers.Game.Spawn("Monster",newParentName:"Monsters");
-
-        monster.transform.position = _monsterSpawnPoint.position;
-    }
-
-    // 몬스터 유닛 제거 메서드
-    private void DestroyMonster(GameObject monster)
-    {
-        Managers.Game.Despawn(monster);
+        Managers.Game.Spawn("Monster",newParentName:"Monsters").transform.position 
+            = _monsterSpawnPoint.position;
     }
 }

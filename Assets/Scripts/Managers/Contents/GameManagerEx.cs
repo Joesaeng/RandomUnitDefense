@@ -13,14 +13,11 @@ public class GameManagerEx
 
     public Define.Map CurMap { get; set; } = Define.Map.Basic;
 
-    HashSet<Monster> _monsters = new HashSet<Monster>();
+    HashSet<Monster> _monsters;
     public HashSet<Monster> Monsters { get { return _monsters; } }
 
-    public Stack<GameObject> _dyingMonsters = new Stack<GameObject>();
+    public Stack<GameObject> _dyingMonsters;
     public Stack<GameObject> DyingMonsters { get { return _dyingMonsters; } }
-
-    public Stack<DamageText> _damageTextPool = new Stack<DamageText>();
-    public Stack<DamageText> DamageTextPool {get{return _damageTextPool;}}
 
     public Action<int> OnSpawnEvent;
 
@@ -48,28 +45,52 @@ public class GameManagerEx
     public int Ruby
     {
         get { return _ruby; }
-        set 
-        { 
+        set
+        {
             _ruby = value;
             if (OnChangedRuby != null)
                 OnChangedRuby.Invoke(Ruby);
         }
     }
 
-    public void Init()
+    public void InitForGameScene(Define.Map map)
     {
         CurStage = 1;
+        CurStageMonsterCount = 0;
+
+        CurMap = map;
+
+
+        UnitAttackRange = null;
+        UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
+
+        Managers.Game.Ruby = ConstantData.InitialRuby;
 
         Managers.Time.OnNextStage -= OnNextStageEvent;
         Managers.Time.OnNextStage += OnNextStageEvent;
 
         Managers.UnitStatus.OnUnitUpgradeSlot -= OnUnitUpgrade;
         Managers.UnitStatus.OnUnitUpgradeSlot += OnUnitUpgrade;
+
+        UpgradeCostOfUnits = new int[ConstantData.SelectableUnitCount];
+        for (int i = 0; i < Managers.Game.UpgradeCostOfUnits.Length; ++i)
+        {
+            UpgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
+        }
+
+        if (_dyingMonsters != null)
+            DyingMonsterDespawn();
+        else
+            _dyingMonsters = new Stack<GameObject>();
+        if (_monsters != null)
+            _monsters.Clear();
+        else
+            _monsters = new HashSet<Monster>();
     }
 
     public bool CanUnitUpgrade(int upgradeSlot)
     {
-        if(Ruby >= UpgradeCostOfUnits[upgradeSlot])
+        if (Ruby >= UpgradeCostOfUnits[upgradeSlot])
         {
             Ruby -= UpgradeCostOfUnits[upgradeSlot];
             return true;
@@ -133,10 +154,19 @@ public class GameManagerEx
     {
         _dyingMonsters.Push(monster);
     }
+    // 현재 프레임에 사망할 몬스터들 디스폰
+    public void DyingMonsterDespawn()
+    {
+        while (DyingMonsters.Count > 0)
+        {
+            Despawn(DyingMonsters.Pop());
+            Ruby += ConstantData.AmountRubyGivenByMonster;
+        }
+    }
 
     public void OnSpawnButtonClicked()
     {
-        if(OnSpawnButtonClickEvent != null)
+        if (OnSpawnButtonClickEvent != null)
             OnSpawnButtonClickEvent.Invoke();
     }
     // 유닛 선택 메서드(공격범위 및 UI_UnitInfo 생성)
@@ -158,7 +188,7 @@ public class GameManagerEx
         {
             if (OnClickedSellButton != null)
             {
-                OnClickedSellButton.Invoke(SelectedUnit.GetComponent<Unit>(),sellCost);
+                OnClickedSellButton.Invoke(SelectedUnit.GetComponent<Unit>(), sellCost);
                 UnSelectUnit();
             }
         }

@@ -17,6 +17,18 @@ public class TimeManager
     public Action OnNextStage;
     public Action OnMonsterRespawnTime;
 
+    public void Init()
+    {
+        IsPause = false;
+
+        GameTime = 0f;
+        StageTime = 0f;
+        _curMonsterRespawnTime = 0f;
+
+        CurTimeScale = 1;
+    }
+
+
     public void OnUpdate()
     {
         if (IsPause)
