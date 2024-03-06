@@ -17,7 +17,7 @@ public class GameScene : BaseScene
 
     // SlotIndex,Unit
     Dictionary<int,Unit> _unitDict = new Dictionary<int,Unit>();
-
+    
     UnitSlot[] _unitSlots = null;
 
     int[] ids = {100,101,102,103,104,105,106,107,108};
@@ -206,10 +206,31 @@ public class GameScene : BaseScene
         string unitname = Managers.Data.BaseUnitDict[id].baseUnit.ToString();
         unit.Init(slotIndex, id, level, unitname);
 
+        unit.GetComponent<DraggableUnit>().OnDraggableMouseDragEvent += OnDraggableUnitDragEventReader;
+        unit.GetComponent<DraggableUnit>().OnDraggableMouseUpEvent += OnDraggableUnitMouseUpEventReader;
+
         obj.name = $"{unitname} Level [{level}]";
 
         _unitDict.Add(slotIndex, unit);
     }
+
+    private void OnDraggableUnitDragEventReader(Unit unit)
+    {
+        for(int slotIndex = 0;  slotIndex < _unitSlots.Length; ++slotIndex)
+        {
+            if (unit.SlotIndex == slotIndex)
+                continue;
+            if (_unitDict.ContainsKey(slotIndex) && AreUnitsComposeable(unit, _unitDict[slotIndex]))
+                _unitSlots[slotIndex].SetAbleUpgradeImage();
+        }
+    }
+
+    private void OnDraggableUnitMouseUpEventReader()
+    {
+        foreach (UnitSlot slot in _unitSlots)
+            slot.SetBasicImage();
+    }
+
 
     private void OnSellAUnit(Unit unit,int sellCost)
     {
@@ -220,7 +241,6 @@ public class GameScene : BaseScene
             Managers.Game.Ruby += sellCost;
         }
     }
-
     // 플레이어 유닛 제거 메서드
     private void DestroyPlayerUnit(int slotIndex)
     {
@@ -228,6 +248,9 @@ public class GameScene : BaseScene
         if (_unitDict.TryGetValue(slotIndex, out unit))
         {
             unit.gameObject.name = "Unit";
+
+            unit.GetComponent<DraggableUnit>().OnDraggableMouseDragEvent -= OnDraggableUnitDragEventReader;
+            unit.GetComponent<DraggableUnit>().OnDraggableMouseUpEvent -= OnDraggableUnitMouseUpEventReader;
 
             Managers.Resource.Destroy(unit.gameObject);
             _unitDict.Remove(slotIndex);

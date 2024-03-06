@@ -7,9 +7,9 @@ using UnityEngine.EventSystems;
 
 public class DraggableUnit : MonoBehaviour
 {
-    public Action OnMouseUpEvent;
-    public Action OnMouseClickEvent;
-    public Action OnMouseDragEvent;
+    public Action OnDraggableMouseUpEvent;
+    public Action OnDraggableMouseClickEvent;
+    public Action<Unit> OnDraggableMouseDragEvent;
     Vector3 _mousePos;
     Unit _unit;
 
@@ -36,6 +36,8 @@ public class DraggableUnit : MonoBehaviour
             _pressed = true;
         }
         _unit.IsDraging = true;
+        if (OnDraggableMouseDragEvent != null)
+            OnDraggableMouseDragEvent.Invoke(_unit);
         _mousePos = Input.mousePosition - GetMousePos();
     }
 
@@ -56,13 +58,13 @@ public class DraggableUnit : MonoBehaviour
         {
             float clickTime = 0.2f * Managers.Time.CurTimeScale;
             if (Time.time < _pressedTime + clickTime)
-                OnMouseClickEvent.Invoke();
+                OnDraggableMouseClickEvent.Invoke();
         }
         _pressed = false;
         _pressedTime = 0;
 
-        if (OnMouseUpEvent != null)
-            OnMouseUpEvent.Invoke();
+        if (OnDraggableMouseUpEvent != null)
+            OnDraggableMouseUpEvent.Invoke();
 
         _unit.IsDraging = false;
     }

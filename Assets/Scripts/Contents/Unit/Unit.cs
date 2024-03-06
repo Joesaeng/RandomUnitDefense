@@ -14,6 +14,7 @@ public class Unit : MonoBehaviour
     public UnitStateMachine StateMachine { get { return _stateMachine; } }
 
     private int _slotIndex;
+    public int SlotIndex => _slotIndex;
     private int _moveSlotIndex;
 
     private bool _isDraging;
@@ -57,10 +58,10 @@ public class Unit : MonoBehaviour
     private void BindEvent()
     {
         DraggableUnit draggableUnit = gameObject.GetComponent<DraggableUnit>();
-        draggableUnit.OnMouseUpEvent -= MouseUpEventReader;
-        draggableUnit.OnMouseUpEvent += MouseUpEventReader;
-        draggableUnit.OnMouseClickEvent -= MouseClickEventReader;
-        draggableUnit.OnMouseClickEvent += MouseClickEventReader;
+        draggableUnit.OnDraggableMouseUpEvent -= MouseUpEventReader;
+        draggableUnit.OnDraggableMouseUpEvent += MouseUpEventReader;
+        draggableUnit.OnDraggableMouseClickEvent -= MouseClickEventReader;
+        draggableUnit.OnDraggableMouseClickEvent += MouseClickEventReader;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -34,5 +34,15 @@ public class UnitSlot : MonoBehaviour
         }
     }
 
-    
+    public void SetAbleUpgradeImage()
+    {
+        spriteRenderer.sprite = Managers.Resource.Load<Sprite>("Art/SlotMoveImage/Upgrade");
+        spriteRenderer.enabled = true;
+    }
+
+    public void SetBasicImage()
+    {
+        spriteRenderer.sprite = Managers.Resource.Load<Sprite>("Art/SlotMoveImage/Move");
+
+    }
 }
