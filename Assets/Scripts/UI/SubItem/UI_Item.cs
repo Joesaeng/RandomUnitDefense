@@ -78,7 +78,6 @@ public class UI_Item : UI_Base
         infoObject.SetActive(false);
     }
 
-
     enum ItemLevelString
     {
         Common = 1,
@@ -87,8 +86,6 @@ public class UI_Item : UI_Base
         Unique,
         Legend
     }
-
-    
 
     public void ClickedItem(PointerEventData data)
     {
@@ -99,8 +96,7 @@ public class UI_Item : UI_Base
             infoObject.SetActive(false);
             return;
         }
-        if (OnClickedItemButton != null)
-            OnClickedItemButton.Invoke();
+        Util.CheckTheEventAndCall(OnClickedItemButton);
         infoObject.SetActive(true);
     }
 
@@ -108,5 +104,10 @@ public class UI_Item : UI_Base
     {
         GameObject infoObject = Get<GameObject>((int)GameObjects.ImageItemInfo);
         infoObject.SetActive(false);
+    }
+
+    public override void OnChangeLanguage()
+    {
+        
     }
 }

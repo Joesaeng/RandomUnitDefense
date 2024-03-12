@@ -91,8 +91,7 @@ public class InGameItemManager
         AcquiredItem((InGameItemID)list[randPick].id);
         Managers.Game.Ruby -= _gambleCost;
         _gambleCost += ConstantData.IncreaseGambleCost;
-        if (OnGambleItem != null)
-            OnGambleItem.Invoke(_gambleCost, list[randPick]);
+        Util.CheckTheEventAndCall(OnGambleItem, _gambleCost, list[randPick]);
     }
 
     private void CalculateStatusApplyEquip()
@@ -109,10 +108,7 @@ public class InGameItemManager
 
         CurrentStatusOnEquipedItem = equipedItemStatus;
 
-        if(OnCalculateEquipItem != null)
-        {
-            OnCalculateEquipItem.Invoke();
-        }
+        Util.CheckTheEventAndCall(OnCalculateEquipItem);
     }
 
     public float GetCurrentEquipedStatus(EquipItemStatus equipItemStatus)

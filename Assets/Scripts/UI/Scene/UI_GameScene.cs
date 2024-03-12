@@ -34,7 +34,7 @@ public class UI_GameScene : UI_Scene
         BtnPause,
         BtnGameSpeed,
     }
-    enum TMPros
+    enum Texts
     {
         TextSpawn,
         TextGamble,
@@ -60,7 +60,7 @@ public class UI_GameScene : UI_Scene
         base.Init();
         Bind<GameObject>(typeof(GameObjects));
         Bind<Button>(typeof(Buttons));
-        Bind<TextMeshProUGUI>(typeof(TMPros));
+        Bind<TextMeshProUGUI>(typeof(Texts));
         Bind<Image>(typeof(Images));
 
         GetButton((int)Buttons.BtnSpawn).gameObject.AddUIEvent(OnSpawnButtonClicked);
@@ -68,22 +68,19 @@ public class UI_GameScene : UI_Scene
         GetButton((int)Buttons.BtnEquipInfo).gameObject.AddUIEvent(OnEquipInfoButtonClicked);
         GetButton((int)Buttons.BtnGameSpeed).gameObject.AddUIEvent(OnGameSpeedButtonClicked);
         GetButton((int)Buttons.BtnPause).gameObject.AddUIEvent(OnPauseButtonClicked);
-        GetTMPro((int)TMPros.TextFixedMonsterCount).text = ConstantData.MonsterCountForGameOver.ToString();
-        GetTMPro((int)TMPros.TextSpawn).text = Language.Spawn;
-        GetTMPro((int)TMPros.TextGamble).text = Language.GambleItem;
+        GetTMPro((int)Texts.TextFixedMonsterCount).text = $"{ConstantData.MonsterCountForGameOver}";
+        GetTMPro((int)Texts.TextSpawn).text = Language.Spawn;
+        GetTMPro((int)Texts.TextGamble).text = Language.GambleItem;
 
         #region 버튼 이벤트 바인딩
         OnChangeAmountOfRuby(Managers.Game.Ruby);
-        Managers.Game.OnChangedRuby -= OnChangeAmountOfRuby;
-        Managers.Game.OnChangedRuby += OnChangeAmountOfRuby;
+        Managers.Game.OnChangedRuby.AddEvent(OnChangeAmountOfRuby);
 
         OnNextStageEvent();
-        Managers.Game.OnNextStage -= OnNextStageEvent;
-        Managers.Game.OnNextStage += OnNextStageEvent;
+        Managers.Game.OnNextStage.AddEvent(OnNextStageEvent);
 
         OnChangeItems(Managers.InGameItem.GambleCost);
-        Managers.InGameItem.OnGambleItem -= OnChangeItems;
-        Managers.InGameItem.OnGambleItem += OnChangeItems;
+        Managers.InGameItem.OnGambleItem.AddEvent(OnChangeItems);
         #endregion
 
         #region 현재 장비 스테이터스 초기화
@@ -140,8 +137,8 @@ public class UI_GameScene : UI_Scene
         }
         #endregion
 
-        _text_stageTime = GetTMPro((int)TMPros.TextLeftTimeStage);
-        _text_monsterCount = GetTMPro((int)TMPros.TextChangeMonsterCount);
+        _text_stageTime = GetTMPro((int)Texts.TextLeftTimeStage);
+        _text_monsterCount = GetTMPro((int)Texts.TextChangeMonsterCount);
         _image_monsterGageBar = GetImage((int)Images.FillMonsterGageBar);
     }
     TextMeshProUGUI _text_stageTime;
@@ -158,13 +155,13 @@ public class UI_GameScene : UI_Scene
 
     public void OnNextStageEvent()
     {
-        GetTMPro((int)TMPros.TextStage).text = $"STAGE {Managers.Game.CurStage}";
+        GetTMPro((int)Texts.TextStage).text = $"STAGE {Managers.Game.CurStage}";
         MonsterData monsterData = Managers.Data.GetMonsterData(Managers.Game.CurStage);
         string hp = monsterData.maxHp.ToString();
         hp = Util.ChangeNumber(hp);
         string defense = monsterData.defense.ToString();
         defense = Util.ChangeNumber(defense);
-        GetTMPro((int)TMPros.TextMonsterInfo).text = 
+        GetTMPro((int)Texts.TextMonsterInfo).text = 
             $"<sprite=46> : {hp}\n" +
             $"<sprite=50> : {defense}";
 
@@ -197,7 +194,7 @@ public class UI_GameScene : UI_Scene
 
     public void OnChangeAmountOfRuby(int value)
     {
-        GetTMPro((int)TMPros.TextTheAmountOfRuby).text = $"<sprite=25> {value}";
+        GetTMPro((int)Texts.TextTheAmountOfRuby).text = $"<sprite=25> {value}";
         GetImage((int)Images.ImageSpawnUnable).enabled = value <= ConstantData.RubyRequiredOneSpawnPlayerUnit;
         GetImage((int)Images.ImageGambleUnable).enabled = Managers.InGameItem.CanGamble();
 
@@ -205,7 +202,7 @@ public class UI_GameScene : UI_Scene
 
     public void OnChangeItems(int value,InGameItemData itemdata = null)
     {
-        GetTMPro((int)TMPros.TextGambleRuby).text = $"<sprite=25> {value}";
+        GetTMPro((int)Texts.TextGambleRuby).text = $"<sprite=25> {value}";
         if(itemdata != null)
         {
             GameObject item = Managers.UI.MakeSubItem<UI_Item>(parent : _panelItem.transform).gameObject;

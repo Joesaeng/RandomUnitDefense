@@ -9,7 +9,17 @@ using UnityEngine.Scripting;
 public class GameManagerEx
 {
     private Define.GameLanguage _gameLanguage = Define.GameLanguage.Korean;
-    public Define.GameLanguage GameLanguage { get { return _gameLanguage; } }
+    public Define.GameLanguage GameLanguage 
+    { 
+        get { return _gameLanguage; } 
+        set 
+        {
+            _gameLanguage = value;
+            Util.CheckTheEventAndCall(OnChangedLanguage);
+        }
+    }
+
+    public Define.Scene CurrentScene { get; set; } = Define.Scene.Unknown;
 
     public Define.Map CurMap { get; set; } = Define.Map.Basic;
 
@@ -19,7 +29,7 @@ public class GameManagerEx
     public Stack<GameObject> _dyingMonsters;
     public Stack<GameObject> DyingMonsters { get { return _dyingMonsters; } }
 
-    public Action<int> OnSpawnEvent;
+    public Action OnChangedLanguage;
 
     public Action<int,int> OnMoveUnitEvent;
 
@@ -48,9 +58,13 @@ public class GameManagerEx
         set
         {
             _ruby = value;
-            if (OnChangedRuby != null)
-                OnChangedRuby.Invoke(Ruby);
+            Util.CheckTheEventAndCall(OnChangedRuby, Ruby);
         }
+    }
+
+    public void Init()
+    {
+        CurrentScene = Define.Scene.Login;
     }
 
     public void InitForGameScene(Define.Map map)
@@ -66,11 +80,8 @@ public class GameManagerEx
 
         Managers.Game.Ruby = ConstantData.InitialRuby;
 
-        Managers.Time.OnNextStage -= OnNextStageEvent;
-        Managers.Time.OnNextStage += OnNextStageEvent;
-
-        Managers.UnitStatus.OnUnitUpgradeSlot -= OnUnitUpgrade;
-        Managers.UnitStatus.OnUnitUpgradeSlot += OnUnitUpgrade;
+        Managers.Time.OnNextStage.AddEvent(OnNextStageEvent);
+        Managers.UnitStatus.OnUnitUpgradeSlot.AddEvent(OnUnitUpgrade);
 
         UpgradeCostOfUnits = new int[ConstantData.SelectableUnitCount];
         for (int i = 0; i < Managers.Game.UpgradeCostOfUnits.Length; ++i)
@@ -107,8 +118,7 @@ public class GameManagerEx
     {
         CurStage++;
         CurStageMonsterCount = 0;
-        if (OnNextStage != null)
-            OnNextStage.Invoke();
+        Util.CheckTheEventAndCall(OnNextStage);
     }
 
     public GameObject Spawn(string path, Transform parent = null, string newParentName = null)
@@ -128,14 +138,11 @@ public class GameManagerEx
 
     public void Despawn(GameObject go)
     {
-        Monster monster;
-        if (go.TryGetComponent(out monster) == true)
+        if (go.TryGetComponent(out Monster monster) == true)
         {
             if (_monsters.Contains(monster))
             {
                 _monsters.Remove(monster);
-                if (OnSpawnEvent != null)
-                    OnSpawnEvent.Invoke(-1);
                 Managers.Resource.Destroy(go);
             }
         }
@@ -146,8 +153,7 @@ public class GameManagerEx
     // 플레이어 유닛 이동 메서드
     public void MoveUnitBetweenSlots(int curSlotIndex, int moveSlotIndex)
     {
-        if (OnMoveUnitEvent != null)
-            OnMoveUnitEvent.Invoke(curSlotIndex, moveSlotIndex);
+        Util.CheckTheEventAndCall(OnMoveUnitEvent, curSlotIndex, moveSlotIndex);
     }
     // 현재 프레임에 사망하는 몬스터들을 등록하는 메서드
     public void RegisterDyingMonster(GameObject monster)
@@ -166,8 +172,7 @@ public class GameManagerEx
 
     public void OnSpawnButtonClicked()
     {
-        if (OnSpawnButtonClickEvent != null)
-            OnSpawnButtonClickEvent.Invoke();
+        Util.CheckTheEventAndCall(OnSpawnButtonClickEvent);
     }
     // 유닛 선택 메서드(공격범위 및 UI_UnitInfo 생성)
     public void SelectUnit(GameObject unit)
@@ -186,9 +191,8 @@ public class GameManagerEx
     {
         if (SelectedUnit != null && SelectUnitInfoUI != null)
         {
-            if (OnClickedSellButton != null)
+            if (Util.CheckTheEventAndCall(OnClickedSellButton, SelectedUnit.GetComponent<Unit>(), sellCost))
             {
-                OnClickedSellButton.Invoke(SelectedUnit.GetComponent<Unit>(), sellCost);
                 UnSelectUnit();
             }
         }
@@ -205,5 +209,14 @@ public class GameManagerEx
                 UnitAttackRange.UnActiveAttackRange();
             }
         }
+    }
+
+    public void ChangeGameLanguage()
+    {
+        if (_gameLanguage == Define.GameLanguage.Korean)
+            _gameLanguage = Define.GameLanguage.English;
+        else
+            _gameLanguage = Define.GameLanguage.Korean;
+        Util.CheckTheEventAndCall(OnChangedLanguage);
     }
 }

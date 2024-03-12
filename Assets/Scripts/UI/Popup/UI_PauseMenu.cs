@@ -73,6 +73,16 @@ public class UI_PauseMenu : UI_Popup
         Get<Slider>((int)Sliders.SliderSFX).onValueChanged.AddListener(OnSFXChanged);
     }
 
+    public override void OnChangeLanguage()
+    {
+        base.OnChangeLanguage();
+
+        GetTMPro((int)TMPros.TextBGM).text = Language.BGM;
+        GetTMPro((int)TMPros.TextSFX).text = Language.SFX;
+        GetTMPro((int)TMPros.TextLobby).text = Language.ExitToLobby;
+        GetTMPro((int)TMPros.TextResume).text = Language.ResumeToGame;
+    }
+
     private void OnBGMButtonClicked(PointerEventData data)
     {
         Managers.Sound.Play("Click");

@@ -61,4 +61,9 @@ public class UI_BtnUpgrade : UI_Base
             SetText();
         }
     }
+
+    public override void OnChangeLanguage()
+    {
+        
+    }
 }

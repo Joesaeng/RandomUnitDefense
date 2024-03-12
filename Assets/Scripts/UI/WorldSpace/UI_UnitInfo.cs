@@ -104,4 +104,8 @@ public class UI_UnitInfo : UI_Base
     {
         Managers.Game.ClickedSellButton(sellCost);
     }
+
+    public override void OnChangeLanguage()
+    {
+    }
 }

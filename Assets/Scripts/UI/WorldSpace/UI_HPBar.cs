@@ -34,4 +34,8 @@ public class UI_HPBar : UI_Base
     {
         _fill.fillAmount = ratio;
     }
+
+    public override void OnChangeLanguage()
+    {
+    }
 }

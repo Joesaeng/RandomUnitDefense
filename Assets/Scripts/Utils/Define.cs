@@ -63,7 +63,7 @@ public class Define
         Unknown,
         Login,
         Lobby,
-        Game,
+        Combat,
     }
     public enum Sound
     {

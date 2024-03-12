@@ -40,16 +40,14 @@ public class TimeManager
 
         if (_curMonsterRespawnTime >= ConstantData.MonsterRespawnTime)
         {
-            if (OnMonsterRespawnTime != null)
-                OnMonsterRespawnTime.Invoke();
+            Util.CheckTheEventAndCall(OnMonsterRespawnTime);
             _curMonsterRespawnTime = 0f;
         }
 
         if (StageTime > ConstantData.OneStageTime)
         {
             StageTime = 0f;
-            if (OnNextStage != null)
-                OnNextStage.Invoke();
+            Util.CheckTheEventAndCall(OnNextStage);
         }
     }
 

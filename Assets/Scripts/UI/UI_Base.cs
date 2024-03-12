@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using System.Threading;
+using Unity.VisualScripting;
 
 public abstract class UI_Base : MonoBehaviour
 {
@@ -15,6 +17,8 @@ public abstract class UI_Base : MonoBehaviour
     private void Start()
     {
         Init();
+        Managers.Game.OnChangedLanguage -= OnChangeLanguage;
+        Managers.Game.OnChangedLanguage += OnChangeLanguage;
     }
 
     /// <summary>
@@ -24,7 +28,8 @@ public abstract class UI_Base : MonoBehaviour
     {
         string[] names = Enum.GetNames(type);
         UnityEngine.Object[] objects = new UnityEngine.Object[names.Length];
-        _objects.Add(typeof(T), objects);
+            _objects.Add(typeof(T), objects);
+
 
         for (int i = 0; i < names.Length; ++i)
         {
@@ -74,4 +79,6 @@ public abstract class UI_Base : MonoBehaviour
                 break;
         }
     }
+
+    public abstract void OnChangeLanguage();
 }

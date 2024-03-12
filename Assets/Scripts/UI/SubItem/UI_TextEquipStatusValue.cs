@@ -10,6 +10,10 @@ public class UI_TextEquipStatusValue : UI_Base
     {
     }
 
+    public override void OnChangeLanguage()
+    {
+    }
+
     public void SetValue(EquipItemStatus equipItemStatus)
     {
         float value = Managers.InGameItem.GetCurrentEquipedStatus(equipItemStatus);

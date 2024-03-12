@@ -61,14 +61,8 @@ public class UnitStatusManager
             Upgrade(_unitStatusDict[baseunit][lv],lv);
         }
         _unitUpgradLv[baseunit]++;
-        if (OnUnitUpgradeSlot != null)
-        {
-            OnUnitUpgradeSlot.Invoke(slot);
-        }
-        if (OnUnitUpgrade != null)
-        {
-            OnUnitUpgrade.Invoke();
-        }
+        Util.CheckTheEventAndCall(OnUnitUpgradeSlot, slot);
+        Util.CheckTheEventAndCall(OnUnitUpgrade);
     }
 
     private void Upgrade(UnitStatus status,int lv)

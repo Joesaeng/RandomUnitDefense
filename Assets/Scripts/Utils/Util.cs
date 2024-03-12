@@ -5,7 +5,7 @@ using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Util
+public static class Util
 {
     public static T GetOrAddComponent<T>(GameObject go) where T : UnityEngine.Component
     {
@@ -133,5 +133,53 @@ public class Util
             int newInt = int.Parse(number);
             return (newInt).ToString();
         }
+    }
+
+    public static bool CheckTheEventAndCall(Action action)
+    {
+        if (action != null)
+        {
+            action.Invoke();
+            return true;
+        }
+        return false;
+    }
+
+    public static bool CheckTheEventAndCall<T>(Action<T> action, T value)
+    {
+        if (action != null)
+        {
+            action.Invoke(value);
+            return true;
+        }
+        return false;
+    }
+
+    public static bool CheckTheEventAndCall<T,K>(Action<T,K> action, T t,K k)
+    {
+        if (action != null)
+        {
+            action.Invoke(t,k);
+            return true;
+        }
+        return false;
+    }
+
+    public static void AddEvent(this Action eventaction, Action action)
+    {
+        eventaction -= action;
+        eventaction += action;
+    }
+
+    public static void AddEvent<T>(this Action<T> eventaction, Action<T> action)
+    {
+        eventaction -= action;
+        eventaction += action;
+    }
+
+    public static void AddEvent<T,K>(this Action<T,K> eventaction, Action<T,K> action)
+    {
+        eventaction -= action;
+        eventaction += action;
     }
 }

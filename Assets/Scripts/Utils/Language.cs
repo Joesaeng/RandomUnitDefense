@@ -1,4 +1,5 @@
 using Data;
+using System.Runtime.InteropServices.WindowsRuntime;
 using static Define;
 
 public static class Language
@@ -162,7 +163,8 @@ public static class Language
 
     public static string Sell
     {
-        get {
+        get
+        {
             Define.GameLanguage language = Managers.Game.GameLanguage;
             switch (language)
             {
@@ -277,6 +279,131 @@ public static class Language
                     return "게임으로 돌아가기";
                 default:
                     return "Resume To Game";
+            }
+        }
+    }
+
+    public static string LanguageButton
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Language";
+                case Define.GameLanguage.Korean:
+                    return "언어";
+                default:
+                    return "Language";
+            }
+        }
+    }
+
+    public static string LanguageText
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "English";
+                case Define.GameLanguage.Korean:
+                    return "한국어";
+                default:
+                    return "English";
+            }
+        }
+    }
+
+    public static string ResumeOrGoGame
+    {
+        get
+        {
+            string ret = Managers.Game.CurrentScene == Define.Scene.Login ? "GoGame" : "Resume";
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return ret;
+                case Define.GameLanguage.Korean:
+                {
+                    if (ret == "GoGame")
+                        return "게임 시작";
+                    else
+                        return "돌아가기";
+                }
+                default:
+                    return ret;
+            }
+        }
+    }
+
+    public static string Combat
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Combat";
+                case Define.GameLanguage.Korean:
+                    return "전투";
+                default:
+                    return "Combat";
+            }
+        }
+    }
+
+    public static string Barrack
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Barrack";
+                case Define.GameLanguage.Korean:
+                    return "배럭";
+                default:
+                    return "Barrack";
+            }
+        }
+    }
+
+    public static string Shop
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Shop";
+                case Define.GameLanguage.Korean:
+                    return "상점";
+                default:
+                    return "Shop";
+            }
+        }
+    }
+
+    public static string StartCombat
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Start Combat";
+                case Define.GameLanguage.Korean:
+                    return "전투 시작";
+                default:
+                    return "Start Combat";
             }
         }
     }

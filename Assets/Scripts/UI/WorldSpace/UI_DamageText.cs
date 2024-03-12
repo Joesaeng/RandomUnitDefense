@@ -9,6 +9,10 @@ public class UI_DamageText : UI_Base
     {
     }
 
+    public override void OnChangeLanguage()
+    {
+    }
+
     public void SetText(float damage,Vector3 pos)
     {
         transform.position = pos;
