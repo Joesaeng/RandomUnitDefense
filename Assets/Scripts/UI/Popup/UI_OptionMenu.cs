@@ -37,19 +37,21 @@ public class UI_OptionMenu : UI_PauseMenu
 
     private void OnResumeOrGoGameButtonClicked(PointerEventData data)
     {
+        Managers.Sound.Play(Define.SFXNames.Click);
         switch (Managers.Game.CurrentScene)
         {
             case Define.Scene.Login:
                 Managers.Scene.LoadScene(Define.Scene.Lobby);
                 break;
             case Define.Scene.Lobby:
+                ClosePopupUI();
                 break;
         }
     }
 
     private void OnLanguageButtonClicked(PointerEventData data)
     {
-        Managers.Sound.Play("Click");
+        Managers.Sound.Play(Define.SFXNames.Click);
         Managers.Game.ChangeGameLanguage();
     }
 

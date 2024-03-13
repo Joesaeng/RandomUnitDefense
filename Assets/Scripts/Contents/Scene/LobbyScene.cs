@@ -9,7 +9,9 @@ public class LobbyScene : BaseScene
         base.Init();
 
         SceneType = Define.Scene.Lobby;
-        Managers.UI.ShowSceneUI<UI_LobbyScene>();
+        Managers.Game.CurrentScene = Define.Scene.Lobby;
+        //UI_LobbyScene ui_lobbyScene = Managers.UI.ShowSceneUI<UI_LobbyScene>();
+        //ui_lobbyScene.Scene = this;
     }
 
 

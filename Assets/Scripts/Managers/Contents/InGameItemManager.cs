@@ -50,7 +50,7 @@ public class InGameItemManager
         }
         _currentStatusOnEquipedItem = new EquipedItemStatus();
 
-        _gambleCost = ConstantData.FirstOfGambleCost;
+        _gambleCost = ConstantData.BaseGambleCost;
     }
 
     public void AcquiredItem(InGameItemID inGameItemID)

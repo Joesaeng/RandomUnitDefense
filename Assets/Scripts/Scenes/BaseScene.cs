@@ -19,6 +19,7 @@ public abstract class BaseScene : MonoBehaviour
         {
             Managers.Resource.Instantiate("EventSystem").name = "@EventSystem";
         }
+        Managers.Game.InitScene(SceneType);
     }
 
     public abstract void Clear();

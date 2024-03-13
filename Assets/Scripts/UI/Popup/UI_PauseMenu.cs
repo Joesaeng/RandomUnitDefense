@@ -85,7 +85,7 @@ public class UI_PauseMenu : UI_Popup
 
     private void OnBGMButtonClicked(PointerEventData data)
     {
-        Managers.Sound.Play("Click");
+        Managers.Sound.Play(Define.SFXNames.Click);
         if(_isOnBGM == true)
         {
             _isOnBGM = false;
@@ -104,7 +104,7 @@ public class UI_PauseMenu : UI_Popup
 
     private void OnSFXButtonClicked(PointerEventData data)
     {
-        Managers.Sound.Play("Click");
+        Managers.Sound.Play(Define.SFXNames.Click);
         if (_isOnSFX == true)
         {
             _isOnSFX = false;
@@ -123,15 +123,15 @@ public class UI_PauseMenu : UI_Popup
 
     private void OnLobbyButtonClicked(PointerEventData data)
     {
-        Managers.Sound.Play("Click");
+        Managers.Sound.Play(Define.SFXNames.Click);
 
     }
 
     private void OnResumeButtonClicked(PointerEventData data)
     {
-        Managers.Sound.Play("Click");
-        Managers.UI.ClosePopupUI(this);
+        Managers.Sound.Play(Define.SFXNames.Click);
         Managers.Time.GameResume();
+        ClosePopupUI();
     }
 
     bool _isOnBGM;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class SoundManager
@@ -14,13 +15,13 @@ public class SoundManager
     public void Init()
     {
         GameObject root = GameObject.Find("@Sound");
-        if(root == null)
+        if (root == null)
         {
             root = new GameObject { name = "@Sound" };
             Object.DontDestroyOnLoad(root);
 
             string[] soundNames = System.Enum.GetNames(typeof(Define.Sound));
-            for(int i = 0; i < soundNames.Length - 1; ++i)
+            for (int i = 0; i < soundNames.Length - 1; ++i)
             {
                 GameObject go = new GameObject { name = soundNames[i] };
                 _audioSources[i] = go.AddComponent<AudioSource>();
@@ -33,7 +34,7 @@ public class SoundManager
 
     public void Clear()
     {
-        foreach(AudioSource audioSource in _audioSources)
+        foreach (AudioSource audioSource in _audioSources)
         {
             audioSource.clip = null;
             audioSource.Stop();
@@ -44,6 +45,10 @@ public class SoundManager
     /// <summary>
     /// {path} ==> 폴더이름/사운드이름
     /// </summary>
+    public void Play(Define.SFXNames SFXname, Define.Sound type = Define.Sound.Effect, float pitch = 1.0f)
+    {
+        Play($"{SFXname}", type, pitch);
+    }
     public void Play(string path, Define.Sound type = Define.Sound.Effect, float pitch = 1.0f)
     {
         AudioClip audioClip = GetOrAddAudioClip(path, type);

@@ -33,11 +33,11 @@ public class UnitBullet : MonoBehaviour
         wideAttackArea = _ownUnitStatus.wideAttackArea;
         if(wideAttackArea> 0)
         {
-            Managers.Sound.Play("AOE");
+            Managers.Sound.Play(Define.SFXNames.AOE);
         }
         else
         {
-            Managers.Sound.Play("Normal");
+            Managers.Sound.Play(Define.SFXNames.Normal);
         }
     }
 

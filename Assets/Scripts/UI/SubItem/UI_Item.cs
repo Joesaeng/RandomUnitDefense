@@ -89,7 +89,7 @@ public class UI_Item : UI_Base
 
     public void ClickedItem(PointerEventData data)
     {
-        Managers.Sound.Play("Click");
+        Managers.Sound.Play(Define.SFXNames.Click);
         GameObject infoObject = Get<GameObject>((int)GameObjects.ImageItemInfo);
         if (infoObject.activeSelf)
         {

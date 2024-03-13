@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class Define
 {
+    public enum SFXNames
+    {
+        Click,
+        GetTheItem,
+        SpawnUnit,
+        UnitUpgrade,
+        Normal,
+        AOE,
+    }
+
     public enum EquipItemStatus
     {
         increaseDamage,

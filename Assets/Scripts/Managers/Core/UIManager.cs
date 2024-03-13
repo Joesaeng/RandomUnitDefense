@@ -146,6 +146,7 @@ public class UIManager
     public void Clear()
     {
         CloseAllPopupUI();
+        Managers.Game.OnChangedLanguage -= _sceneUI.OnChangeLanguage;
         _sceneUI = null;
     }
 }

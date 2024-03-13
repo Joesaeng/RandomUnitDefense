@@ -29,6 +29,8 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
     float _curPos;
     float _targetPos;
 
+    float _scrollSpeed = 10;
+
     int _targetIndex;
 
     bool _isDrag;
@@ -108,6 +110,7 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
 
     public void TabClick(int tabIndex)
     {
+        Managers.Sound.Play(Define.SFXNames.Click);
         _targetIndex = tabIndex;
         SetTargetPos(_pos[tabIndex]);
     }
@@ -116,13 +119,13 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
     {
         if (!_isDrag)
         {
-            _scrollbar.value = Mathf.Lerp(_scrollbar.value, _targetPos, 0.1f);
+            _scrollbar.value = Mathf.Lerp(_scrollbar.value, _targetPos, _scrollSpeed * Time.deltaTime);
             for (int i = 0; i < _btnImages.Length; ++i)
             {
-                _btnImages[i].rectTransform.sizeDelta = Vector2.Lerp(_btnImages[i].rectTransform.sizeDelta, _btnTargetSizes[i], 0.1f);
-                _btnImages[i].color = Color.Lerp(_btnImages[i].color, _btnTargetColors[i], 0.1f);
-                _menuImages[i].rectTransform.sizeDelta = Vector2.Lerp(_menuImages[i].rectTransform.sizeDelta, _menuTargetSizes[i], 0.1f);
-                _menuImages[i].rectTransform.localPosition = Vector3.Lerp(_menuImages[i].rectTransform.localPosition, _menuTargetPoss[i], 0.1f);
+                _btnImages[i].rectTransform.sizeDelta = Vector2.Lerp(_btnImages[i].rectTransform.sizeDelta, _btnTargetSizes[i], _scrollSpeed * Time.deltaTime);
+                _btnImages[i].color = Color.Lerp(_btnImages[i].color, _btnTargetColors[i], _scrollSpeed * Time.deltaTime);
+                _menuImages[i].rectTransform.sizeDelta = Vector2.Lerp(_menuImages[i].rectTransform.sizeDelta, _menuTargetSizes[i], _scrollSpeed * Time.deltaTime);
+                _menuImages[i].rectTransform.localPosition = Vector3.Lerp(_menuImages[i].rectTransform.localPosition, _menuTargetPoss[i], _scrollSpeed * Time.deltaTime);
             }
         }
         

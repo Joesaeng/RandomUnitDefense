@@ -40,7 +40,7 @@ public class CombatScene : BaseScene
 
         #region TEMP // 로비 씬에서 선택한 유닛을 게임 씬으로 가져와야함
 
-        _selectedUnitIds = new int[ConstantData.SelectableUnitCount];
+        _selectedUnitIds = new int[ConstantData.SetUnitCount];
         HashSet<int> IdSet = new HashSet<int>();
         for (int i = 0; i < _selectedUnitIds.Length; ++i)
         {
@@ -54,7 +54,7 @@ public class CombatScene : BaseScene
                 break;
             }
         }
-        Managers.Game.SelectedUnitIds = _selectedUnitIds;
+        Managers.Game.SetUnits = _selectedUnitIds;
         
 
         #endregion
@@ -63,7 +63,7 @@ public class CombatScene : BaseScene
         Managers.UnitStatus.Init();
         Managers.Time.Init();
 
-        Managers.UI.ShowSceneUI<UI_GameScene>();
+        Managers.UI.ShowSceneUI<UI_CombatScene>();
 
         Managers.Sound.Play("GameScene",Define.Sound.Bgm);
     }
@@ -184,7 +184,7 @@ public class CombatScene : BaseScene
         CreatePlayerUnit(randSlotIndex, randId);
         Managers.Game.Ruby -= ConstantData.RubyRequiredOneSpawnPlayerUnit;
 
-        Managers.Sound.Play("SpawnUnit");
+        Managers.Sound.Play(Define.SFXNames.SpawnUnit);
     }
 
     // 플레이어 유닛 생성 메서드

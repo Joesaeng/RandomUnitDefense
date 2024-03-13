@@ -43,7 +43,7 @@ public class GameManagerEx
     public GameObject SelectedUnit { get; set; }
     public UI_UnitInfo SelectUnitInfoUI { get; set; }
 
-    public int[] SelectedUnitIds { get; set; }
+    public int[] SetUnits { get; set; }
     public int[] UpgradeCostOfUnits { get; set; }
 
     public UnitAttackRange UnitAttackRange { get; set; }
@@ -62,9 +62,9 @@ public class GameManagerEx
         }
     }
 
-    public void Init()
+    public void InitScene(Define.Scene scene)
     {
-        CurrentScene = Define.Scene.Login;
+        CurrentScene = scene;
     }
 
     public void InitForGameScene(Define.Map map)
@@ -74,6 +74,9 @@ public class GameManagerEx
 
         CurMap = map;
 
+        SetUnits = new int[ConstantData.SetUnitCount];
+        // 플레이어 데이터 매니저에서 선택된 유닛을 가져와서 넣어줘야함
+        // SelectedUnitIds = PlayerManager.SetedUnits;
 
         UnitAttackRange = null;
         UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
@@ -83,7 +86,7 @@ public class GameManagerEx
         Managers.Time.OnNextStage.AddEvent(OnNextStageEvent);
         Managers.UnitStatus.OnUnitUpgradeSlot.AddEvent(OnUnitUpgrade);
 
-        UpgradeCostOfUnits = new int[ConstantData.SelectableUnitCount];
+        UpgradeCostOfUnits = new int[ConstantData.SetUnitCount];
         for (int i = 0; i < Managers.Game.UpgradeCostOfUnits.Length; ++i)
         {
             UpgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
@@ -111,7 +114,7 @@ public class GameManagerEx
 
     private void OnUnitUpgrade(int upgradeSlot)
     {
-        UpgradeCostOfUnits[upgradeSlot] = Managers.UnitStatus.UnitUpgradLv[(UnitNames)SelectedUnitIds[upgradeSlot]] * ConstantData.BaseUpgradeCost;
+        UpgradeCostOfUnits[upgradeSlot] = Managers.UnitStatus.UnitUpgradLv[(UnitNames)SetUnits[upgradeSlot]] * ConstantData.BaseUpgradeCost;
     }
 
     private void OnNextStageEvent()
