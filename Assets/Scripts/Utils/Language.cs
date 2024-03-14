@@ -1,11 +1,13 @@
 using Data;
 using System.Runtime.InteropServices.WindowsRuntime;
 using static Define;
+using static Unity.VisualScripting.Icons;
 
 public static class Language
 {
     public enum UnitInfos
     {
+        AttackType,
         Level,
         AttackDamage,
         AttackRange,
@@ -16,6 +18,23 @@ public static class Language
         StunDuration,
         PosionDamagePerSecond,
         PosionDuration,
+    }
+
+    public static string GetAttackType(UnitType type)
+    {
+        int index = (int)type;
+        string[] english = {"Common","AOE","Debuffer"};
+        string[] korean = {"일반 공격","광역 공격","디버퍼" };
+        Define.GameLanguage language = Managers.Game.GameLanguage;
+        switch (language)
+        {
+            case Define.GameLanguage.English:
+                return english[index];
+            case Define.GameLanguage.Korean:
+                return korean[index];
+            default:
+                return english[index];
+        }
     }
 
     public static string GetBaseUnitName(UnitNames unit)
@@ -46,6 +65,9 @@ public static class Language
             "워리어",
             "포이즌보우맨",
         };
+
+        if (unitIndex < 0 || unitIndex > englishName.Length)
+            return "";
         switch (language)
         {
             case Define.GameLanguage.English:
@@ -62,6 +84,7 @@ public static class Language
         Define.GameLanguage language = Managers.Game.GameLanguage;
         string[] englishUnitInfos =
         {
+            "AttackType",
             "Level",
             "AttackDamage",
             "AttackRange",
@@ -75,6 +98,7 @@ public static class Language
         };
         string[] koreaUnitInfos =
         {
+            "공격타입",
             "레벨",
             "공격력",
             "공격범위",
@@ -405,6 +429,88 @@ public static class Language
                 default:
                     return "Start Combat";
             }
+        }
+    }
+
+    public static string CompleteSetUnits
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Complete Unit Setting In The Barracks";
+                case Define.GameLanguage.Korean:
+                    return "배럭에서 유닛 설정을 완료해주세요";
+                default:
+                    return "Complete Unit Setting In The Barracks";
+            }
+        }
+    }
+
+    public static string Use
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Use";
+                case Define.GameLanguage.Korean:
+                    return "사용하기";
+                default:
+                    return "Use";
+            }
+        }
+    }
+
+    public static string Cancel
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Cancel";
+                case Define.GameLanguage.Korean:
+                    return "취소";
+                default:
+                    return "Cancel";
+            }
+        }
+    }
+
+    public static string Lv3Preview
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Lv3 Preview";
+                case Define.GameLanguage.Korean:
+                    return "Lv3 미리보기";
+                default:
+                    return "Lv3 Preview";
+            }
+        }
+    }
+
+    public static string AttackPerNSeconds(float second)
+    {
+        Define.GameLanguage language = Managers.Game.GameLanguage;
+        switch (language)
+        {
+            case Define.GameLanguage.English:
+                return $"Atk / {second} Sec";
+            case Define.GameLanguage.Korean:
+                return $"{second} 초당 공격";
+            default:
+                return $"Atk / {second} Sec";
         }
     }
 }

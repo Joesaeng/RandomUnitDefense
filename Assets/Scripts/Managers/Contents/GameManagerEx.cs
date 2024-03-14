@@ -74,17 +74,19 @@ public class GameManagerEx
 
         CurMap = map;
 
-        SetUnits = new int[ConstantData.SetUnitCount];
         // 플레이어 데이터 매니저에서 선택된 유닛을 가져와서 넣어줘야함
-        // SelectedUnitIds = PlayerManager.SetedUnits;
+        SetUnits = Managers.Player.Data.setUnits;
 
         UnitAttackRange = null;
         UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
 
         Managers.Game.Ruby = ConstantData.InitialRuby;
 
-        Managers.Time.OnNextStage.AddEvent(OnNextStageEvent);
-        Managers.UnitStatus.OnUnitUpgradeSlot.AddEvent(OnUnitUpgrade);
+        Managers.Time.OnNextStage -= OnNextStageEvent;
+        Managers.Time.OnNextStage += OnNextStageEvent;
+
+        Managers.UnitStatus.OnUnitUpgradeSlot -= OnUnitUpgrade;
+        Managers.UnitStatus.OnUnitUpgradeSlot += OnUnitUpgrade;
 
         UpgradeCostOfUnits = new int[ConstantData.SetUnitCount];
         for (int i = 0; i < Managers.Game.UpgradeCostOfUnits.Length; ++i)
@@ -220,6 +222,7 @@ public class GameManagerEx
             _gameLanguage = Define.GameLanguage.English;
         else
             _gameLanguage = Define.GameLanguage.Korean;
+        Managers.Player.Data.gameLanguage = (int)_gameLanguage;
         Util.CheckTheEventAndCall(OnChangedLanguage);
     }
 }

@@ -114,7 +114,7 @@ TextureImporter:
       213: 2453311538521018424
     second: icon_DeleteTxt
   externalObjects: {}
-  serializedVersion: 12
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -131,12 +131,11 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-    flipGreenChannel: 0
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
-  ignoreMipmapLimit: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -175,33 +174,29 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
-  swizzle: 50462976
-  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 128
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 128
     resizeAlgorithm: 0
-    textureFormat: 25
+    textureFormat: 2
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 1
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -214,7 +209,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 1
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -227,20 +221,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 1
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Server
-    maxTextureSize: 128
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
@@ -1013,44 +993,45 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      BG_1: 2172342012233351780
-      BG_2: -4256395657813228662
-      BG_3: 2457316141762840973
-      BG_4: -5429104711119312019
-      Button_1: -2333321367727697304
-      Button_2: -8906651652776757167
-      Button_3: 9159566210088081630
-      Button_4: -7174055450697819317
-      Button_5: 8383697525836615824
-      Button_6: -3404455655209396371
-      Circle_1: -7603163721911060405
-      Circle_2: 41372713791414077
-      SPBG_Armor: -1219066558808019568
-      SPBG_Back: -5129141213198270181
-      SPBG_Body: 5679573514717239927
-      SPBG_Cloth: 7910646498760808955
-      SPBG_Eye: 2992150105879530166
-      SPBG_Hair: 3476057189189894855
-      SPBG_Head: -1284677758300463224
-      SPBG_Helmet: 7668006070215484072
-      SPBG_Mustache: -1636928336435705200
-      SPBG_Pants: -2613245113464456288
-      SPBG_Weapon: -2407324949086632672
-      icon_Color: -3672210150432319256
-      icon_Delete: -7743597180495254381
-      icon_DeleteTxt: 2453311538521018424
-      icon_Edit: -1917482399961538043
       icon_Load: 8441688403871000800
-      icon_Lock: 3783403439240937934
-      icon_LockOpen: 5687144089129122442
-      icon_Logo: -6650768509668895999
+      SPBG_Body: 5679573514717239927
+      Button_5: 8383697525836615824
+      SPBG_Hair: 3476057189189894855
+      Circle_1: -7603163721911060405
+      BG_2: -4256395657813228662
+      icon_DeleteTxt: 2453311538521018424
+      Button_1: -2333321367727697304
+      SPBG_Weapon: -2407324949086632672
       icon_LogoBG: 5725398023607781132
-      icon_New: 9109928833191348939
+      BG_4: -5429104711119312019
+      BG_3: 2457316141762840973
+      icon_Lock: 3783403439240937934
+      Button_4: -7174055450697819317
+      Circle_2: 41372713791414077
+      SPBG_Pants: -2613245113464456288
+      Button_3: 9159566210088081630
+      SPBG_Head: -1284677758300463224
+      SPBG_Mustache: -1636928336435705200
+      Button_2: -8906651652776757167
+      icon_Edit: -1917482399961538043
       icon_Rando: -8344240196048465495
+      BG_1: 2172342012233351780
+      SPBG_Cloth: 7910646498760808955
+      icon_Delete: -7743597180495254381
+      icon_LockOpen: 5687144089129122442
+      SPBG_Armor: -1219066558808019568
       icon_Random: -3909321965482597598
+      icon_Logo: -6650768509668895999
+      Button_6: -3404455655209396371
+      icon_New: 9109928833191348939
+      SPBG_Eye: 2992150105879530166
+      icon_Color: -3672210150432319256
+      SPBG_Helmet: 7668006070215484072
       icon_Save: -144161922717634184
-  mipmapLimitGroupName: 
+      SPBG_Back: -5129141213198270181
+  spritePackingTag: 
   pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

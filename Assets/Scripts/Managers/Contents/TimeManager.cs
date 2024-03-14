@@ -26,6 +26,7 @@ public class TimeManager
         _curMonsterRespawnTime = 0f;
 
         CurTimeScale = 1;
+        Time.timeScale = CurTimeScale;
     }
 
 

@@ -9,6 +9,8 @@ using UnityEngine;
 
 public class CombatScene : BaseScene
 {
+    UI_CombatScene _ui_scene;
+
     [SerializeField]
     Transform _monsterSpawnPoint;
 
@@ -19,8 +21,6 @@ public class CombatScene : BaseScene
     Dictionary<int,Unit> _unitDict = new Dictionary<int,Unit>();
     
     UnitSlot[] _unitSlots = null;
-
-    int[] ids = {100,101,102,103,104,105,106,107,108};
 
     [SerializeField]
     int[] _selectedUnitIds;
@@ -33,37 +33,25 @@ public class CombatScene : BaseScene
         Managers.Game.InitForGameScene(_curMap);
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
 
-        Managers.Game.OnMoveUnitEvent.AddEvent(OnMoveUnitBetweenSlots);
-        Managers.Game.OnSpawnButtonClickEvent.AddEvent(OnSpawnPlayerUnit);
-        Managers.Game.OnClickedSellButton.AddEvent(OnSellAUnit);
-        Managers.Time.OnMonsterRespawnTime.AddEvent(TheRespawnTime);
+        Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
+        Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
 
-        #region TEMP // 로비 씬에서 선택한 유닛을 게임 씬으로 가져와야함
+        Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
+        Managers.Game.OnSpawnButtonClickEvent += OnSpawnPlayerUnit;
 
-        _selectedUnitIds = new int[ConstantData.SetUnitCount];
-        HashSet<int> IdSet = new HashSet<int>();
-        for (int i = 0; i < _selectedUnitIds.Length; ++i)
-        {
-            while (true)
-            {
-                int randId = ids[UnityEngine.Random.Range(0,ids.Length)];
-                if(IdSet.Contains(randId))
-                    continue;
-                IdSet.Add(randId);
-                _selectedUnitIds[i] = randId;
-                break;
-            }
-        }
-        Managers.Game.SetUnits = _selectedUnitIds;
+        Managers.Game.OnClickedSellButton -= OnSellAUnit;
+        Managers.Game.OnClickedSellButton += OnSellAUnit;
+
+        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
+        Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
+
+        _selectedUnitIds = Managers.Game.SetUnits;
         
-
-        #endregion
-
         Managers.InGameItem.Init();
         Managers.UnitStatus.Init();
         Managers.Time.Init();
 
-        Managers.UI.ShowSceneUI<UI_CombatScene>();
+        _ui_scene = Managers.UI.ShowSceneUI<UI_CombatScene>();
 
         Managers.Sound.Play("GameScene",Define.Sound.Bgm);
     }
@@ -199,7 +187,8 @@ public class CombatScene : BaseScene
         string unitname = Managers.Data.BaseUnitDict[id].baseUnit.ToString();
         unit.Init(slotIndex, id, level, unitname);
 
-        unit.GetComponent<DraggableUnit>().OnDraggableMouseDragEvent.AddEvent(OnDraggableUnitDragEventReader);
+        unit.GetComponent<DraggableUnit>().OnDraggableMouseDragEvent -= OnDraggableUnitDragEventReader;
+        unit.GetComponent<DraggableUnit>().OnDraggableMouseDragEvent += OnDraggableUnitDragEventReader;
 
         obj.name = $"{unitname} Level [{level}]";
 
@@ -273,6 +262,8 @@ public class CombatScene : BaseScene
         Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
         Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
         Managers.Game.OnClickedSellButton -= OnSellAUnit;
+
+        _ui_scene.Clear();
     }
 
     // 몬스터를 리스폰할 시간이 되었다! 는 이벤트

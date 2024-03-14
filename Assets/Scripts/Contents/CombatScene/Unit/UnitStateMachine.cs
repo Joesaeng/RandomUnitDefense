@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using static PlayerObj;
 using static Unit;
 
 public enum UnitState
@@ -98,8 +97,10 @@ public class UnitStateMachine : MonoBehaviour
 
         UpdateUnitStatus();
 
-        Managers.InGameItem.OnCalculateEquipItem.AddEvent(UpdateUnitStatus);
-        Managers.UnitStatus.OnUnitUpgrade.AddEvent(UpdateUnitStatus);
+        Managers.InGameItem.OnCalculateEquipItem -= UpdateUnitStatus;
+        Managers.InGameItem.OnCalculateEquipItem += UpdateUnitStatus;
+        Managers.UnitStatus.OnUnitUpgrade -= UpdateUnitStatus;
+        Managers.UnitStatus.OnUnitUpgrade += UpdateUnitStatus;
 
         _attackType = _unitStatus.unitType;
         _attackRange = _unitStatus.attackRange;

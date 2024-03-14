@@ -16,6 +16,9 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
     [SerializeField]
     Image[] _menuImages;
 
+    [SerializeField]
+    Transform _contentTr;
+
     const int CountOfLobbyMenu = 3;
     float[] _pos = new float[CountOfLobbyMenu];
 
@@ -35,11 +38,11 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
 
     bool _isDrag;
 
-    void Start()
+    public void Init()
     {
         // 거리에 따라 0~1인 pos 대입
         _distance = 1f / (CountOfLobbyMenu - 1);
-        for(int i = 0; i < CountOfLobbyMenu; i++)
+        for (int i = 0; i < CountOfLobbyMenu; i++)
         { _pos[i] = _distance * i; }
         SetTargetPos(0);
     }
@@ -74,15 +77,9 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
         _menuTargetSizes[_targetIndex] = new Vector2(200f, 200f);
     }
 
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        _curPos = SetPos();
-    }
+    public void OnBeginDrag(PointerEventData eventData) => _curPos = SetPos();
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        _isDrag = true;
-    }
+    public void OnDrag(PointerEventData eventData) => _isDrag = true;
 
     public void OnEndDrag(PointerEventData eventData)
     {
@@ -104,6 +101,12 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
                 ++_targetIndex;
                 SetTargetPos(_curPos + _distance);
             }
+        }
+
+        for (int i = 0; i < CountOfLobbyMenu; ++i)
+        {
+            if (Util.FindChild<ScrollScript>(_contentTr.gameObject, recursive: true) != null && _curPos != _pos[i] && _targetPos == _pos[i])
+                Util.FindChild<Scrollbar>(_contentTr.gameObject,recursive:true).value = 1;
 
         }
     }

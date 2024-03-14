@@ -32,9 +32,9 @@ public class UIManager
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
         // Canvas가 중첩으로 있을 때, 부모의 sortingorder를 따라가지 않고 자신의 sortingorder를 가지게 함
-        canvas.overrideSorting = true; 
+        canvas.overrideSorting = true;
 
-        if(sort)
+        if (sort)
         {
             canvas.sortingOrder = _order;
             _order++;
@@ -86,7 +86,7 @@ public class UIManager
     {
         if (string.IsNullOrEmpty(name))
             name = typeof(T).Name;
-        
+
         GameObject go = Managers.Resource.Instantiate($"UI/SubItem/{name}");
 
         if (parent != null)
@@ -97,7 +97,7 @@ public class UIManager
 
     public T ShowPopupUI<T>(string name = null) where T : UI_Popup
     {
-        if(string.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(name))
             name = typeof(T).Name;
 
         GameObject go = Managers.Resource.Instantiate($"UI/Popup/{name}");
@@ -114,7 +114,7 @@ public class UIManager
         if (_popupStack.Count == 0)
             return;
 
-        if(_popupStack.Peek() != popup)
+        if (_popupStack.Peek() != popup)
         {
             Debug.LogWarning("Close Popup Failed");
             return;
@@ -137,7 +137,7 @@ public class UIManager
 
     public void CloseAllPopupUI()
     {
-        while(_popupStack.Count > 0)
+        while (_popupStack.Count > 0)
         {
             ClosePopupUI();
         }
@@ -146,7 +146,10 @@ public class UIManager
     public void Clear()
     {
         CloseAllPopupUI();
-        Managers.Game.OnChangedLanguage -= _sceneUI.OnChangeLanguage;
-        _sceneUI = null;
+        if (_sceneUI != null)
+        {
+            Managers.Game.OnChangedLanguage -= _sceneUI.OnChangeLanguage;
+            _sceneUI = null;
+        }
     }
 }

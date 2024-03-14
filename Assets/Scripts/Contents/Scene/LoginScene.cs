@@ -10,6 +10,7 @@ public class LoginScene : BaseScene
         base.Init();
         Managers.Init();
         SceneType = Define.Scene.Login;
+        Managers.Game.CurrentScene = SceneType;
     }
 
     public override void Clear()
@@ -19,11 +20,13 @@ public class LoginScene : BaseScene
 
     public void LoginSceneButtonClicked()
     {
-        // 플레이어 데이터 확인(처음인지, 아닌지)
-        // 플레이어 데이터 저장 or 로드
-        // if(처음일 때)
-        Managers.UI.ShowPopupUI<UI_OptionMenu>();
-        // else
-        // Managers.Scene.LoadScene(Define.Scene.Lobby);
+        Managers.Game.GameLanguage = (Define.GameLanguage)Managers.Player.Data.gameLanguage;
+        if(Managers.Player.Data.beginner)
+        {
+            Managers.UI.ShowPopupUI<UI_OptionMenu>();
+            Managers.Player.Data.beginner = false;
+        }
+        else
+             Managers.Scene.LoadScene(Define.Scene.Lobby);
     }
 }

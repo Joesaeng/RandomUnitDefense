@@ -74,13 +74,16 @@ public class UI_CombatScene : UI_Scene
 
         #region 버튼 이벤트 바인딩
         OnChangeAmountOfRuby(Managers.Game.Ruby);
-        Managers.Game.OnChangedRuby.AddEvent(OnChangeAmountOfRuby);
+        Managers.Game.OnChangedRuby -= OnChangeAmountOfRuby;
+        Managers.Game.OnChangedRuby += OnChangeAmountOfRuby;
 
         OnNextStageEvent();
-        Managers.Game.OnNextStage.AddEvent(OnNextStageEvent);
+        Managers.Game.OnNextStage -= OnNextStageEvent;
+        Managers.Game.OnNextStage += OnNextStageEvent;
 
         OnChangeItems(Managers.InGameItem.GambleCost);
-        Managers.InGameItem.OnGambleItem.AddEvent(OnChangeItems);
+        Managers.InGameItem.OnGambleItem -= OnChangeItems;
+        Managers.InGameItem.OnGambleItem += OnChangeItems;
         #endregion
 
         #region 현재 장비 스테이터스 초기화
@@ -233,5 +236,14 @@ public class UI_CombatScene : UI_Scene
     {
         _panelEquipStatusName.SetActive(!_panelEquipStatusName.activeSelf);
         _panelEquipStatusValue.SetActive(!_panelEquipStatusValue.activeSelf);
+    }
+
+    public void Clear()
+    {
+        Managers.Game.OnChangedRuby -= OnChangeAmountOfRuby;
+
+        Managers.Game.OnNextStage -= OnNextStageEvent;
+
+        Managers.InGameItem.OnGambleItem -= OnChangeItems;
     }
 }

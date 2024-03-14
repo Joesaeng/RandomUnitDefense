@@ -164,22 +164,4 @@ public static class Util
         }
         return false;
     }
-
-    public static void AddEvent(this Action eventaction, Action action)
-    {
-        eventaction -= action;
-        eventaction += action;
-    }
-
-    public static void AddEvent<T>(this Action<T> eventaction, Action<T> action)
-    {
-        eventaction -= action;
-        eventaction += action;
-    }
-
-    public static void AddEvent<T,K>(this Action<T,K> eventaction, Action<T,K> action)
-    {
-        eventaction -= action;
-        eventaction += action;
-    }
 }

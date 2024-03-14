@@ -4,19 +4,20 @@ using UnityEngine;
 
 public class LobbyScene : BaseScene
 {
+    UI_LobbyScene _ui_Scene;
     protected override void Init()
     {
         base.Init();
 
         SceneType = Define.Scene.Lobby;
         Managers.Game.CurrentScene = Define.Scene.Lobby;
-        //UI_LobbyScene ui_lobbyScene = Managers.UI.ShowSceneUI<UI_LobbyScene>();
-        //ui_lobbyScene.Scene = this;
+        _ui_Scene = Managers.UI.ShowSceneUI<UI_LobbyScene>();
+        _ui_Scene.Scene = this;
     }
 
 
     public override void Clear()
     {
-
+        _ui_Scene.Clear();
     }
 }

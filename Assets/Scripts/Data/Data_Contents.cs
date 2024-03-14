@@ -8,6 +8,17 @@ using UnityEngine;
 // DataManager에서 Json을 어떤 파일 포맷으로 불러들일지 저장
 namespace Data
 {
+    #region Player
+    [Serializable]
+    public class PlayerData
+    {
+        public bool beginner = true;
+        public int gameLanguage = (int)Define.GameLanguage.English;
+        public int[] setUnits = new int[ConstantData.SetUnitCount];
+    }
+
+    #endregion
+
     #region Units
 
     [Serializable]

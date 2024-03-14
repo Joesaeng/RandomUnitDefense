@@ -8,7 +8,8 @@ public class UnitSlots : MonoBehaviour
     void Start()
     {
         unitSlotsSpriteRenderer = GetComponentsInChildren<SpriteRenderer>();
-        Managers.Input.MouseAction.AddEvent(OnMouseAction);
+        Managers.Input.MouseAction -= OnMouseAction;
+        Managers.Input.MouseAction += OnMouseAction;
     }
     private void OnMouseAction(Define.MouseEvent mouseEvent)
     {

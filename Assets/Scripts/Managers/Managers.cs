@@ -12,11 +12,13 @@ public class Managers : MonoBehaviour
     GameManagerEx _game = new GameManagerEx();
     UnitStatusManager _unitStatus = new UnitStatusManager();
     InGameItemManager _inGameItem = new InGameItemManager();
+    PlayerManager _player = new PlayerManager();
 
 
     public static GameManagerEx Game { get { return Instance._game; } }
     public static UnitStatusManager UnitStatus { get {  return Instance._unitStatus; } }
     public static InGameItemManager InGameItem { get {  return Instance._inGameItem; } }
+    public static PlayerManager Player { get {  return Instance._player; } }
     #endregion
 
     #region Core
@@ -72,6 +74,7 @@ public class Managers : MonoBehaviour
             s_instance._data.Init();
             s_instance._pool.Init();
             s_instance._sound.Init();
+            s_instance._player.Init();
         }
     }
 
