@@ -62,6 +62,8 @@ public class GameManagerEx
         }
     }
 
+    public Transform hpBarPanel;
+
     public void InitScene(Define.Scene scene)
     {
         CurrentScene = scene;
@@ -79,7 +81,7 @@ public class GameManagerEx
 
         UnitAttackRange = null;
         UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
-
+        hpBarPanel = GameObject.Find("UI_HPBarPanel").transform;
         Managers.Game.Ruby = ConstantData.InitialRuby;
 
         Managers.Time.OnNextStage -= OnNextStageEvent;

@@ -69,10 +69,10 @@ public class UIManager
         if (parent != null)
             go.transform.SetParent(parent);
 
-        Canvas canvas = go.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-        canvas.worldCamera = Camera.main;
-        canvas.sortingOrder = ConstantData.WorldSpaceUISortOrder;
+        //Canvas canvas = go.GetComponent<Canvas>();
+        //canvas.renderMode = RenderMode.WorldSpace;
+        //canvas.worldCamera = Camera.main;
+        //canvas.sortingOrder = ConstantData.WorldSpaceUISortOrder;
 
         return Util.GetOrAddComponent<T>(go);
     }

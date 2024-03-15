@@ -338,7 +338,7 @@ GameObject:
   - component: {fileID: 4943229274585134692}
   - component: {fileID: 5159609366572076095}
   m_Layer: 0
-  m_Name: Viewport
+  m_Name: UnitSlotsViewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -360,7 +360,7 @@ RectTransform:
   m_Father: {fileID: 5566484562685863062}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
@@ -583,7 +583,7 @@ GameObject:
   - component: {fileID: 6519903860477314486}
   - component: {fileID: 3043167747719561129}
   m_Layer: 5
-  m_Name: Tab
+  m_Name: MenuTabPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1144,7 +1144,7 @@ GameObject:
   - component: {fileID: 5447499599998568055}
   - component: {fileID: 1635248060973787313}
   m_Layer: 0
-  m_Name: Scrollbar Vertical
+  m_Name: UnitSlotsScrollBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7998,7 +7998,7 @@ GameObject:
   - component: {fileID: 3662244778806392235}
   - component: {fileID: 7698112449371103078}
   m_Layer: 5
-  m_Name: Btn
+  m_Name: ShopBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8107,7 +8107,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7738847645745774728}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: NestedScrollManager, Assembly-CSharp
         m_MethodName: TabClick
         m_Mode: 3
@@ -11260,7 +11260,6 @@ GameObject:
   - component: {fileID: 5566484562685863062}
   - component: {fileID: 3008879539588253401}
   - component: {fileID: 3248365634526490869}
-  - component: {fileID: 2779645711134223497}
   m_Layer: 0
   m_Name: UnitSlotsScroll
   m_TagString: UnitSlotsScroll
@@ -11327,36 +11326,81 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2779645711134223497
+--- !u!1 &2346508249007426702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3201677985678969906}
+  - component: {fileID: 1072120186586851855}
+  - component: {fileID: 5158410552860830477}
+  m_Layer: 5
+  m_Name: BlockerStartCombatBtn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3201677985678969906
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2346508249007426702}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3149335265828125939}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -3.6112, y: -600}
+  m_SizeDelta: {x: 590.2477, y: 225.71}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1072120186586851855
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2346508249007426702}
+  m_CullTransparentMesh: 1
+--- !u!114 &5158410552860830477
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2333674138913471602}
+  m_GameObject: {fileID: 2346508249007426702}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 056b78df7dc738c47aecbd31cbbca579, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Content: {fileID: 6624714819681842993}
-  m_Horizontal: 0
-  m_Vertical: 1
-  m_MovementType: 2
-  m_Elasticity: 0.1
-  m_Inertia: 1
-  m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
-  m_Viewport: {fileID: 8590112119196183742}
-  m_HorizontalScrollbar: {fileID: 0}
-  m_VerticalScrollbar: {fileID: 1635248060973787313}
-  m_HorizontalScrollbarVisibility: 0
-  m_VerticalScrollbarVisibility: 2
-  m_HorizontalScrollbarSpacing: 0
-  m_VerticalScrollbarSpacing: 0
-  m_OnValueChanged:
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2625735231180726415
 GameObject:
   m_ObjectHideFlags: 0
@@ -11369,7 +11413,7 @@ GameObject:
   - component: {fileID: 2552391175916299194}
   - component: {fileID: 5500194405805051925}
   m_Layer: 5
-  m_Name: menuImage
+  m_Name: ShopImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16394,7 +16438,6 @@ GameObject:
   m_Component:
   - component: {fileID: 145370461612947349}
   - component: {fileID: 8921478827669814572}
-  - component: {fileID: 7738847645745774728}
   - component: {fileID: 9216986613929526961}
   - component: {fileID: 1921461572677810947}
   m_Layer: 5
@@ -16433,28 +16476,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2819034654512043256}
   m_CullTransparentMesh: 1
---- !u!114 &7738847645745774728
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2819034654512043256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b84fa8edd1b732a439d7e059bf846f3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scrollbar: {fileID: 7973527085734444177}
-  _btnImages:
-  - {fileID: 1023799710647128755}
-  - {fileID: 8188739818658113004}
-  - {fileID: 3662244778806392235}
-  _menuImages:
-  - {fileID: 3891602152566282479}
-  - {fileID: 6966889921053342000}
-  - {fileID: 5500194405805051925}
-  _contentTr: {fileID: 8836475896529018910}
 --- !u!114 &9216986613929526961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16611,7 +16632,7 @@ GameObject:
   - component: {fileID: 1682438720250043066}
   - component: {fileID: 6182834582802736380}
   m_Layer: 5
-  m_Name: Content
+  m_Name: NestedContent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17786,7 +17807,7 @@ GameObject:
   - component: {fileID: 7708670450407529335}
   - component: {fileID: 3891602152566282479}
   m_Layer: 5
-  m_Name: menuImage
+  m_Name: CombatImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23343,7 +23364,7 @@ GameObject:
   - component: {fileID: 3951550432340940320}
   - component: {fileID: 7973527085734444177}
   m_Layer: 5
-  m_Name: Scrollbar
+  m_Name: NestedScrollBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25500,7 +25521,7 @@ GameObject:
   - component: {fileID: 8715200117405645284}
   - component: {fileID: 6966889921053342000}
   m_Layer: 5
-  m_Name: menuImage
+  m_Name: BarrackImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26382,6 +26403,7 @@ RectTransform:
   - {fileID: 2351747297317287135}
   - {fileID: 523359028980128769}
   - {fileID: 5220788261968208010}
+  - {fileID: 3201677985678969906}
   m_Father: {fileID: 8836475896529018910}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -27169,7 +27191,7 @@ GameObject:
   - component: {fileID: 8188739818658113004}
   - component: {fileID: 3775495874720371052}
   m_Layer: 5
-  m_Name: Btn
+  m_Name: BarrackBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27278,7 +27300,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7738847645745774728}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: NestedScrollManager, Assembly-CSharp
         m_MethodName: TabClick
         m_Mode: 3
@@ -28419,7 +28441,7 @@ GameObject:
   - component: {fileID: 1023799710647128755}
   - component: {fileID: 4918895645002619088}
   m_Layer: 5
-  m_Name: Btn
+  m_Name: CombatBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28528,7 +28550,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7738847645745774728}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: NestedScrollManager, Assembly-CSharp
         m_MethodName: TabClick
         m_Mode: 3

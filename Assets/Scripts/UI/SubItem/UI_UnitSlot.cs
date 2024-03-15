@@ -47,6 +47,7 @@ public class UI_UnitSlot : UI_Base, IDragHandler, IBeginDragHandler, IEndDragHan
     {
         if(!forParent)
         {
+            Managers.Sound.Play(Define.SFXNames.Click);
             _uI_LobbyScene.OnSelectUnitButtonClick(ID);
         }
     }

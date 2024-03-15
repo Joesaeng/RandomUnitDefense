@@ -13,6 +13,7 @@ public class LobbyScene : BaseScene
         Managers.Game.CurrentScene = Define.Scene.Lobby;
         _ui_Scene = Managers.UI.ShowSceneUI<UI_LobbyScene>();
         _ui_Scene.Scene = this;
+        Time.timeScale = 1f;
     }
 
 

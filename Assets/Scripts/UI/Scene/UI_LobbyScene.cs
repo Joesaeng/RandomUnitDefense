@@ -25,6 +25,7 @@ public class UI_LobbyScene : UI_Scene
         Point2,
         Point3,
         Point4,
+        BlockerStartCombatBtn,
         #endregion
         #region BarrackPanel
         UnitSlots,
@@ -198,6 +199,7 @@ public class UI_LobbyScene : UI_Scene
     
     private void SetStartCombatButton(bool setAllUnits)
     {
+        Get<GameObject>((int)GameObjects.BlockerStartCombatBtn).SetActive(!setAllUnits);
         GetButton((int)Buttons.BtnStartCombat).interactable = setAllUnits;
         string text = setAllUnits ? Language.StartCombat : Language.CompleteSetUnits;
         GetTMPro((int)Texts.TextStartCombat).text = text;
@@ -232,6 +234,7 @@ public class UI_LobbyScene : UI_Scene
 
     public void OnUseUnitButtonClick(PointerEventData eventData)
     {
+        Managers.Sound.Play(Define.SFXNames.Click);
         Managers.UI.ShowPopupUI<UI_UseUnit>().Set((int)_selectedUnitId);
     }
 
@@ -325,13 +328,13 @@ public class UI_LobbyScene : UI_Scene
 
     public void OnCloseSelectedUnitPanelButton(PointerEventData eventData)
     {
+        Managers.Sound.Play(Define.SFXNames.Click);
         SelectUnitPanel.HideSelectUnitPanel();
     }
     #endregion
 
     public void Clear()
     {
-        Destroy(Get<GameObject>((int)GameObjects.NestedScrollManager).GetComponent<NestedScrollManager>());
-        Destroy(Get<GameObject>((int)GameObjects.UnitSlotsScroll).GetComponent<ScrollScript>());
+        Managers.Resource.Destroy(gameObject);
     }
 }

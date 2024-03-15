@@ -63,14 +63,14 @@ public class UI_UnitInfo : UI_Base
             case UnitNames.Knight:
             case UnitNames.Spearman:
             case UnitNames.Archer:
-                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Textures/UnitIcon/Common");
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/Common");
                 break;
             case UnitNames.FireMagician:
             case UnitNames.Viking:
             case UnitNames.Warrior:
             {
                 GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.WideAttackArea)} : {_unitStatus.wideAttackArea}";
-                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Textures/UnitIcon/AOE");
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/AOE");
                 break;
             }
             case UnitNames.SlowMagician:
@@ -78,20 +78,20 @@ public class UI_UnitInfo : UI_Base
                 GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.WideAttackArea)} : {_unitStatus.wideAttackArea}";
                 GetTMPro((int)TMPros.TextInfo5).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowRatio)} : {_unitStatus.debuffRatio}";
                 GetTMPro((int)TMPros.TextInfo6).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowDuration)} : {_unitStatus.debuffDuration}";
-                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Textures/UnitIcon/Debuffer");
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImagesn/Debuffer");
                 break;
             }
             case UnitNames.StunGun:
             {
                 GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.StunDuration)} : {_unitStatus.debuffDuration}";
-                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Textures/UnitIcon/Debuffer");
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/Debuffer");
                 break;
             }
             case UnitNames.PoisonBowMan:
             {
                 GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.PosionDamagePerSecond)} : {_unitStatus.damagePerSecond}/s";
                 GetTMPro((int)TMPros.TextInfo5).text = $"{Language.GetUnitInfo(Language.UnitInfos.PosionDuration)} : {_unitStatus.debuffDuration}";
-                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Textures/UnitIcon/Debuffer");
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/Debuffer");
                 break;
             }
         }

@@ -15,10 +15,18 @@ public class UnitBullet : MonoBehaviour
     private UnitStatus _ownUnitStatus;
     private float wideAttackArea;
 
+    SpriteRenderer _spriteRenderer;
+    Sprite[] _sprites = new Sprite[ConstantData.PlayerUnitHighestLevel];
+
     public void Init(Monster targetMonster, UnitNames baseUnit, int unitLv, float bulletSpeed = 20f)
     {
-        GetComponent<SpriteRenderer>().sprite =
-            Managers.Resource.Load<Sprite>($"Art/Bullets/{unitLv}");
+        if (_spriteRenderer == null)
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+        if (_sprites[unitLv - 1] == null)
+            _sprites[unitLv - 1] = Managers.Resource.Load<Sprite>($"Art/Bullets/{unitLv}");
+
+        _spriteRenderer.sprite = _sprites[unitLv - 1];
+
         _targetMonster = targetMonster;
         if(targetMonster == null)
         {

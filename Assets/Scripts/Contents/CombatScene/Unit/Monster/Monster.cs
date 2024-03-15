@@ -45,8 +45,7 @@ public class Monster : MonoBehaviour
         _previousMovePoint = 3;
         _monsterStat = Managers.Data.GetMonsterData(stageNum);
 
-        if (_hpBar == null)
-            _hpBar = Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
+        Managers.UI.MakeWorldSpaceUI<UI_HPBar>(Managers.Game.hpBarPanel).InitHPBar(transform);
 
         if (_unitAnimator != null)
         {

@@ -30,6 +30,9 @@ public class SoundManager
 
             _audioSources[(int)Define.Sound.Bgm].loop = true;
         }
+        BGMVolume = Managers.Player.Data.bgmVolume;
+        SFXVolume = Managers.Player.Data.sfxVolume;
+
     }
 
     public void Clear()

@@ -440,11 +440,11 @@ public static class Language
             switch (language)
             {
                 case Define.GameLanguage.English:
-                    return "Complete Unit Setting In The Barracks";
+                    return "You need to Setting \n Unit In the Barrack";
                 case Define.GameLanguage.Korean:
-                    return "배럭에서 유닛 설정을 완료해주세요";
+                    return "배럭에서 유닛 설정을 \n 완료해주세요";
                 default:
-                    return "Complete Unit Setting In The Barracks";
+                    return "You need to Setting \n Unit In the Barrack";
             }
         }
     }

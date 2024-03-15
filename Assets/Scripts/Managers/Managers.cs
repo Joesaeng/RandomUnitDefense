@@ -73,8 +73,8 @@ public class Managers : MonoBehaviour
             // 초기화가 필요한 매니저들 초기화 작업
             s_instance._data.Init();
             s_instance._pool.Init();
-            s_instance._sound.Init();
             s_instance._player.Init();
+            s_instance._sound.Init();
         }
     }
 

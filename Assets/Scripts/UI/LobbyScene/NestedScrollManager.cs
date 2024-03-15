@@ -11,7 +11,7 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
     Scrollbar _scrollbar;
 
     [SerializeField]
-    Image[] _btnImages;
+    Image[] _tabBtnImages;
 
     [SerializeField]
     Image[] _menuImages;
@@ -40,6 +40,33 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
 
     public void Init()
     {
+        #region NestedScrollBar Setting
+        _scrollbar = GameObject.Find("NestedScrollBar").GetComponent<Scrollbar>();
+
+        _tabBtnImages = new Image[] 
+        {
+            GameObject.Find("CombatBtn").GetComponent<Image>(), 
+            GameObject.Find("BarrackBtn").GetComponent<Image>(), 
+            GameObject.Find("ShopBtn").GetComponent<Image>() 
+        };
+        _menuImages = new Image[]
+        {
+            GameObject.Find("CombatImage").GetComponent<Image>(),
+            GameObject.Find("BarrackImage").GetComponent<Image>(),
+            GameObject.Find("ShopImage").GetComponent<Image>(),
+        };
+
+        _contentTr = GameObject.Find("NestedContent").transform;
+
+        Button tabBtn = GameObject.Find("CombatBtn").GetComponent<Button>();
+        tabBtn.onClick.AddListener(() => TabClick(0));
+        tabBtn = GameObject.Find("BarrackBtn").GetComponent<Button>();
+        tabBtn.onClick.AddListener(() => TabClick(1));
+        tabBtn = GameObject.Find("ShopBtn").GetComponent<Button>();
+        tabBtn.onClick.AddListener(() => TabClick(2));
+
+        #endregion
+
         // 거리에 따라 0~1인 pos 대입
         _distance = 1f / (CountOfLobbyMenu - 1);
         for (int i = 0; i < CountOfLobbyMenu; i++)
@@ -64,7 +91,7 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
     private void SetTargetPos(float pos)
     {
         _targetPos = pos;
-        for(int i = 0; i < _btnImages.Length;++i)
+        for(int i = 0; i < _tabBtnImages.Length;++i)
         {
             _btnTargetSizes[i] = new Vector2(320f, 190f);
             _btnTargetColors[i] = new Color(0.6f, 0.6f, 0.6f);
@@ -123,10 +150,10 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
         if (!_isDrag)
         {
             _scrollbar.value = Mathf.Lerp(_scrollbar.value, _targetPos, _scrollSpeed * Time.deltaTime);
-            for (int i = 0; i < _btnImages.Length; ++i)
+            for (int i = 0; i < _tabBtnImages.Length; ++i)
             {
-                _btnImages[i].rectTransform.sizeDelta = Vector2.Lerp(_btnImages[i].rectTransform.sizeDelta, _btnTargetSizes[i], _scrollSpeed * Time.deltaTime);
-                _btnImages[i].color = Color.Lerp(_btnImages[i].color, _btnTargetColors[i], _scrollSpeed * Time.deltaTime);
+                _tabBtnImages[i].rectTransform.sizeDelta = Vector2.Lerp(_tabBtnImages[i].rectTransform.sizeDelta, _btnTargetSizes[i], _scrollSpeed * Time.deltaTime);
+                _tabBtnImages[i].color = Color.Lerp(_tabBtnImages[i].color, _btnTargetColors[i], _scrollSpeed * Time.deltaTime);
                 _menuImages[i].rectTransform.sizeDelta = Vector2.Lerp(_menuImages[i].rectTransform.sizeDelta, _menuTargetSizes[i], _scrollSpeed * Time.deltaTime);
                 _menuImages[i].rectTransform.localPosition = Vector3.Lerp(_menuImages[i].rectTransform.localPosition, _menuTargetPoss[i], _scrollSpeed * Time.deltaTime);
             }
