@@ -9,6 +9,7 @@ public class UnitAnimaitor : MonoBehaviour
     public AnimationClip[] AnimationClips => _animationClips;
 
     private Dictionary<string, int> _nameToHashPair = new Dictionary<string, int>();
+    private Dictionary<string, int> _animDict = new Dictionary<string, int>();
     private void InitAnimPair()
     {
         _nameToHashPair.Clear();
@@ -29,13 +30,19 @@ public class UnitAnimaitor : MonoBehaviour
 
     public void PlayAnimation(string name)
     {
-        foreach (var animationName in _nameToHashPair)
+        if (_animDict.ContainsKey(name))
         {
-            if (animationName.Key.ToLower().Contains(name.ToLower()))
-            {
-                _animator.Play(animationName.Value, 0);
-                break;
-            }
+            _animator.Play(_animDict[name], 0);
         }
+        else
+            foreach (var animationName in _nameToHashPair)
+            {
+                if (animationName.Key.ToLower().Contains(name.ToLower()))
+                {
+                    _animator.Play(animationName.Value, 0);
+                    _animDict.Add(name, animationName.Value);
+                    break;
+                }
+            }
     }
 }

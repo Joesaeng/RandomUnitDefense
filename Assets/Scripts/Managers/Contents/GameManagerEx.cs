@@ -62,7 +62,10 @@ public class GameManagerEx
         }
     }
 
-    public Transform hpBarPanel;
+    public Transform HpBarPanel { get; set; }
+    public Transform DamageTexts { get; set; }
+    public Transform HitEffects { get; set; }
+    public Transform UnitBullets { get; set; }
 
     public void InitScene(Define.Scene scene)
     {
@@ -81,7 +84,12 @@ public class GameManagerEx
 
         UnitAttackRange = null;
         UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
-        hpBarPanel = GameObject.Find("UI_HPBarPanel").transform;
+        HpBarPanel = GameObject.Find("UI_HPBarPanel").transform;
+        DamageTexts = GameObject.Find("DamageTexts").transform;
+        HitEffects = GameObject.Find("HitEffects").transform;
+        UnitBullets = GameObject.Find("UnitBullets").transform;
+
+
         Managers.Game.Ruby = ConstantData.InitialRuby;
 
         Managers.Time.OnNextStage -= OnNextStageEvent;

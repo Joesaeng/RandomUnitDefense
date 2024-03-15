@@ -59,12 +59,12 @@ public class UIManager
         return sceneUI;
     }
 
-    public T MakeWorldSpaceUI<T>(Transform parent = null, string name = null) where T : UI_Base
+    public T MakeWorldSpaceUI<T>(Transform parent = null, string name = null, Transform tfPos = null) where T : UI_Base
     {
         if (string.IsNullOrEmpty(name))
             name = typeof(T).Name;
 
-        GameObject go = Managers.Resource.Instantiate($"UI/WorldSpace/{name}");
+        GameObject go = Managers.Resource.Instantiate($"UI/WorldSpace/{name}",tfPos:tfPos);
 
         if (parent != null)
             go.transform.SetParent(parent);

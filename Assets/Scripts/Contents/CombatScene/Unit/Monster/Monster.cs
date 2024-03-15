@@ -28,7 +28,7 @@ public class Monster : MonoBehaviour
     List<BaseDebuff> _debuffs;
     public List<BaseDebuff> Debuffs => _debuffs;
 
-    UI_HPBar _hpBar;
+    public Action<float> OnReduceHp; // HpRatio
 
     // Stats
     float _moveSpeed;
@@ -45,7 +45,7 @@ public class Monster : MonoBehaviour
         _previousMovePoint = 3;
         _monsterStat = Managers.Data.GetMonsterData(stageNum);
 
-        Managers.UI.MakeWorldSpaceUI<UI_HPBar>(Managers.Game.hpBarPanel).InitHPBar(transform);
+        Managers.UI.MakeWorldSpaceUI<UI_HPBar>(Managers.Game.HpBarPanel).InitHPBar(transform);
 
         if (_unitAnimator != null)
         {
@@ -56,12 +56,14 @@ public class Monster : MonoBehaviour
             string stage = stageNum.ToString();
             string tstage = stage.PadLeft(3, '0');
 
-            GameObject go = Managers.Resource.Instantiate($"Monsters/Monster{tstage}",transform);
+            GameObject go = Managers.Resource.Instantiate($"Units/Monster{tstage}",transform);
             _animatorTF = go.transform;
             _animatorTF.localPosition = new Vector3(0, -0.5f, 0);
+            _animatorTF.localScale = new Vector3(1.25f, 1.25f, 1);
             _unitAnimator = go.GetOrAddComponent<UnitAnimaitor>();
             _unitAnimator.Init();
         }
+
         _unitAnimator.PlayAnimation("Run");
 
         // stageNum에 따라서 유닛의 형태, 이동속도, 체력 등 초기화
@@ -157,15 +159,15 @@ public class Monster : MonoBehaviour
             float fiipX;
             if (_movePoints[_previousMovePoint].x != _movePoints[_nextMovePoint].x)
             {
-                fiipX = _movePoints[_previousMovePoint].x < _movePoints[_nextMovePoint].x ? -2.5f:2.5f;
-                _animatorTF.localScale = new Vector3(fiipX, 2.5f, 1);
+                fiipX = _movePoints[_previousMovePoint].x < _movePoints[_nextMovePoint].x ? -1.25f : 1.25f;
+                _animatorTF.localScale = new Vector3(fiipX, 1.25f, 1);
             }
         }
         transform.position = Vector3.MoveTowards(transform.position, _movePoints[_nextMovePoint], _curMoveSpeed * Time.deltaTime);
-        
+
     }
 
-    public void TakeHit(UnitStatus attackerStat,float damageRatio = 1)
+    public void TakeHit(UnitStatus attackerStat, float damageRatio = 1)
     {
         if (IsDead)
             return;
@@ -202,14 +204,20 @@ public class Monster : MonoBehaviour
         ReduceHp(damage);
         ReduceHp(addedDamage); // 추뎀
 
-        GameObject damageText = Managers.Resource.Instantiate("DamageText");
+        GameObject damageText = Managers.Resource.Instantiate
+             ("DamageText",Managers.Game.DamageTexts);
         damageText.GetComponent<DamageText>().SetText(damage + addedDamage, transform.position);
     }
 
     public void ReduceHp(float damage)
     {
-        if(IsDead) return;
+        if (IsDead)
+            return;
+
         _curHp -= damage;
+
+        float hpRatio = CurHp / MaxHp;
+        OnReduceHp.Invoke(hpRatio);
         if (_curHp <= 0)
         {
             _isDead = true;

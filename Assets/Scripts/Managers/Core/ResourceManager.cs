@@ -51,7 +51,7 @@ public class ResourceManager
     /// 리소스>프리펩 폴더에 있는 프리펩을 주소값으로 불러 반환합니다.
     /// path => Resources/Prefabs/{path}
     /// </summary>
-    public GameObject Instantiate(string path, Transform parent = null, string newParentName = null)
+    public GameObject Instantiate(string path, Transform parent = null, string newParentName = null, Transform tfPos = null)
     {
         GameObject original = Load<GameObject>($"Prefabs/{path}");
         if(original == null)
@@ -71,11 +71,17 @@ public class ResourceManager
             {
                 obj = new GameObject { name = newParentName };
             }
-            go = Object.Instantiate(original, obj.transform);
+            if(tfPos != null)
+                go = Object.Instantiate(original, tfPos.transform.position, tfPos.transform.rotation ,obj.transform);
+            else
+                go = Object.Instantiate(original, obj.transform);
         }
         else
         {
-            go = Object.Instantiate(original, parent);
+            if (tfPos != null)
+                go = Object.Instantiate(original, tfPos.transform.position, tfPos.transform.rotation, parent);
+            else
+                go = Object.Instantiate(original, parent);
         }
         go.name = original.name;
 

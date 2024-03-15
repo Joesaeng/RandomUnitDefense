@@ -164,7 +164,6 @@ public class CombatScene : BaseScene
         }
         if (randSlotIndex == -1)
         {
-            Debug.Log("unitSlots is Full!");
             return;
         }
         int randId = _selectedUnitIds[UnityEngine.Random.Range(0, _selectedUnitIds.Length)];

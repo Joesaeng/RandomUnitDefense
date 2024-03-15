@@ -53,9 +53,11 @@ public class UnitBullet : MonoBehaviour
     {
         if (wideAttackArea > 0)
         {
-            transform.position = Vector3.MoveTowards(transform.position, _targetPosition, _bulletSpeed * Time.deltaTime);
             Vector3 dir = _targetPosition - transform.position;
-            transform.rotation = Quaternion.FromToRotation(Vector3.up, dir);
+            transform.SetPositionAndRotation
+                (Vector3.MoveTowards(transform.position, _targetPosition, _bulletSpeed * Time.deltaTime),
+                Quaternion.FromToRotation(Vector3.up, dir));
+
             if (Vector3.Distance(gameObject.transform.position, _targetPosition) < 0.01f)
             {
                 foreach (Monster monster in Managers.Game.Monsters)
@@ -66,7 +68,8 @@ public class UnitBullet : MonoBehaviour
                         monster.TakeHit(_ownUnitStatus, damageRatio);
                     }
                 }
-                GameObject effect = Managers.Resource.Instantiate("HitEffect_1");
+                GameObject effect = Managers.Resource.Instantiate
+                    ("HitEffect_1",Managers.Game.HitEffects);
                 effect.GetComponent<HitEffect>().Init(_targetPosition, wideAttackArea);
                 DestroyBullet();
             }
@@ -79,13 +82,15 @@ public class UnitBullet : MonoBehaviour
                 DestroyBullet();
                 return;
             }
-            transform.position = Vector3.MoveTowards(transform.position, _targetMonster.transform.position, _bulletSpeed * Time.deltaTime);
             Vector3 dir = _targetMonster.transform.position - transform.position;
-            transform.rotation = Quaternion.FromToRotation(Vector3.up, dir);
+            transform.SetPositionAndRotation
+                (Vector3.MoveTowards(transform.position, _targetMonster.transform.position, _bulletSpeed * Time.deltaTime),
+                Quaternion.FromToRotation(Vector3.up, dir));
             if (Util.GetDistance(gameObject, _targetMonster.gameObject) < 0.01f)
             {
                 _targetMonster.TakeHit(_ownUnitStatus);
-                GameObject effect = Managers.Resource.Instantiate("HitEffect_2");
+                GameObject effect = Managers.Resource.Instantiate
+                    ("HitEffect_2",Managers.Game.HitEffects);
                 effect.GetComponent<HitEffect>().Init(_targetMonster.transform.position);
 
                 DestroyBullet();

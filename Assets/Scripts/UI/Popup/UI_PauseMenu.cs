@@ -147,6 +147,7 @@ public class UI_PauseMenu : UI_Popup
             Managers.Resource.Load<Sprite>($"Art/UIImages/UI_{_isOnBGM}");
         Managers.Sound.ChangeBGMVolume();
         Managers.Player.Data.bgmVolume = value;
+        Managers.Player.Data.bgmOn = _isOnBGM;
     }
 
     bool _isOnSFX;
@@ -161,6 +162,7 @@ public class UI_PauseMenu : UI_Popup
         GetImage((int)Images.BtnSFX).sprite =
             Managers.Resource.Load<Sprite>($"Art/UIImages/UI_{_isOnSFX}");
         Managers.Player.Data.sfxVolume = value;
+        Managers.Player.Data.sfxOn = _isOnSFX;
 
     }
 }

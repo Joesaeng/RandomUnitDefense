@@ -17,6 +17,8 @@ namespace Data
         public int[] setUnits = new int[ConstantData.SetUnitCount];
         public float bgmVolume = 1f;
         public float sfxVolume = 1f;
+        public bool bgmOn = true;
+        public bool sfxOn = true;
     }
 
     #endregion

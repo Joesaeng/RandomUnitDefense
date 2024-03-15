@@ -11,6 +11,7 @@ public enum UnitState
 {
     SearchTarget,           // 타겟 스캔
     SkillState,             // 스킬 사용
+    UsingSkill,             // 스킬 사용 중
 }
 
 
@@ -138,7 +139,7 @@ public class UnitStateMachine : MonoBehaviour
         }
         else
         {
-            _unitAnimator.PlayAnimation($"{animstate.ToString()}");
+            _unitAnimator.PlayAnimation($"{animstate}");
         }
     }
 
@@ -183,7 +184,10 @@ public class UnitStateMachine : MonoBehaviour
         }
 
         if (_curAttackRateTime > _unitStatus.attackRate)
+        {
+            ChangeState(UnitState.UsingSkill);
             Skill();
+        }
     }
 
     private void Skill()
@@ -197,14 +201,30 @@ public class UnitStateMachine : MonoBehaviour
         _unitAnimator.PlayAnimation($"Attack_{_job}");
 
         float bullettime = ConstantData.UnitAttackAnimLength / attackAnimSpeed * 0.66f;
-        Invoke("CreateBullet", bullettime);
+        WaitForSeconds wBulletTime = new WaitForSeconds(bullettime);
+        StartCoroutine("CoCreateBullet", wBulletTime);
         _curAttackRateTime = 0f;
     }
 
     public void CreateBullet()
     {
-        GameObject bullet = Managers.Game.Spawn("UnitBullet");
+        ChangeState(UnitState.SearchTarget);
+
+        if (_targetMonster.IsDead)
+        {
+            _targetMonster = null;
+            return;
+        }
+
+        GameObject bullet = Managers.Resource.Instantiate
+            ("UnitBullet",Managers.Game.UnitBullets);
         bullet.transform.position = _ownObj.transform.position;
         bullet.GetComponent<UnitBullet>().Init(_targetMonster, _baseUnit, _unitLv);
+    }
+
+    IEnumerator CoCreateBullet(WaitForSeconds bullettime)
+    {
+        yield return bullettime;
+        CreateBullet();
     }
 }
