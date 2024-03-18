@@ -51,6 +51,17 @@ public class CombatScene : BaseScene
         Managers.UnitStatus.Init();
         Managers.Time.Init();
 
+        #region 오브젝트풀 미리 초기화
+        Managers.Resource.Destroy (Managers.Resource.Instantiate
+            ("UnitBullet", Managers.Game.UnitBullets));
+        Managers.Resource.Destroy (Managers.Resource.Instantiate
+             ("DamageText", Managers.Game.DamageTexts));
+        Managers.Resource.Destroy (Managers.Resource.Instantiate
+                    ("HitEffect_1", Managers.Game.HitEffects));
+        Managers.Resource.Destroy (Managers.Resource.Instantiate
+                    ("HitEffect_2", Managers.Game.HitEffects));
+        #endregion
+
         _ui_scene = Managers.UI.ShowSceneUI<UI_CombatScene>();
 
         Managers.Sound.Play("GameScene",Define.Sound.Bgm);

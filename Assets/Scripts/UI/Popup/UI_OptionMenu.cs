@@ -41,7 +41,7 @@ public class UI_OptionMenu : UI_PauseMenu
         switch (Managers.Game.CurrentScene)
         {
             case Define.Scene.Login:
-                Managers.Scene.LoadScene(Define.Scene.Lobby);
+                Managers.Scene.LoadSceneWithLoadingScene(Define.Scene.Lobby);
                 break;
             case Define.Scene.Lobby:
                 ClosePopupUI();

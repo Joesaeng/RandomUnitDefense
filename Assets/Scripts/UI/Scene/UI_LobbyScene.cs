@@ -194,7 +194,7 @@ public class UI_LobbyScene : UI_Scene
     public void OnStartCombatButtonClicked(PointerEventData data)
     {
         Managers.Sound.Play(Define.SFXNames.Click);
-        Managers.Scene.LoadScene(Define.Scene.Combat);
+        Managers.Scene.LoadSceneWithLoadingScene(Define.Scene.Combat);
     }
     
     private void SetStartCombatButton(bool setAllUnits)

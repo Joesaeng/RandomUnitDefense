@@ -21,12 +21,12 @@ public class LoginScene : BaseScene
     public void LoginSceneButtonClicked()
     {
         Managers.Game.GameLanguage = (Define.GameLanguage)Managers.Player.Data.gameLanguage;
-        if(Managers.Player.Data.beginner)
+        if (Managers.Player.Data.beginner)
         {
             Managers.UI.ShowPopupUI<UI_OptionMenu>();
             Managers.Player.Data.beginner = false;
         }
         else
-             Managers.Scene.LoadScene(Define.Scene.Lobby);
+            Managers.Scene.LoadSceneWithLoadingScene(Define.Scene.Lobby);
     }
 }

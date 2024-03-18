@@ -26,7 +26,7 @@ public class Managers : MonoBehaviour
     InputManager _input = new InputManager();
     PoolManager _pool = new PoolManager();
     ResourceManager _resource = new ResourceManager();
-    SceneManagerEx _scene = new SceneManagerEx();
+    SceneManagerEx _scene;
     SoundManager _sound = new SoundManager();
     TimeManager _time = new TimeManager();
     UIManager _UI = new UIManager();
@@ -71,6 +71,11 @@ public class Managers : MonoBehaviour
             s_instance = go.GetComponent<Managers>();
 
             // 초기화가 필요한 매니저들 초기화 작업
+            GameObject sceneManager = new GameObject {name = "@SceneManagerEX"};
+            sceneManager.AddComponent<SceneManagerEx>();
+            sceneManager.transform.SetParent(go.transform);
+            s_instance._scene = sceneManager.GetComponent<SceneManagerEx>();
+
             s_instance._data.Init();
             s_instance._pool.Init();
             s_instance._player.Init();

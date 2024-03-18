@@ -38,7 +38,7 @@ public class PoolManager
             if (poolable == null)
                 return;
 
-            poolable.transform.parent = Root;
+            poolable.transform.SetParent(Root);
             poolable.gameObject.SetActive(false);
             poolable.isUsing = false;
 
@@ -57,8 +57,8 @@ public class PoolManager
             poolable.gameObject.SetActive(true);
 
             // DontDestroyOnLoad 해제 용도
-             if (parent == null)
-                poolable.transform.parent = Managers.Scene.CurrentScene.transform;
+            if (parent == null)
+                poolable.transform.SetParent(Managers.Scene.CurrentScene.transform);
 
             if (newParentName != null)
             {
@@ -67,11 +67,11 @@ public class PoolManager
                 {
                     obj = new GameObject { name = newParentName };
                 }
-                poolable.transform.parent = obj.transform;
+                poolable.transform.SetParent(obj.transform);
             }
             else
             {
-                poolable.transform.parent = parent;
+                poolable.transform.SetParent(parent);
 
             }
             poolable.isUsing = true;

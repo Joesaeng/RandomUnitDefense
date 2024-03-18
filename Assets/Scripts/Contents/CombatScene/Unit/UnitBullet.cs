@@ -18,7 +18,7 @@ public class UnitBullet : MonoBehaviour
     SpriteRenderer _spriteRenderer;
     Sprite[] _sprites = new Sprite[ConstantData.PlayerUnitHighestLevel];
 
-    public void Init(Monster targetMonster, UnitNames baseUnit, int unitLv, float bulletSpeed = 20f)
+    public void Init(Monster targetMonster, UnitNames baseUnit, int unitLv, float bulletSpeed = 25f)
     {
         if (_spriteRenderer == null)
             _spriteRenderer = GetComponent<SpriteRenderer>();
