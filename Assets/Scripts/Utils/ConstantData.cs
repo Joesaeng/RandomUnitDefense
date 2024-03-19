@@ -18,7 +18,8 @@ public static class ConstantData
     public const float   OneStageTime = 15f;                    // 1스테이지 진행 시간
     public const int     OneStageSpawnCount = 50;               // 1스테이지의 몬스터 소환 횟수
     public const int     MonsterCountForGameOver = 100;         // 게임오버까지의 몬스터 개수
-    public const int     SetUnitCount = 5;                      // 지정된 유닛 설정 갯수
+    public const int     SetUnitCount = 5;                      // 지정된 유닛 설정 개수
+    public const int     EquipedRunesCount = 3;                 // 지정된 룬 장착 가능 개수
     public const int     InitialRuby = 6000;                      // 게임 시작시 초기 루비 양
     public const int     AmountRubyGivenByMonster = 1;          // 몬스터 한마리가 주는 루비의 양
     public const int     RubyRequiredOneSpawnPlayerUnit = 20;   // 플레이어 유닛을 소환하는데 필요한 루비의 양
@@ -36,10 +37,10 @@ public static class ConstantData
 
     // 인게임 아이템 뽑기 확률 
                        //PercentOfCommon             // 0.60 ~ 1
-    public const float   PercentOfUnCommon  = 0.60f; // 0.30 ~ 0.60
-    public const float   PercentOfRare      = 0.30f; // 0.15 ~ 0.30
-    public const float   PercentOfUnique    = 0.15f; // 0.05 ~ 0.15
-    public const float   PercentOfLegend    = 0.05f; // 0    ~ 0.05
+    public const float   PercentOfUnCommonItem  = 0.60f; // 0.30 ~ 0.60
+    public const float   PercentOfRareItem      = 0.30f; // 0.15 ~ 0.30
+    public const float   PercentOfUniqueItem    = 0.15f; // 0.05 ~ 0.15
+    public const float   PercentOfLegendItem    = 0.05f; // 0    ~ 0.05
 
     public const int     BaseGambleCost  = 10;                  // 기본 아이템 뽑기 필요 값
     public const int     IncreaseGambleCost  = 10;              // 뽑기 회당 필요 값 증가량

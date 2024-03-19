@@ -11,8 +11,10 @@ public class UI_LobbyScene : UI_Scene
 {
     public LobbyScene Scene { get; set; }
 
-    SelectUnitPanel SelectUnitPanel { get; set; }
+    SelectedPanel SelectUnitPanel { get; set; }
+    SelectedPanel SelectRunePanel { get; set; }
     Transform _unitSlotsTF;
+    Transform _runeSlotsTF;
 
     GameObject[] _barrackSetUnits = new GameObject[ConstantData.SetUnitCount];
     GameObject[] _combatSetUnits = new GameObject[ConstantData.SetUnitCount];
@@ -29,19 +31,25 @@ public class UI_LobbyScene : UI_Scene
         #endregion
         #region BarrackPanel
         UnitSlots,
+        UnitSlotsScroll,
         SelectUnitPanel,
         UnitPrefabPoint,
         SetUnitPanel,
         #endregion
+        #region RunePanel
+        RuneSlots,
+        RuneSlotsScroll,
+        SelectRunePanel,
+        RuneImageBack,
+        #endregion
         NestedScrollManager,
-        UnitSlotsScroll,
     }
 
     enum Texts
     {
         TextTabCombat,
         TextTabBarrack,
-        TextTabShop,
+        TextTabRune,
         #region CombatPanel
         TextStartCombat,
         #endregion
@@ -53,7 +61,7 @@ public class UI_LobbyScene : UI_Scene
         BtnUseUnitText,
         Lv3PreviewText,
         #endregion
-        #region ShopPanel
+        #region RunePanel
         #endregion
     }
 
@@ -67,7 +75,7 @@ public class UI_LobbyScene : UI_Scene
         BtnCloseSelectedUnit,
         BtnUseUnit,
         #endregion
-        #region ShopPanel
+        #region RunePanel
         #endregion
     }
 
@@ -79,23 +87,29 @@ public class UI_LobbyScene : UI_Scene
         Bind<Button>(typeof(Buttons));
 
         Get<GameObject>((int)GameObjects.NestedScrollManager).GetOrAddComponent<NestedScrollManager>().Init();
-        Get<GameObject>((int)GameObjects.UnitSlotsScroll).GetOrAddComponent<ScrollScript>().Init();
+        Get<GameObject>((int)GameObjects.UnitSlotsScroll).GetOrAddComponent<ScrollScript>()
+            .Init("UnitSlots", "UnitSlotsViewport", "UnitSlotsScrollBar");
+        Get<GameObject>((int)GameObjects.RuneSlotsScroll).GetOrAddComponent<ScrollScript>()
+            .Init("RuneSlots", "RuneSlotsViewport", "RuneSlotsScrollBar");
 
         GetTMPro((int)Texts.TextTabCombat).text = Language.Combat;
         GetTMPro((int)Texts.TextTabBarrack).text = Language.Barrack;
-        GetTMPro((int)Texts.TextTabShop).text = Language.Shop;
+        GetTMPro((int)Texts.TextTabRune).text = Language.Rune;
 
         #region CombatPanel
+
         GetTMPro((int)Texts.TextStartCombat).text = Language.StartCombat;
 
         GetButton((int)Buttons.BtnStartCombat).gameObject.AddUIEvent(OnStartCombatButtonClicked);
         GetButton((int)Buttons.BtnOptionMenu).gameObject.AddUIEvent(OnOptionMenuButtonClicked);
+
         #endregion
 
         #region BarrackPanel
         GetTMPro((int)Texts.BtnUseUnitText).text = Language.Use;
         GetTMPro((int)Texts.Lv3PreviewText).text = Language.Lv3Preview;
 
+        // 현재 사용가능한 유닛들을 슬롯에 세팅
         _unitSlotsTF = Get<GameObject>((int)GameObjects.UnitSlots).transform;
         int baseSlotCount = 30;
         for (int i = 0; i < baseSlotCount; i++)
@@ -109,6 +123,28 @@ public class UI_LobbyScene : UI_Scene
             }
         }
 
+        SelectUnitPanel = Get<GameObject>((int)GameObjects.SelectUnitPanel).GetComponent<SelectedPanel>();
+
+        GetButton((int)Buttons.BtnUseUnit).gameObject.AddUIEvent(OnUseUnitButtonClick);
+        GetButton((int)Buttons.BtnCloseSelectedUnit).gameObject.AddUIEvent(OnCloseSelectedUnitPanelButton);
+
+        #endregion
+
+        #region RunePanel
+        _runeSlotsTF = Get<GameObject>((int)GameObjects.RuneSlots).transform;
+
+        // 플레이어 데이터에서 보유한 룬을 불러와서 룬슬롯들을 채운다
+        // 룬을 뽑을 때마다 해야 하니 메서드를 따로 빼서 만들어주는게 좋겠다.
+        for (int i = 0; i < baseSlotCount; i++)
+        {
+            GameObject runeSlot = Managers.UI.MakeSubItem<UI_RuneSlot>(parent : _runeSlotsTF).gameObject;
+            runeSlot.transform.localScale = new Vector3(1f, 1f, 1f);
+        }
+
+        SelectRunePanel = Get<GameObject>((int)GameObjects.SelectRunePanel).GetComponent<SelectedPanel>();
+        #endregion
+
+        // 설정된 유닛 슬롯 초기화
         Transform setUnitsTF = Get<GameObject>((int)GameObjects.SetUnitPanel).transform;
         for (int index = 0; index < ConstantData.SetUnitCount; index++)
         {
@@ -125,12 +161,10 @@ public class UI_LobbyScene : UI_Scene
 
         SetSetUnits();
 
-        SelectUnitPanel = Get<GameObject>((int)GameObjects.SelectUnitPanel).GetComponent<SelectUnitPanel>();
-
-        GetButton((int)Buttons.BtnUseUnit).gameObject.AddUIEvent(OnUseUnitButtonClick);
-        GetButton((int)Buttons.BtnCloseSelectedUnit).gameObject.AddUIEvent(OnCloseSelectedUnitPanelButton);
-        #endregion
+        
     }
+
+    // 사용할 유닛들 세팅
     bool _setAllUnits;
     public void SetSetUnits()
     {
@@ -151,6 +185,7 @@ public class UI_LobbyScene : UI_Scene
             }
         }
 
+        // 모든 유닛이 설정되지 않았다면 전투 시작 버튼을 비활성화함
         SetStartCombatButton(_setAllUnits);
     }
 
@@ -170,7 +205,7 @@ public class UI_LobbyScene : UI_Scene
         base.OnChangeLanguage();
         GetTMPro((int)Texts.TextTabCombat).text = Language.Combat;
         GetTMPro((int)Texts.TextTabBarrack).text = Language.Barrack;
-        GetTMPro((int)Texts.TextTabShop).text = Language.Shop;
+        GetTMPro((int)Texts.TextTabRune).text = Language.Rune;
         SetStartCombatButton(_setAllUnits);
 
         GetTMPro((int)Texts.BtnUseUnitText).text = Language.Use;
@@ -178,7 +213,7 @@ public class UI_LobbyScene : UI_Scene
         GetTMPro((int)Texts.UnitNameText).text = Language.GetBaseUnitName(_selectedUnitId);
 
         string infoName,InfoValue;
-        SetInfoText(_selectedUnitId, out infoName, out InfoValue);
+        SetUnitInfoText(_selectedUnitId, out infoName, out InfoValue);
         GetTMPro((int)Texts.UnitInfoText).text = infoName;
         GetTMPro((int)Texts.UnitInfoText2).text = InfoValue;
     }
@@ -209,17 +244,22 @@ public class UI_LobbyScene : UI_Scene
     #endregion
 
     #region BarrackPanel
+
+    // 유닛 선택 시 선택된 유닛 정보 및 사용하기 버튼이 있는 선택유닛 패널을 표시함
     UnitNames _selectedUnitId;
     public void OnSelectUnitButtonClick(UnitNames unitId)
     {
         _selectedUnitId = unitId;
-        SelectUnitPanel.ShowSelectUnitPanel();
+        SelectUnitPanel.ShowSelectedPanel();
 
         GetTMPro((int)Texts.UnitNameText).text = Language.GetBaseUnitName(unitId);
+
+        // UnitPrefabPoint(선택된 유닛의 프리펩이 담겨있는 위치)에 기존에 선택된 유닛이 있을 때 제거함
         if (Util.FindChild(Get<GameObject>((int)GameObjects.UnitPrefabPoint)) != null)
         {
             Managers.Resource.Destroy(Util.FindChild(Get<GameObject>((int)GameObjects.UnitPrefabPoint)));
         }
+
         GameObject obj = Managers.Resource.Instantiate($"Units/{unitId}_3", Get<GameObject>((int)GameObjects.UnitPrefabPoint).transform);
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localScale = Vector3.one;
@@ -227,7 +267,7 @@ public class UI_LobbyScene : UI_Scene
         Util.FindChild<SortingGroup>(obj).sortingOrder = 9;
 
         string infoName,InfoValue;
-        SetInfoText(unitId, out infoName, out InfoValue);
+        SetUnitInfoText(unitId, out infoName, out InfoValue);
         GetTMPro((int)Texts.UnitInfoText).text = infoName;
         GetTMPro((int)Texts.UnitInfoText2).text = InfoValue;
     }
@@ -238,7 +278,8 @@ public class UI_LobbyScene : UI_Scene
         Managers.UI.ShowPopupUI<UI_UseUnit>().Set((int)_selectedUnitId);
     }
 
-    private void SetInfoText(UnitNames unitId, out string infoName, out string infoValue)
+    // 유닛의 정보들을 세팅
+    private void SetUnitInfoText(UnitNames unitId, out string infoName, out string infoValue)
     {
         string info =
             $"{Language.GetUnitInfo(Language.UnitInfos.AttackType)}\n" +
@@ -329,10 +370,13 @@ public class UI_LobbyScene : UI_Scene
     public void OnCloseSelectedUnitPanelButton(PointerEventData eventData)
     {
         Managers.Sound.Play(Define.SFXNames.Click);
-        SelectUnitPanel.HideSelectUnitPanel();
+        SelectUnitPanel.HideSelectedPanel();
     }
     #endregion
 
+    #region RunePanel
+
+    #endregion
     public void Clear()
     {
         Managers.Resource.Destroy(gameObject);

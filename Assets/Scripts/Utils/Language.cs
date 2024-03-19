@@ -398,7 +398,7 @@ public static class Language
         }
     }
 
-    public static string Shop
+    public static string Rune
     {
         get
         {
@@ -406,11 +406,11 @@ public static class Language
             switch (language)
             {
                 case Define.GameLanguage.English:
-                    return "Shop";
+                    return "Rune";
                 case Define.GameLanguage.Korean:
-                    return "ªÛ¡°";
+                    return "∑È";
                 default:
-                    return "Shop";
+                    return "Rune";
             }
         }
     }

@@ -19,6 +19,64 @@ namespace Data
         public float sfxVolume = 1f;
         public bool bgmOn = true;
         public bool sfxOn = true;
+
+        public List<Rune> ownedRunes = new List<Rune>();
+        public Rune[] equipedRunes = new Rune[ConstantData.EquipedRunesCount];
+    }
+
+    #endregion
+
+    #region Runes
+    public enum BaseRune
+    {
+        RuneOfKnight,
+        RuneOfArcher,
+        RuneOfViking,
+        RuneOfFireMagician,
+        RuneOfSpearman,
+        RuneOfWarrior,
+        RuneOfPoisonBowMan,
+
+        RuneOfRich,
+        RuneOfFighter,
+        RuneOfLucky,
+        RuneOfCurse,
+        Count
+    }
+    public enum GradeOfRune
+    {
+        Common,
+        Rare,
+        Hero,
+        Legend,
+        Myth,
+    }
+    public enum AdditionalEffectName
+    {
+        IncreaseDamage,
+        DecreaseAttackRate,
+        AddedDamage,
+        IncreaseBulletSpeed,
+
+
+
+    }
+
+    [System.Serializable]
+    public class AdditionalEffect
+    {
+        public AdditionalEffectName name;
+        public float value;
+    }
+
+    [System.Serializable]
+    public class Rune
+    {
+        public BaseRune baseRune;
+        public GradeOfRune gradeOfRune;
+        public float baseRuneEffectValue;
+        public bool isEquip;
+        public List<AdditionalEffect> additionalEffects = new List<AdditionalEffect>();
     }
 
     #endregion

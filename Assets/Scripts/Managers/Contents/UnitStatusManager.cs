@@ -224,6 +224,8 @@ public class UnitStatusManager
             break;
         }
 
+        // status에 장착된 룬의 효과를 부여하기
+
         return status;
     }
 

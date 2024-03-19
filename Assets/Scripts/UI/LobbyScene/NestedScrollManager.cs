@@ -16,9 +16,6 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
     [SerializeField]
     Image[] _menuImages;
 
-    [SerializeField]
-    Transform _contentTr;
-
     const int CountOfLobbyMenu = 3;
     float[] _pos = new float[CountOfLobbyMenu];
 
@@ -47,22 +44,20 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
         {
             GameObject.Find("CombatBtn").GetComponent<Image>(), 
             GameObject.Find("BarrackBtn").GetComponent<Image>(), 
-            GameObject.Find("ShopBtn").GetComponent<Image>() 
+            GameObject.Find("RuneBtn").GetComponent<Image>() 
         };
         _menuImages = new Image[]
         {
             GameObject.Find("CombatImage").GetComponent<Image>(),
             GameObject.Find("BarrackImage").GetComponent<Image>(),
-            GameObject.Find("ShopImage").GetComponent<Image>(),
+            GameObject.Find("RuneImage").GetComponent<Image>(),
         };
-
-        _contentTr = GameObject.Find("NestedContent").transform;
 
         Button tabBtn = GameObject.Find("CombatBtn").GetComponent<Button>();
         tabBtn.onClick.AddListener(() => TabClick(0));
         tabBtn = GameObject.Find("BarrackBtn").GetComponent<Button>();
         tabBtn.onClick.AddListener(() => TabClick(1));
-        tabBtn = GameObject.Find("ShopBtn").GetComponent<Button>();
+        tabBtn = GameObject.Find("RuneBtn").GetComponent<Button>();
         tabBtn.onClick.AddListener(() => TabClick(2));
 
         #endregion
@@ -128,13 +123,6 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
                 ++_targetIndex;
                 SetTargetPos(_curPos + _distance);
             }
-        }
-
-        for (int i = 0; i < CountOfLobbyMenu; ++i)
-        {
-            if (Util.FindChild<ScrollScript>(_contentTr.gameObject, recursive: true) != null && _curPos != _pos[i] && _targetPos == _pos[i])
-                Util.FindChild<Scrollbar>(_contentTr.gameObject,recursive:true).value = 1;
-
         }
     }
 

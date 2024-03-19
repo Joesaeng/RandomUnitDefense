@@ -13,21 +13,21 @@ public class ScrollScript : ScrollRect
     {
         
     }
-    public void Init()
+    public void Init(string slotObjName, string slotsViewportName, string slotsScrollBarName)
     {
         NM = GameObject.FindWithTag("NestedScrollManager").GetComponent<NestedScrollManager>();
         parentScrollRect = GameObject.FindWithTag("NestedScrollManager").GetComponent<ScrollRect>();
 
-        content = GameObject.Find("UnitSlots").GetComponent<RectTransform>();
+        content = GameObject.Find(slotObjName).GetComponent<RectTransform>();
         horizontal = false;
         vertical = true;
         movementType = MovementType.Clamped;
         inertia = true;
         decelerationRate = 0.135f;
         scrollSensitivity = 1;
-        viewport = GameObject.Find("UnitSlotsViewport").GetComponent<RectTransform>();
+        viewport = GameObject.Find(slotsViewportName).GetComponent<RectTransform>();
         horizontalScrollbar = null;
-        verticalScrollbar = GameObject.Find("UnitSlotsScrollBar").GetComponent<Scrollbar>();
+        verticalScrollbar = GameObject.Find(slotsScrollBarName).GetComponent<Scrollbar>();
         verticalScrollbarVisibility = ScrollbarVisibility.AutoHideAndExpandViewport;
         verticalScrollbarSpacing = 0;
     }
