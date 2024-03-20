@@ -13,12 +13,14 @@ public class Managers : MonoBehaviour
     UnitStatusManager _unitStatus = new UnitStatusManager();
     InGameItemManager _inGameItem = new InGameItemManager();
     PlayerManager _player = new PlayerManager();
+    RuneManager _rune = new RuneManager();
 
 
     public static GameManagerEx Game { get { return Instance._game; } }
     public static UnitStatusManager UnitStatus { get {  return Instance._unitStatus; } }
     public static InGameItemManager InGameItem { get {  return Instance._inGameItem; } }
     public static PlayerManager Player { get {  return Instance._player; } }
+    public static RuneManager Rune { get {  return Instance._rune; } }
     #endregion
 
     #region Core
@@ -80,6 +82,7 @@ public class Managers : MonoBehaviour
             s_instance._pool.Init();
             s_instance._player.Init();
             s_instance._sound.Init();
+            s_instance._rune.Init();
         }
     }
 

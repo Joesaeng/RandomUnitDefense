@@ -35,6 +35,7 @@ public class PlayerManager
         if (!File.Exists(_path))
         {
             _playerData = new PlayerData();
+
             SaveToJson();
         }
         string jsonData = File.ReadAllText(_path);

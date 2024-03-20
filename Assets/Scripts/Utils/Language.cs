@@ -1,4 +1,5 @@
 using Data;
+using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using static Define;
 using static Unity.VisualScripting.Icons;
@@ -88,7 +89,7 @@ public static class Language
             "Level",
             "AttackDamage",
             "AttackRange",
-            "AttackRate",
+            "AttackSpeed",
             "AttackArea",
             "SlowRatio",
             "Duration",
@@ -128,7 +129,7 @@ public static class Language
         {
             "",
             "Increase Damage",
-            "Decrease Attack Rate",
+            "Decrease Attack Cycle",
             "Increase Attack Range",
             "Increase AOE Area",
             "Added Damage"
@@ -554,4 +555,154 @@ public static class Language
         }
         return retString;
     }
+
+    #region RuneDescriptions
+    public static string GetRuneGradeText(GradeOfRune gradeOfRune)
+    {
+        Define.GameLanguage language = Managers.Game.GameLanguage;
+        string[] englishGrade =
+        {
+            "Common",
+            "Rare",
+            "Unique",
+            "Legend",
+            "Myth"
+        };
+        string[] koreanGrade =
+        {
+            "일반",
+            "희귀",
+            "유니크",
+            "전설",
+            "신화"
+        };
+        switch (language)
+        {
+            case Define.GameLanguage.English:
+                return englishGrade[(int)gradeOfRune];
+            case Define.GameLanguage.Korean:
+                return koreanGrade[(int)gradeOfRune];
+            default:
+                return englishGrade[(int)gradeOfRune];
+        }
+    }
+
+    public static string GetRuneNameText(BaseRune baseRune)
+    {
+        Define.GameLanguage language = Managers.Game.GameLanguage;
+        string[] englishRuneName =
+        {
+            "Knight's Rune",
+            "Archer's Rune",
+            "Viking's Rune",
+            "FireMagician's Rune",
+            "Spearman's Rune",
+            "Warrior's Rune",
+            "PoisonBowMan's Rune",
+            "Rich's Rune",
+            "Fighter's Rune",
+            "Lucky's Rune",
+            "Curse's Rune",
+        };
+        string[] koreanRuneName =
+        {
+            "기사의 룬",
+            "궁수의 룬",
+            "바이킹의 룬",
+            "파이어매지션의 룬",
+            "창기사의 룬",
+            "워리어의 룬",
+            "포이즌보우맨의 룬",
+            "부자의 룬",
+            "싸움꾼의 룬",
+            "운의 룬",
+            "저주의 룬",
+        };
+        switch (language)
+        {
+            case Define.GameLanguage.English:
+                return englishRuneName[(int)baseRune];
+            case Define.GameLanguage.Korean:
+                return koreanRuneName[(int)baseRune];
+            default:
+                return englishRuneName[(int)baseRune];
+        }
+    }
+
+    public static string GetRuneBaseInfo(BaseRune baseRune, float value)
+    {
+        string valuetext = $"{MathF.Round(value *100)}%";
+        Define.GameLanguage language = Managers.Game.GameLanguage;
+        string[] englishRuneBaseInfo =
+        {
+            $"The Knight's Base Damages Are Increase {valuetext}",
+            $"The Archer's Base Damages Are Increase {valuetext}",
+            $"The Viking's Base Damages Are Increase {valuetext}",
+            $"The FireMagician's Base Damages Are Increase {valuetext}",
+            $"The Spearman's Base Damages Are Increase {valuetext}",
+            $"The Warrior's Base Damages Are Increase {valuetext}",
+            $"The PoisonBowMan's Poison Damages Are Increase {valuetext}",
+            $"{valuetext} increase in gold coin acquisition",
+            $"Attack speed increases by {valuetext}",
+            $"Spawn the unit one more time with a {valuetext} chance.",
+            $"Decreases the monster's defense by {valuetext}.",
+        };
+        string[] koreanRuneBaseInfo =
+        {
+            $"기사의 기본 피해량이 {valuetext} 증가합니다",
+            $"궁수의 기본 피해량이 {valuetext} 증가합니다",
+            $"바이킹의 기본 피해량이 {valuetext} 증가합니다",
+            $"파이어매지션의 기본 피해량이 {valuetext} 증가합니다",
+            $"스피어맨의 기본 피해량이 {valuetext} 증가합니다",
+            $"워리어의 기본 피해량이 {valuetext} 증가합니다",
+            $"포이즌보우맨의 독 피해량이 {valuetext} 증가합니다",
+            $"금화 획득량이 {valuetext} 증가합니다",
+            $"공격속도가 {valuetext} 증가합니다",
+            $"유닛 소환 시 {valuetext} 확률로 한번 더 소환합니다",
+            $"몬스터의 방어력을 {valuetext} 감소시킵니다.",
+        };
+        switch (language)
+        {
+            case Define.GameLanguage.English:
+                return englishRuneBaseInfo[(int)baseRune];
+            case Define.GameLanguage.Korean:
+                return koreanRuneBaseInfo[(int)baseRune];
+            default:
+                return englishRuneBaseInfo[(int)baseRune];
+        }
+    }
+
+    public static string GetRuneAdditionalEffectText(AdditionalEffectName effectName, float value)
+    {
+        string valuetext = $"{value}";
+        if(effectName != AdditionalEffectName.AddedDamage &&
+            effectName != AdditionalEffectName.IncreaseBulletSpeed)
+            valuetext = $"{MathF.Round(value * 100)}%";
+
+        Define.GameLanguage language = Managers.Game.GameLanguage;
+        string[] englishEffects =
+        {
+            $"{valuetext} Increased Damages",
+            $"{valuetext} Increased Attack Speed",
+            $"{valuetext} Added Damage",
+            $"{valuetext} Increased Bullet Speed",
+        };
+        string[] koreanEffects =
+        {
+            $"{valuetext} 데미지 증가",
+            $"{valuetext} 공격속도 증가",
+            $"{valuetext} 추가 데미지",
+            $"{valuetext} 투사체 속도 증가",
+        };
+        switch (language)
+        {
+            case Define.GameLanguage.English:
+                return englishEffects[(int)effectName];
+            case Define.GameLanguage.Korean:
+                return koreanEffects[(int)effectName];
+            default:
+                return englishEffects[(int)effectName];
+        }
+    }
+    #endregion
 }

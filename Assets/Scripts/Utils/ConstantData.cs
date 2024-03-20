@@ -20,7 +20,7 @@ public static class ConstantData
     public const int     MonsterCountForGameOver = 100;         // 게임오버까지의 몬스터 개수
     public const int     SetUnitCount = 5;                      // 지정된 유닛 설정 개수
     public const int     EquipedRunesCount = 3;                 // 지정된 룬 장착 가능 개수
-    public const int     InitialRuby = 6000;                      // 게임 시작시 초기 루비 양
+    public const int     InitialRuby = 6000;                    // 게임 시작시 초기 루비 양
     public const int     AmountRubyGivenByMonster = 1;          // 몬스터 한마리가 주는 루비의 양
     public const int     RubyRequiredOneSpawnPlayerUnit = 20;   // 플레이어 유닛을 소환하는데 필요한 루비의 양
 
@@ -36,14 +36,25 @@ public static class ConstantData
     public const float   IncreaseDebuffRatio = 1.1f;
 
     // 인게임 아이템 뽑기 확률 
-                       //PercentOfCommon             // 0.60 ~ 1
-    public const float   PercentOfUnCommonItem  = 0.60f; // 0.30 ~ 0.60
-    public const float   PercentOfRareItem      = 0.30f; // 0.15 ~ 0.30
-    public const float   PercentOfUniqueItem    = 0.15f; // 0.05 ~ 0.15
-    public const float   PercentOfLegendItem    = 0.05f; // 0    ~ 0.05
+    //PercentOfCommon                 // 0.60 ~ 1    40%
+    public const float   PercentOfUnCommonItem  = 0.60f; // 0.30 ~ 0.60 30%
+    public const float   PercentOfRareItem      = 0.30f; // 0.15 ~ 0.30 15%
+    public const float   PercentOfUniqueItem    = 0.15f; // 0.05 ~ 0.15 10% 
+    public const float   PercentOfLegendItem    = 0.05f; // 0    ~ 0.05  5%
 
     public const int     BaseGambleCost  = 10;                  // 기본 아이템 뽑기 필요 값
     public const int     IncreaseGambleCost  = 10;              // 뽑기 회당 필요 값 증가량
+
+    // 룬 뽑기 확률
+    // PercentOfCommonRune                  0.50 ~ 1      50%
+    public const float   PercentOfRareRune        = 0.50f; // 0.21 ~ 0.50   29%
+    public const float   PercentOfUniqueRune      = 0.21f; // 0.09 ~ 0.21   12%
+    public const float   PercentOfLegendRune      = 0.09f; // 0.03 ~ 0.09    6%
+    public const float   PercentOfMythRune        = 0.03f; // 0    ~ 0.03    3%
+
+    // 룬 등급 당 부가 효과 개수
+    public static readonly int[] AdditionalEftCountOfRunes = {0,1,2,3,5};
+
 
     // 아이템 텍스트 컬러
     public static readonly Color[] ItemColors =
@@ -54,6 +65,16 @@ public static class ConstantData
         new Color(169/255f,11/255f,214/255f),
         new Color(214/255f,10/255f,75/255f),
         new Color(214/255f,195/255f,10/255f),
+    };
+
+    // 룬 등급 텍스트 컬러
+    public static readonly Color[] RuneGradeColors =
+    {
+        new Color(0.78f,0.81f,0.86f),
+        new Color(1f,0.78f,0.14f),
+        new Color(1f,0.92f,0.34f),
+        new Color(0.58f,0.99f,1f),
+        new Color(0.91f,0.19f,0.23f),
     };
 
 

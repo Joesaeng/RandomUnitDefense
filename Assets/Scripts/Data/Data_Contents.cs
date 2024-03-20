@@ -29,27 +29,27 @@ namespace Data
     #region Runes
     public enum BaseRune
     {
-        RuneOfKnight,
-        RuneOfArcher,
-        RuneOfViking,
-        RuneOfFireMagician,
-        RuneOfSpearman,
-        RuneOfWarrior,
-        RuneOfPoisonBowMan,
-
-        RuneOfRich,
-        RuneOfFighter,
-        RuneOfLucky,
-        RuneOfCurse,
+        Knight,
+        Archer,
+        Viking,
+        FireMagician,
+        Spearman,
+        Warrior,
+        PoisonBowMan,
+        Rich,
+        Fighter,
+        Lucky,
+        Curse,
         Count
     }
     public enum GradeOfRune
     {
         Common,
         Rare,
-        Hero,
+        Unique,
         Legend,
         Myth,
+        None,
     }
     public enum AdditionalEffectName
     {
@@ -57,13 +57,13 @@ namespace Data
         DecreaseAttackRate,
         AddedDamage,
         IncreaseBulletSpeed,
+        
 
-
-
+        Count
     }
 
     [System.Serializable]
-    public class AdditionalEffect
+    public class AdditionalEffectOfRune
     {
         public AdditionalEffectName name;
         public float value;
@@ -76,7 +76,58 @@ namespace Data
         public GradeOfRune gradeOfRune;
         public float baseRuneEffectValue;
         public bool isEquip;
-        public List<AdditionalEffect> additionalEffects = new List<AdditionalEffect>();
+        public List<AdditionalEffectOfRune> additionalEffects = new List<AdditionalEffectOfRune>();
+    }
+
+    [System.Serializable]
+    public class AdditionalEffectOfRuneValueMinMax
+    {
+        public string effectName;
+        public float min;
+        public float max;
+    }
+
+    [System.Serializable]
+    public class AdditionalEffectOfRuneValueMinMaxDatas 
+        : ILoader<string, AdditionalEffectOfRuneValueMinMax>
+    {
+        public List<AdditionalEffectOfRuneValueMinMax> effectMinMaxs 
+            = new List<AdditionalEffectOfRuneValueMinMax>();
+
+        public Dictionary<string, AdditionalEffectOfRuneValueMinMax> MakeDict()
+        {
+            Dictionary<string,AdditionalEffectOfRuneValueMinMax> dict 
+                = new Dictionary<string,AdditionalEffectOfRuneValueMinMax>();
+
+            foreach (AdditionalEffectOfRuneValueMinMax data in effectMinMaxs)
+            {
+                dict.Add(data.effectName, data);
+            }
+            return dict;
+        }
+    }
+
+    [System.Serializable]
+    public class BaseRuneValue
+    {
+        public string       runeGradeAndName;
+        public float        value;
+    }
+
+    [System.Serializable]
+    public class BaseRuneValueDatas : ILoader<string, BaseRuneValue>
+    {
+        public List<BaseRuneValue> RuneValues = new List<BaseRuneValue>();
+
+        public Dictionary<string, BaseRuneValue> MakeDict()
+        {
+            Dictionary<string,BaseRuneValue> dict = new Dictionary<string,BaseRuneValue>();
+            foreach (BaseRuneValue data in RuneValues)
+            {
+                dict.Add(data.runeGradeAndName, data);
+            }
+            return dict;
+        }
     }
 
     #endregion

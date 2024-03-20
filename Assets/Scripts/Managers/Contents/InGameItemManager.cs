@@ -72,13 +72,13 @@ public class InGameItemManager
 
         float randValue = UnityEngine.Random.value;
         int itemLevel = 1;
-        if (randValue < ConstantData.PercentOfLegendItem)
+        if (randValue <= ConstantData.PercentOfLegendItem)
             itemLevel = 5;
-        else if (randValue < ConstantData.PercentOfUniqueItem)
+        else if (randValue <= ConstantData.PercentOfUniqueItem)
             itemLevel = 4;
-        else if (randValue < ConstantData.PercentOfRareItem)
+        else if (randValue <= ConstantData.PercentOfRareItem)
             itemLevel = 3;
-        else if (randValue < ConstantData.PercentOfUnCommonItem)
+        else if (randValue <= ConstantData.PercentOfUnCommonItem)
             itemLevel = 2;
 
         List<InGameItemData> list = new List<InGameItemData>();

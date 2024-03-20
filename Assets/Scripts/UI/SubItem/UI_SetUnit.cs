@@ -7,7 +7,8 @@ public class UI_SetUnit : UI_Base
 {
     enum Images
     {
-        ImageUnit
+        ImageUnit,
+        ImageBack
     }
     public override void Init()
     {
@@ -37,6 +38,10 @@ public class UI_SetUnit : UI_Base
     public void OffImage()
     {
         GetImage((int)Images.ImageUnit).enabled = false;
+    }
+    public void SelectImageOff()
+    {
+        GetImage((int)Images.ImageBack).enabled = false;
     }
     private void Start()
     {

@@ -40,7 +40,7 @@ public class UI_UnitSlot : UI_LobbySceneSlot
         if(!forParent)
         {
             Managers.Sound.Play(Define.SFXNames.Click);
-            _uI_LobbyScene.OnSelectUnitButtonClick(ID);
+            _uI_LobbyScene.UpdateSelectedUnitPanel(ID);
         }
     }
 }

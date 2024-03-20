@@ -2,6 +2,7 @@ using Data;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
@@ -18,6 +19,8 @@ public class UI_LobbyScene : UI_Scene
 
     GameObject[] _barrackSetUnits = new GameObject[ConstantData.SetUnitCount];
     GameObject[] _combatSetUnits = new GameObject[ConstantData.SetUnitCount];
+
+    GameObject[] _equipedRunes = new GameObject[ConstantData.EquipedRunesCount];
 
     enum GameObjects
     {
@@ -41,6 +44,7 @@ public class UI_LobbyScene : UI_Scene
         RuneSlotsScroll,
         SelectRunePanel,
         RuneImageBack,
+        SetRunesPanel,
         #endregion
         NestedScrollManager,
     }
@@ -54,7 +58,6 @@ public class UI_LobbyScene : UI_Scene
         TextStartCombat,
         #endregion
         #region BarrackPanel
-        // SeletedUnitPanel
         UnitNameText,
         UnitInfoText,
         UnitInfoText2,
@@ -62,6 +65,16 @@ public class UI_LobbyScene : UI_Scene
         Lv3PreviewText,
         #endregion
         #region RunePanel
+        RuneNameText,
+        RuneBaseInfoText,
+        RuneSubInfoText,
+        BtnUseRuneText,
+        BtnSellRuneText,
+        RuneGradeText,
+        OneRuneGambleText,
+        TenRuneGambleText,
+        GambleOneRuneCostText,
+        GambleTenRuneCostText,
         #endregion
     }
 
@@ -76,6 +89,11 @@ public class UI_LobbyScene : UI_Scene
         BtnUseUnit,
         #endregion
         #region RunePanel
+        BtnCloseSelectedRune,
+        BtnUseRune,
+        BtnSellRune,
+        OneRuneGambleButton,
+        TenRuneGambleButton,
         #endregion
     }
 
@@ -133,15 +151,26 @@ public class UI_LobbyScene : UI_Scene
         #region RunePanel
         _runeSlotsTF = Get<GameObject>((int)GameObjects.RuneSlots).transform;
 
-        // 플레이어 데이터에서 보유한 룬을 불러와서 룬슬롯들을 채운다
-        // 룬을 뽑을 때마다 해야 하니 메서드를 따로 빼서 만들어주는게 좋겠다.
-        for (int i = 0; i < baseSlotCount; i++)
+        SetOwnRunes();
+
+        Transform equipedRunesTF = Get<GameObject>((int)GameObjects.SetRunesPanel).transform;
+        for (int index = 0; index < ConstantData.EquipedRunesCount; index++)
         {
-            GameObject runeSlot = Managers.UI.MakeSubItem<UI_RuneSlot>(parent : _runeSlotsTF).gameObject;
-            runeSlot.transform.localScale = new Vector3(1f, 1f, 1f);
+            GameObject equipedRuneSlot = Managers.UI.MakeSubItem<UI_SetRune>(parent : equipedRunesTF).gameObject;
+            equipedRuneSlot.transform.localScale = new Vector3(1f, 1f, 1f);
+            _equipedRunes[index] = equipedRuneSlot;
         }
 
+        SetEquipedRunes();
+
         SelectRunePanel = Get<GameObject>((int)GameObjects.SelectRunePanel).GetComponent<SelectedPanel>();
+
+        GetButton((int)Buttons.BtnCloseSelectedRune).gameObject.AddUIEvent(OnCloseSelectedRunePanelButton);
+        GetButton((int)Buttons.BtnUseRune).gameObject.AddUIEvent(OnUseRuneButtonClick);
+        GetButton((int)Buttons.BtnSellRune).gameObject.AddUIEvent(OnSellRuneButtonClick);
+
+        GetButton((int)Buttons.OneRuneGambleButton).gameObject.AddUIEvent(OnOneRuneGambleButtonClicked);
+        GetButton((int)Buttons.TenRuneGambleButton).gameObject.AddUIEvent(OnTenRuneGambleButtonClicked);
         #endregion
 
         // 설정된 유닛 슬롯 초기화
@@ -156,12 +185,13 @@ public class UI_LobbyScene : UI_Scene
             setUnit2.transform.localScale = new Vector3(1f, 1f, 1f);
             setUnit2.transform.localPosition = Vector3.zero;
             setUnit2.GetComponent<Image>().enabled = false;
+            setUnit2.GetComponent<UI_SetUnit>().SelectImageOff();
             _combatSetUnits[index] = setUnit2;
         }
 
         SetSetUnits();
 
-        
+
     }
 
     // 사용할 유닛들 세팅
@@ -208,14 +238,11 @@ public class UI_LobbyScene : UI_Scene
         GetTMPro((int)Texts.TextTabRune).text = Language.Rune;
         SetStartCombatButton(_setAllUnits);
 
-        GetTMPro((int)Texts.BtnUseUnitText).text = Language.Use;
-        GetTMPro((int)Texts.Lv3PreviewText).text = Language.Lv3Preview;
-        GetTMPro((int)Texts.UnitNameText).text = Language.GetBaseUnitName(_selectedUnitId);
+        if (_selectedUnitId != UnitNames.Count)
+            UpdateSelectedUnitPanel(_selectedUnitId);
 
-        string infoName,InfoValue;
-        SetUnitInfoText(_selectedUnitId, out infoName, out InfoValue);
-        GetTMPro((int)Texts.UnitInfoText).text = infoName;
-        GetTMPro((int)Texts.UnitInfoText2).text = InfoValue;
+        if (selectedRune != null)
+            UpdateSelectedRunePanel(selectedRune, selectedRuneIndex);
     }
 
     public void OnOptionMenuButtonClicked(PointerEventData data)
@@ -231,7 +258,7 @@ public class UI_LobbyScene : UI_Scene
         Managers.Sound.Play(Define.SFXNames.Click);
         Managers.Scene.LoadSceneWithLoadingScene(Define.Scene.Combat);
     }
-    
+
     private void SetStartCombatButton(bool setAllUnits)
     {
         Get<GameObject>((int)GameObjects.BlockerStartCombatBtn).SetActive(!setAllUnits);
@@ -245,9 +272,9 @@ public class UI_LobbyScene : UI_Scene
 
     #region BarrackPanel
 
-    // 유닛 선택 시 선택된 유닛 정보 및 사용하기 버튼이 있는 선택유닛 패널을 표시함
-    UnitNames _selectedUnitId;
-    public void OnSelectUnitButtonClick(UnitNames unitId)
+    // 유닛슬롯에서 유닛 선택 시 선택된 유닛 정보 및 사용하기 버튼이 있는 선택유닛 패널을 표시함
+    UnitNames _selectedUnitId = UnitNames.Count;
+    public void UpdateSelectedUnitPanel(UnitNames unitId)
     {
         _selectedUnitId = unitId;
         SelectUnitPanel.ShowSelectedPanel();
@@ -270,6 +297,7 @@ public class UI_LobbyScene : UI_Scene
         SetUnitInfoText(unitId, out infoName, out InfoValue);
         GetTMPro((int)Texts.UnitInfoText).text = infoName;
         GetTMPro((int)Texts.UnitInfoText2).text = InfoValue;
+        GetTMPro((int)Texts.Lv3PreviewText).text = Language.Lv3Preview;
     }
 
     public void OnUseUnitButtonClick(PointerEventData eventData)
@@ -372,10 +400,150 @@ public class UI_LobbyScene : UI_Scene
         Managers.Sound.Play(Define.SFXNames.Click);
         SelectUnitPanel.HideSelectedPanel();
     }
+
     #endregion
 
     #region RunePanel
+    // 플레이어가 가지고있는 룬들을 UI에 표시
+    public void SetOwnRunes()
+    {
+        for (int i = 0; i < _runeSlotsTF.childCount; ++i)
+        {
+            Managers.Resource.Destroy(_runeSlotsTF.GetChild(i).gameObject);
+        }
 
+        for (int runeIndex = 0; runeIndex < Managers.Player.Data.ownedRunes.Count; runeIndex++)
+        {
+            GameObject ownRune = Managers.UI.MakeSubItem<UI_RuneSlot>(parent : _runeSlotsTF).gameObject;
+            ownRune.transform.localScale = new Vector3(1f, 1f, 1f);
+
+            ownRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
+        }
+    }
+
+    public void SetEquipedRunes()
+    {
+        for (int i = 0; i < ConstantData.EquipedRunesCount; i++)
+        {
+            if (Managers.Player.Data.equipedRunes[i] != null
+                && Managers.Player.Data.equipedRunes[i].baseRuneEffectValue != 0f)
+            {
+                Rune rune = Managers.Player.Data.equipedRunes[i];
+                _equipedRunes[i].GetComponent<UI_SetRune>().SetRuneImage(rune.baseRune, rune.gradeOfRune);
+            }
+            else
+                _equipedRunes[i].GetComponent<UI_SetRune>().OffImage();
+        }
+        // 장착 룬이 바뀌면 보유한 룬들도 한번 업데이트
+        StartCoroutine("RuneSlotsUpdate");
+    }
+
+    Rune selectedRune = null;
+    int selectedRuneIndex = int.MaxValue;
+    public void UpdateSelectedRunePanel(Rune rune, int runeIndex)
+    {
+        selectedRune = rune;
+        selectedRuneIndex = runeIndex;
+        SelectRunePanel.ShowSelectedPanel();
+
+        GetTMPro((int)Texts.RuneNameText).text = Language.GetRuneNameText(rune.baseRune);
+
+        GetTMPro((int)Texts.RuneBaseInfoText).text = Language.GetRuneBaseInfo(rune.baseRune, rune.baseRuneEffectValue);
+
+        GetTMPro((int)Texts.RuneSubInfoText).text = "";
+        int additionalEffectCount = rune.additionalEffects.Count;
+        for (int i = 0; i < additionalEffectCount; ++i)
+        {
+            AdditionalEffectOfRune effect = rune.additionalEffects[i];
+            string additionalEffectText = Language.GetRuneAdditionalEffectText(effect.name,effect.value);
+            GetTMPro((int)Texts.RuneSubInfoText).text += $"{additionalEffectText}\n";
+        }
+
+
+        GetTMPro((int)Texts.BtnUseRuneText).text = Language.Use;
+
+        // TEMP
+        int sellCost = 100;
+        GetTMPro((int)Texts.BtnSellRuneText).text = $"{Language.Sell} {sellCost}";
+
+        GetTMPro((int)Texts.RuneGradeText).text = Language.GetRuneGradeText(rune.gradeOfRune);
+        GetTMPro((int)Texts.RuneGradeText).color = ConstantData.RuneGradeColors[(int)rune.gradeOfRune];
+
+        GameObject runeImageObj = Get<GameObject>((int)GameObjects.RuneImageBack);
+        Util.FindChild<Image>(runeImageObj, "RuneImage").sprite = Managers.Rune.RuneSprites[rune.gradeOfRune];
+        Util.FindChild<TextMeshProUGUI>(runeImageObj, "RuneImageText", true).text = Managers.Rune.RuneTextImages[rune.baseRune];
+    }
+
+    public void OnUseRuneButtonClick(PointerEventData eventData)
+    {
+        Managers.Sound.Play(Define.SFXNames.Click);
+        Managers.UI.ShowPopupUI<UI_UseRune>().Set(selectedRune);
+    }
+
+    public void OnSellRuneButtonClick(PointerEventData eventData)
+    {
+        SelectRunePanel.HideSelectedPanel();
+        if (Managers.Player.Data.ownedRunes[selectedRuneIndex].isEquip == true)
+            return;
+        Managers.Resource.Destroy(_runeSlotsTF.GetChild(selectedRuneIndex).gameObject);
+        Managers.Player.Data.ownedRunes.RemoveAt(selectedRuneIndex);
+
+        StartCoroutine("RuneSlotsUpdate");
+        //for (int runeIndex = 0; runeIndex < Managers.Player.Data.ownedRunes.Count; runeIndex++)
+        //{
+        //    GameObject ownRune = _runeSlotsTF.GetChild(runeIndex).gameObject;
+
+        //    ownRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
+        //}
+    }
+
+    IEnumerator RuneSlotsUpdate()
+    {
+        yield return null;
+        for (int runeIndex = 0; runeIndex < Managers.Player.Data.ownedRunes.Count; runeIndex++)
+        {
+            GameObject ownRune = _runeSlotsTF.GetChild(runeIndex).gameObject;
+
+            ownRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
+        }
+    }
+
+    public void OnCloseSelectedRunePanelButton(PointerEventData eventData)
+    {
+        Managers.Sound.Play(Define.SFXNames.Click);
+        SelectRunePanel.HideSelectedPanel();
+    }
+
+    public void OnOneRuneGambleButtonClicked(PointerEventData eventData)
+    {
+        // 플레이어 골드 확인
+        Managers.Player.Data.ownedRunes.Add(Managers.Rune.CreateRandomRune());
+
+        GameObject newRune = Managers.UI.MakeSubItem<UI_RuneSlot>(parent : _runeSlotsTF).gameObject;
+        newRune.transform.localScale = new Vector3(1f, 1f, 1f);
+
+        newRune.GetComponent<UI_RuneSlot>().SetRune(Managers.Player.Data.ownedRunes.Count - 1, this);
+    }
+
+    public void OnTenRuneGambleButtonClicked(PointerEventData eventData)
+    {
+        // 플레이어 골드 확인
+
+        int beginRuneIndex = Managers.Player.Data.ownedRunes.Count;
+        for (int count = 0; count < 10; count++)
+        {
+            Managers.Player.Data.ownedRunes.Add(Managers.Rune.CreateRandomRune());
+        }
+        Managers.Player.Data.ownedRunes.Add(Managers.Rune.CreateRandomRune(GradeOfRune.Unique));
+
+        for (int runeIndex = beginRuneIndex; runeIndex < Managers.Player.Data.ownedRunes.Count; runeIndex++)
+        {
+            GameObject newRune = Managers.UI.MakeSubItem<UI_RuneSlot>(parent : _runeSlotsTF).gameObject;
+            newRune.transform.localScale = new Vector3(1f, 1f, 1f);
+
+            newRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
+        }
+    }
     #endregion
     public void Clear()
     {

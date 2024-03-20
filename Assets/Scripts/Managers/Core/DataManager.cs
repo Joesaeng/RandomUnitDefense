@@ -18,6 +18,9 @@ public class DataManager
     public Dictionary<int, Data.BaseUnit> BaseUnitDict { get; private set; } = new Dictionary<int, Data.BaseUnit>();
     public Dictionary<int, Data.MonsterData> MonsterDict { get; private set; } = new Dictionary<int, Data.MonsterData>();
     public Dictionary<int, Data.InGameItemData> InGameItemDict { get; private set; } = new Dictionary<int, Data.InGameItemData>();
+    public Dictionary<string, Data.BaseRuneValue> RunesDict { get; private set; } = new Dictionary<string, Data.BaseRuneValue>();
+    public Dictionary<string, Data.AdditionalEffectOfRuneValueMinMax> EffectMinMaxs { get; private set; } 
+        = new Dictionary<string, Data.AdditionalEffectOfRuneValueMinMax>();
 
     public Dictionary<int, Data.Knight> KnightStats { get; private set; } = new Dictionary<int, Data.Knight>();
     public Dictionary<int, Data.Spearman> SpearmanStats { get; private set; } = new Dictionary<int, Data.Spearman>();
@@ -29,13 +32,15 @@ public class DataManager
     public Dictionary<int, Data.Warrior> WarriorStats { get; private set; } = new Dictionary<int, Data.Warrior>();
     public Dictionary<int, Data.PoisonBowMan> PoisonBowManStats { get; private set; } = new Dictionary<int, Data.PoisonBowMan>();
 
-    public Dictionary<UnitNames, Dictionary<int, UnitStat_Base>> UnitStatDict { get; private set; } = new Dictionary<UnitNames, Dictionary<int, UnitStat_Base>>();
     public void Init()
     {
         BaseUnitDict = LoadJson<Data.BaseUnitDatas, int, Data.BaseUnit>("BaseUnits").MakeDict();
         MonsterDict = LoadJson<Data.MonsterDatas, int, Data.MonsterData>("MonsterDatas").MakeDict();
         InGameItemDict = LoadJson<Data.InGameItemDatas, int, Data.InGameItemData>("InGameItemDatas").MakeDict();
-       
+        RunesDict = LoadJson<Data.BaseRuneValueDatas, string, Data.BaseRuneValue>("RuneValues").MakeDict();
+        EffectMinMaxs = LoadJson<Data.AdditionalEffectOfRuneValueMinMaxDatas, string, 
+            Data.AdditionalEffectOfRuneValueMinMax>("EffectMinMaxData").MakeDict();
+
         KnightStats = LoadJson<Data.UnitStats<Knight>, int, Data.Knight>("Knight").MakeDict();
         SpearmanStats = LoadJson<Data.UnitStats<Spearman>, int, Data.Spearman>("Spearman").MakeDict();
         ArcherStats = LoadJson<Data.UnitStats<Archer>, int, Data.Archer>("Archer").MakeDict();
