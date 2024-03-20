@@ -423,16 +423,25 @@ public class UI_LobbyScene : UI_Scene
 
     public void SetEquipedRunes()
     {
+        Rune[] equipedRunes = Managers.Player.Data.EquipedRunes;
         for (int i = 0; i < ConstantData.EquipedRunesCount; i++)
         {
-            if (Managers.Player.Data.equipedRunes[i] != null
-                && Managers.Player.Data.equipedRunes[i].baseRuneEffectValue != 0f)
+            if (equipedRunes[i] != null && equipedRunes[i].baseRuneEffectValue != 0f)
             {
-                Rune rune = Managers.Player.Data.equipedRunes[i];
+                Rune rune = equipedRunes[i];
                 _equipedRunes[i].GetComponent<UI_SetRune>().SetRuneImage(rune.baseRune, rune.gradeOfRune);
             }
             else
                 _equipedRunes[i].GetComponent<UI_SetRune>().OffImage();
+
+            //if (Managers.Player.Data.EquipedRunes[i] != null
+            //    && Managers.Player.Data.EquipedRunes[i].baseRuneEffectValue != 0f)
+            //{
+            //    Rune rune = Managers.Player.Data.EquipedRunes[i];
+            //    _equipedRunes[i].GetComponent<UI_SetRune>().SetRuneImage(rune.baseRune, rune.gradeOfRune);
+            //}
+            //else
+            //    _equipedRunes[i].GetComponent<UI_SetRune>().OffImage();
         }
         // ÀåÂø ·éÀÌ ¹Ù²î¸é º¸À¯ÇÑ ·éµéµµ ÇÑ¹ø ¾÷µ¥ÀÌÆ®
         StartCoroutine("RuneSlotsUpdate");

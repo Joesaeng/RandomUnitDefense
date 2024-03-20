@@ -28,17 +28,14 @@ public class SelectedPanel : MonoBehaviour
         _isMoving = true;
     }
 
-    float movetime = 0f;
     void Update()
     {
         if(_isMoving)
         {
             transform.localPosition = Vector3.Lerp(transform.localPosition, _movingPos[(int)_movePos], _scrollSpeed * Time.deltaTime);
-            movetime += Time.deltaTime;
-            if (movetime >= 1.5f)
+            if (Vector3.Distance(transform.localPosition, _movingPos[(int)_movePos]) <= 1f)
             {
                 _isMoving = false;
-                movetime = 0f;
             }
         }
     }

@@ -23,6 +23,16 @@ public class PlayerManager
     {
         _path = Application.persistentDataPath + "/PlayerData";
         LoadFromJson();
+
+        // ÀåÂøµÈ ·é ¼¼ÆÃ
+        List<Rune> ownedRunes = Managers.Player.Data.ownedRunes;
+        for (int i = 0; i < Managers.Player.Data.ownedRunes.Count; ++i)
+        {
+            if (ownedRunes[i].isEquip && ownedRunes[i].equipSlotIndex != -1)
+            {
+                Data.EquipedRunes[ownedRunes[i].equipSlotIndex] = ownedRunes[i];
+            }
+        }
     }
 
     public void SaveToJson()

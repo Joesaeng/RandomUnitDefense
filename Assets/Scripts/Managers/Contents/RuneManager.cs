@@ -102,12 +102,12 @@ public class RuneManager
         effect.value = Random.Range(minMax.min, minMax.max);
 
         // 추가데미지와 투사체속도증가는 소수점이 필요 없으니 없앰
-        if(effect.name == AdditionalEffectName.AddedDamage 
+        if (effect.name == AdditionalEffectName.AddedDamage
             || effect.name == AdditionalEffectName.IncreaseBulletSpeed)
-                effect.value = (float)System.Math.Round(effect.value, 0);
+            effect.value = System.MathF.Round(effect.value);
         // 이 외는 소수점 두자리까지만 사용
         else
-            effect.value = (float)System.Math.Round(effect.value, 2);
+            effect.value = System.MathF.Round(effect.value,2);
 
         return effect;
     }

@@ -21,7 +21,8 @@ namespace Data
         public bool sfxOn = true;
 
         public List<Rune> ownedRunes = new List<Rune>();
-        public Rune[] equipedRunes = new Rune[ConstantData.EquipedRunesCount];
+        private Rune[] equipedRunes = new Rune[ConstantData.EquipedRunesCount];
+        public Rune[] EquipedRunes { get { return equipedRunes; } set { equipedRunes = value; } }
     }
 
     #endregion
@@ -76,6 +77,7 @@ namespace Data
         public GradeOfRune gradeOfRune;
         public float baseRuneEffectValue;
         public bool isEquip;
+        public int equipSlotIndex = -1;
         public List<AdditionalEffectOfRune> additionalEffects = new List<AdditionalEffectOfRune>();
     }
 
