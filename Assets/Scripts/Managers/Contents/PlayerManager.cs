@@ -11,7 +11,6 @@ public class PlayerManager
     {
         get 
         {
-            SaveToJson();
             return _playerData;
         }
         set { _playerData = value; }

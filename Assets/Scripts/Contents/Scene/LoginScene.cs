@@ -28,5 +28,7 @@ public class LoginScene : BaseScene
         }
         else
             Managers.Scene.LoadSceneWithLoadingScene(Define.Scene.Lobby);
+
+        Managers.Player.SaveToJson();
     }
 }

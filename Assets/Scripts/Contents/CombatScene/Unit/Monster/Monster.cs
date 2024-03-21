@@ -10,7 +10,7 @@ public class Monster : MonoBehaviour
 {
     MonsterData _monsterStat = new MonsterData();
 
-    UnitAnimaitor _unitAnimator;
+    UnitAnimator _unitAnimator;
 
     Transform _animatorTF;
 
@@ -60,7 +60,7 @@ public class Monster : MonoBehaviour
             _animatorTF = go.transform;
             _animatorTF.localPosition = new Vector3(0, -0.5f, 0);
             _animatorTF.localScale = new Vector3(1.25f, 1.25f, 1);
-            _unitAnimator = go.GetOrAddComponent<UnitAnimaitor>();
+            _unitAnimator = go.GetOrAddComponent<UnitAnimator>();
             _unitAnimator.Init();
         }
 

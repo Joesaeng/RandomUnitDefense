@@ -148,6 +148,8 @@ public class UI_PauseMenu : UI_Popup
         Managers.Sound.ChangeBGMVolume();
         Managers.Player.Data.bgmVolume = value;
         Managers.Player.Data.bgmOn = _isOnBGM;
+
+        Managers.Player.SaveToJson();
     }
 
     bool _isOnSFX;
@@ -164,5 +166,6 @@ public class UI_PauseMenu : UI_Popup
         Managers.Player.Data.sfxVolume = value;
         Managers.Player.Data.sfxOn = _isOnSFX;
 
+        Managers.Player.SaveToJson();
     }
 }

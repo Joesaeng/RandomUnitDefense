@@ -234,5 +234,6 @@ public class GameManagerEx
             _gameLanguage = Define.GameLanguage.Korean;
         Managers.Player.Data.gameLanguage = (int)_gameLanguage;
         Util.CheckTheEventAndCall(OnChangedLanguage);
+        Managers.Player.SaveToJson();
     }
 }

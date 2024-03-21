@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitAnimaitor : MonoBehaviour
+public class UnitAnimator : MonoBehaviour
 {
     public Animator _animator;
     private AnimationClip[] _animationClips;

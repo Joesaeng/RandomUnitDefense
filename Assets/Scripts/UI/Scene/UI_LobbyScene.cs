@@ -217,6 +217,8 @@ public class UI_LobbyScene : UI_Scene
 
         // 모든 유닛이 설정되지 않았다면 전투 시작 버튼을 비활성화함
         SetStartCombatButton(_setAllUnits);
+
+        Managers.Player.SaveToJson();
     }
 
     private void SetCanvasForLobbyScene()
@@ -291,7 +293,10 @@ public class UI_LobbyScene : UI_Scene
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localScale = Vector3.one;
         obj.transform.localRotation = Quaternion.identity;
-        Util.FindChild<SortingGroup>(obj).sortingOrder = 9;
+        Util.FindChild<SortingGroup>(obj).sortingOrder = 10;
+        Util.FindChild<Animator>(obj).runtimeAnimatorController = Managers.Resource.Load<RuntimeAnimatorController>("Animations/PrefabUnits/AnimatorController");
+        Util.FindChild<Animator>(obj).SetFloat("AttackAnimSpeed", 1f);
+        Util.FindChild<Animator>(obj).Play($"Attack_{Managers.Data.BaseUnitDict[(int)unitId].job}",0);
 
         string infoName,InfoValue;
         SetUnitInfoText(unitId, out infoName, out InfoValue);
@@ -419,6 +424,7 @@ public class UI_LobbyScene : UI_Scene
 
             ownRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
         }
+        Managers.Player.SaveToJson();
     }
 
     public void SetEquipedRunes()
@@ -433,18 +439,10 @@ public class UI_LobbyScene : UI_Scene
             }
             else
                 _equipedRunes[i].GetComponent<UI_SetRune>().OffImage();
-
-            //if (Managers.Player.Data.EquipedRunes[i] != null
-            //    && Managers.Player.Data.EquipedRunes[i].baseRuneEffectValue != 0f)
-            //{
-            //    Rune rune = Managers.Player.Data.EquipedRunes[i];
-            //    _equipedRunes[i].GetComponent<UI_SetRune>().SetRuneImage(rune.baseRune, rune.gradeOfRune);
-            //}
-            //else
-            //    _equipedRunes[i].GetComponent<UI_SetRune>().OffImage();
         }
         // 장착 룬이 바뀌면 보유한 룬들도 한번 업데이트
         StartCoroutine("RuneSlotsUpdate");
+        Managers.Player.SaveToJson();
     }
 
     Rune selectedRune = null;
@@ -498,12 +496,7 @@ public class UI_LobbyScene : UI_Scene
         Managers.Player.Data.ownedRunes.RemoveAt(selectedRuneIndex);
 
         StartCoroutine("RuneSlotsUpdate");
-        //for (int runeIndex = 0; runeIndex < Managers.Player.Data.ownedRunes.Count; runeIndex++)
-        //{
-        //    GameObject ownRune = _runeSlotsTF.GetChild(runeIndex).gameObject;
-
-        //    ownRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
-        //}
+        Managers.Player.SaveToJson();
     }
 
     IEnumerator RuneSlotsUpdate()
@@ -532,6 +525,7 @@ public class UI_LobbyScene : UI_Scene
         newRune.transform.localScale = new Vector3(1f, 1f, 1f);
 
         newRune.GetComponent<UI_RuneSlot>().SetRune(Managers.Player.Data.ownedRunes.Count - 1, this);
+        Managers.Player.SaveToJson();
     }
 
     public void OnTenRuneGambleButtonClicked(PointerEventData eventData)
@@ -552,6 +546,7 @@ public class UI_LobbyScene : UI_Scene
 
             newRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
         }
+        Managers.Player.SaveToJson();
     }
     #endregion
     public void Clear()
