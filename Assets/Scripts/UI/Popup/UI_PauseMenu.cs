@@ -124,6 +124,7 @@ public class UI_PauseMenu : UI_Popup
     private void OnLobbyButtonClicked(PointerEventData data)
     {
         Managers.Sound.Play(Define.SFXNames.Click);
+        ClosePopupUI();
         Managers.Scene.LoadSceneWithLoadingScene(Define.Scene.Lobby);
     }
 

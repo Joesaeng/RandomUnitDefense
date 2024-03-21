@@ -9,10 +9,10 @@ using UnityEngine.Scripting;
 public class GameManagerEx
 {
     private Define.GameLanguage _gameLanguage = Define.GameLanguage.Korean;
-    public Define.GameLanguage GameLanguage 
-    { 
-        get { return _gameLanguage; } 
-        set 
+    public Define.GameLanguage GameLanguage
+    {
+        get { return _gameLanguage; }
+        set
         {
             _gameLanguage = value;
             Util.CheckTheEventAndCall(OnChangedLanguage);
@@ -136,22 +136,17 @@ public class GameManagerEx
         Util.CheckTheEventAndCall(OnNextStage);
     }
 
-    public GameObject Spawn(string path, Transform parent = null, string newParentName = null)
+    public void SpawnMonster(Vector3 spawnPoint)
     {
-        GameObject go = Managers.Resource.Instantiate(path, parent, newParentName);
-
-        if (path == "Monster")
-        {
-            Monster monster = go.GetOrAddComponent<Monster>();
-            monster.Init(CurStage, CurMap);
-            _monsters.Add(monster);
-            CurStageMonsterCount++;
-        }
-
-        return go;
+        GameObject go = Managers.Resource.Instantiate("Monster",newParentName:"Monsters");
+        Monster monster = go.GetOrAddComponent<Monster>();
+        monster.Init(CurStage, CurMap);
+        _monsters.Add(monster);
+        CurStageMonsterCount++;
+        go.transform.position = spawnPoint;
     }
 
-    public void Despawn(GameObject go)
+    public void DespawnMonster(GameObject go)
     {
         if (go.TryGetComponent(out Monster monster) == true)
         {
@@ -161,10 +156,7 @@ public class GameManagerEx
                 Managers.Resource.Destroy(go);
             }
         }
-
-
     }
-
     // 플레이어 유닛 이동 메서드
     public void MoveUnitBetweenSlots(int curSlotIndex, int moveSlotIndex)
     {
@@ -180,7 +172,7 @@ public class GameManagerEx
     {
         while (DyingMonsters.Count > 0)
         {
-            Despawn(DyingMonsters.Pop());
+            DespawnMonster(DyingMonsters.Pop());
             Ruby += ConstantData.AmountRubyGivenByMonster;
         }
     }

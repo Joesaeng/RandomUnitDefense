@@ -11,7 +11,7 @@ public static class ConstantData
     #endregion
 
 
-    // ▽▽▽▽▽▽▽▽▽▽ Contents 데이터 ▽▽▽▽▽▽▽▽▽▽▽
+    #region ▽▽▽▽▽▽▽▽▽▽ Contents 데이터 ▽▽▽▽▽▽▽▽▽▽▽
 
     public const int     PlayerUnitHighestLevel = 3;            // 플레이어 유닛의 최고 레벨
     public const float   MonsterRespawnTime = 0.3f;             // 몬스터 리스폰 시간
@@ -30,30 +30,31 @@ public static class ConstantData
     public const int     FirstOfUnitID = 100;                   // 첫번째 플레이어 유닛의 ID
 
     public const int     BaseUpgradeCost = 10;                  // 유닛의 기본 업그레이드 필요 값
-    // 유닛 업그레이드 당 증가량
-    public const float   IncreaseAttackRate = 0.95f;
-    public const float   IncreaseDebuffDuration = 1.1f;
-    public const float   IncreaseDebuffRatio = 1.1f;
+
+    // 유닛 업그레이드 당 증가량                                   // 공격력은 기본 공격력 만큼 증가함
+    public const float   IncreaseAttackRate         = 0.95f;    // 공격속도 증가 5%
+    public const float   IncreaseDebuffDuration     = 1.1f;     // 디버프 지속시간 증가 10%
+    public const float   IncreaseDebuffRatio        = 1.1f;     // 디버프 비율 증가 10%
 
     // 인게임 아이템 뽑기 확률 
-    //PercentOfCommon                 // 0.60 ~ 1    40%
-    public const float   PercentOfUnCommonItem  = 0.60f; // 0.30 ~ 0.60 30%
-    public const float   PercentOfRareItem      = 0.30f; // 0.15 ~ 0.30 15%
-    public const float   PercentOfUniqueItem    = 0.15f; // 0.05 ~ 0.15 10% 
-    public const float   PercentOfLegendItem    = 0.05f; // 0    ~ 0.05  5%
+    //                   PercentOfCommon                    0.60 ~ 1        40%
+    public const float   PercentOfUnCommonItem  = 0.60f; // 0.30 ~ 0.60     30%
+    public const float   PercentOfRareItem      = 0.30f; // 0.15 ~ 0.30     15%
+    public const float   PercentOfUniqueItem    = 0.15f; // 0.05 ~ 0.15     10% 
+    public const float   PercentOfLegendItem    = 0.05f; // 0    ~ 0.05      5%
 
     public const int     BaseGambleCost  = 10;                  // 기본 아이템 뽑기 필요 값
     public const int     IncreaseGambleCost  = 10;              // 뽑기 회당 필요 값 증가량
 
     // 룬 뽑기 확률
-    // PercentOfCommonRune                  0.50 ~ 1      50%
+    //                   PercentOfCommonRune                  0.50 ~ 1      50%
     public const float   PercentOfRareRune        = 0.50f; // 0.21 ~ 0.50   29%
     public const float   PercentOfUniqueRune      = 0.21f; // 0.09 ~ 0.21   12%
     public const float   PercentOfLegendRune      = 0.09f; // 0.03 ~ 0.09    6%
     public const float   PercentOfMythRune        = 0.03f; // 0    ~ 0.03    3%
 
     // 룬 등급 당 부가 효과 개수
-    public static readonly int[] AdditionalEftCountOfRunes = {0,1,2,3,5};
+    public static readonly int[] AdditionalEftCountOfRunes = {0,1,2,3,5}; // {Common,Rare,Unique,Legend,Myth}
 
 
     // 아이템 텍스트 컬러
@@ -78,7 +79,7 @@ public static class ConstantData
     };
 
 
-    #region 몬스터 이동 포인트 벡터
+    #region 맵마다 필요한 몬스터의 이동 위치벡터
     // Basic Map
     public static readonly Vector3[] BasicMapPoint =
     {
@@ -87,5 +88,8 @@ public static class ConstantData
         new Vector3 (  3.9f, -3.4f, -1f),
         new Vector3 (  3.9f,  4.2f, -1f)
     };
+    #endregion
+
+    public const int SelectedUnitPrefabSortOrder = 10;  // LobbyScene 선택 유닛 패널에 있는 프리펩의 SortOrder
     #endregion
 }

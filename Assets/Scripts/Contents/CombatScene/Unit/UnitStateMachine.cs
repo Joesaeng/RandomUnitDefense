@@ -10,8 +10,8 @@ using static Unit;
 public enum UnitState
 {
     SearchTarget,           // 타겟 스캔
-    SkillState,             // 스킬 사용
-    UsingSkill,             // 스킬 사용 중
+    AttackState,            // 공격
+    Attacking,              // 공격 중
 }
 
 
@@ -64,10 +64,10 @@ public class UnitStateMachine : MonoBehaviour
         switch (_state)
         {
             case UnitState.SearchTarget:
-                SearchTargetM();
+                SearchTarget();
                 break;
-            case UnitState.SkillState:
-                SkillStateM();
+            case UnitState.AttackState:
+                AttackState();
                 break;
 
         }
@@ -125,7 +125,7 @@ public class UnitStateMachine : MonoBehaviour
             case UnitState.SearchTarget:
                 CurrentAnimState = Define.UnitAnimationState.Idle;
                 break;
-            case UnitState.SkillState:
+            case UnitState.AttackState:
                 CurrentAnimState = Define.UnitAnimationState.Attack;
                 break;
         }
@@ -143,7 +143,7 @@ public class UnitStateMachine : MonoBehaviour
         }
     }
 
-    private void SearchTargetM()
+    private void SearchTarget()
     {
         float closestDist = Mathf.Infinity;
         foreach (Monster monster in Managers.Game.Monsters)
@@ -160,12 +160,12 @@ public class UnitStateMachine : MonoBehaviour
 
         if (_targetMonster != null)
         {
-            ChangeState(UnitState.SkillState);
+            ChangeState(UnitState.AttackState);
             return;
         }
     }
 
-    private void SkillStateM()
+    private void AttackState()
     {
         if (_targetMonster == null ||
             (_targetMonster != null && _targetMonster.IsDead))
@@ -185,12 +185,12 @@ public class UnitStateMachine : MonoBehaviour
 
         if (_curAttackRateTime > _unitStatus.attackRate)
         {
-            ChangeState(UnitState.UsingSkill);
-            Skill();
+            ChangeState(UnitState.Attacking);
+            Attack();
         }
     }
 
-    private void Skill()
+    private void Attack()
     {
         float flipX = transform.position.x < _targetMonster.transform.position.x ? -1.3f : 1.3f;
         _unitAnimator.transform.localScale = new Vector3(flipX, 1.3f, 1);
@@ -210,7 +210,8 @@ public class UnitStateMachine : MonoBehaviour
     {
         ChangeState(UnitState.SearchTarget);
 
-        if (_targetMonster.IsDead)
+        // 타겟한 몬스터가 사망했어도 광역공격유닛은 그 위치에 공격을 하게끔
+        if (_targetMonster.IsDead && _unitStatus.wideAttackArea <= 0f)
         {
             _targetMonster = null;
             return;

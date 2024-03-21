@@ -2,6 +2,7 @@ using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using Unity.VisualScripting;
@@ -11,10 +12,8 @@ public class CombatScene : BaseScene
 {
     UI_CombatScene _ui_scene;
 
-    [SerializeField]
     Transform _monsterSpawnPoint;
 
-    [SerializeField]
     Define.Map _curMap = Define.Map.Basic;
 
     // SlotIndex,Unit
@@ -22,13 +21,13 @@ public class CombatScene : BaseScene
     
     UnitSlot[] _unitSlots = null;
 
-    [SerializeField]
     int[] _selectedUnitIds;
 
     protected override void Init()
     {
         base.Init();
         SceneType = Define.Scene.Combat;
+        _monsterSpawnPoint = GameObject.Find("SpawnPoint").transform;
 
         Managers.Game.InitForGameScene(_curMap);
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
@@ -87,7 +86,6 @@ public class CombatScene : BaseScene
             Managers.Game.DyingMonsterDespawn();
         }
     }
-
     // 유닛의 슬롯간 이동시 호출되는 메서드
     private void OnMoveUnitBetweenSlots(int curSlotIndex, int nextSlotIndex)
     {
@@ -153,7 +151,6 @@ public class CombatScene : BaseScene
         return isComposeable;
     }
 
-
     // 플레이어가 유닛 소환 버튼 클릭 시 호출되는 메서드
     private void OnSpawnPlayerUnit()
     {
@@ -188,8 +185,7 @@ public class CombatScene : BaseScene
     // 플레이어 유닛 생성 메서드
     private void CreatePlayerUnit(int slotIndex, int id, int level = 1)
     {
-        GameObject obj = Managers.Game.Spawn("Unit",newParentName:"Units");
-
+        GameObject obj = Managers.Resource.Instantiate("Unit", newParentName:"Units");
         obj.transform.position = GetUnitMovePos(slotIndex);
 
         Unit unit = obj.GetOrAddComponent<Unit>();
@@ -205,6 +201,7 @@ public class CombatScene : BaseScene
         _unitDict.Add(slotIndex, unit);
     }
 
+    // 플레이어가 유닛을 드래그 할 때 호출되는 이벤트
     private void OnDraggableUnitDragEventReader(Unit unit)
     {
         for(int slotIndex = 0;  slotIndex < _unitSlots.Length; ++slotIndex)
@@ -216,13 +213,14 @@ public class CombatScene : BaseScene
         }
     }
 
+    // 플레이어가 유닛을 드래그하고 뗄 때 호출되는 이벤트
     private void OnDraggableUnitMouseUpEventReader()
     {
         foreach (UnitSlot slot in _unitSlots)
             slot.SetBasicImage();
     }
 
-
+    // 플레이어가 유닛 판매 버튼을 눌렀을 때
     private void OnSellAUnit(Unit unit,int sellCost)
     {
         int slotIndex;
@@ -232,6 +230,7 @@ public class CombatScene : BaseScene
             Managers.Game.Ruby += sellCost;
         }
     }
+
     // 플레이어 유닛 제거 메서드
     private void DestroyPlayerUnit(int slotIndex)
     {
@@ -258,6 +257,7 @@ public class CombatScene : BaseScene
         return _unitSlots[slotIndex].transform.position + Vector3.back;
     }
 
+    // 씬 변경 할 때
     public override void Clear()
     {
         for (int i = 0; i < _unitSlots.Length; i++)
@@ -277,16 +277,22 @@ public class CombatScene : BaseScene
     }
 
     // 몬스터를 리스폰할 시간이 되었다! 는 이벤트
+    // 이 이벤트를 굳이 CombatScene에서 받아올 필요가 있는가?
+    // GameManager에서 관리를 하는데 그냥 GameManager가 이벤트를 받을까?
+    // 모르겠땅!
     private void TheRespawnTime()
     {
         if (Managers.Game.CurStageMonsterCount < ConstantData.OneStageSpawnCount)
             SpawnMonster();
+        else
+        { 
+            // GameOver
+        }
     }
 
     // 몬스터 유닛 소환 메서드
     private void SpawnMonster()
     {
-        Managers.Game.Spawn("Monster",newParentName:"Monsters").transform.position 
-            = _monsterSpawnPoint.position;
+        Managers.Game.SpawnMonster(_monsterSpawnPoint.position);
     }
 }

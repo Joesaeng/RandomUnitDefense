@@ -293,10 +293,14 @@ public class UI_LobbyScene : UI_Scene
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localScale = Vector3.one;
         obj.transform.localRotation = Quaternion.identity;
-        Util.FindChild<SortingGroup>(obj).sortingOrder = 10;
-        Util.FindChild<Animator>(obj).runtimeAnimatorController = Managers.Resource.Load<RuntimeAnimatorController>("Animations/PrefabUnits/AnimatorController");
-        Util.FindChild<Animator>(obj).SetFloat("AttackAnimSpeed", 1f);
-        Util.FindChild<Animator>(obj).Play($"Attack_{Managers.Data.BaseUnitDict[(int)unitId].job}",0);
+
+        Util.FindChild<SortingGroup>(obj).sortingOrder = ConstantData.SelectedUnitPrefabSortOrder;
+
+        Animator selectedUnitPrefabAnimator = Util.FindChild<Animator>(obj);
+        selectedUnitPrefabAnimator.runtimeAnimatorController 
+            = Managers.Resource.Load<RuntimeAnimatorController>("Animations/PrefabUnits/AnimatorController");
+        selectedUnitPrefabAnimator.SetFloat("AttackAnimSpeed", 1f);
+        selectedUnitPrefabAnimator.Play($"Attack_{Managers.Data.BaseUnitDict[(int)unitId].job}",0);
 
         string infoName,InfoValue;
         SetUnitInfoText(unitId, out infoName, out InfoValue);

@@ -5,24 +5,25 @@ using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
 
-// DataManager에서 Json을 어떤 파일 포맷으로 불러들일지 저장
+// Json 데이터 저장 형식
 namespace Data
 {
     #region Player
     [Serializable]
     public class PlayerData
     {
-        public bool beginner = true;
-        public int gameLanguage = (int)Define.GameLanguage.English;
-        public int[] setUnits = new int[ConstantData.SetUnitCount];
-        public float bgmVolume = 1f;
-        public float sfxVolume = 1f;
-        public bool bgmOn = true;
-        public bool sfxOn = true;
+        public bool     beginner        = true;
+        public int      gameLanguage    = (int)Define.GameLanguage.English;
+        public int[]    setUnits        = new int[ConstantData.SetUnitCount];
+        public float    bgmVolume       = 1f;
+        public float    sfxVolume       = 1f;
+        public bool     bgmOn           = true;
+        public bool     sfxOn           = true;
+        public int      AmountOfGold    = 0;
 
-        public List<Rune> ownedRunes = new List<Rune>();
-        private Rune[] equipedRunes = new Rune[ConstantData.EquipedRunesCount];
-        public Rune[] EquipedRunes { get { return equipedRunes; } set { equipedRunes = value; } }
+        public  List<Rune>      ownedRunes      = new List<Rune>();
+        private Rune[]          equipedRunes    = new Rune[ConstantData.EquipedRunesCount];
+        public  Rune[]          EquipedRunes    { get { return equipedRunes; } set { equipedRunes = value; } }
     }
 
     #endregion
