@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static Define;
 
 public class UnitStatus : ICloneable
 {
@@ -33,9 +34,11 @@ public class UnitStatusManager
     // 기능 : 
     // Id,Lv 을 인자로 받아서 정보를 뱉어줌
     // 업그레이드 할 때 유닛의 정보 업데이트 (unitStateMachine의 공격속도, 공격범위 업데이트)
-    // <Id<Lv,Info>> 딕셔너리 
-    Dictionary<UnitNames,Dictionary<int,UnitStatus>> _unitStatusDict;
+    
+    Dictionary<UnitNames,Dictionary<int,UnitStatus>> _unitStatusDict; // <Id<Lv,Info>>
     Dictionary<UnitNames,int> _unitUpgradLv;
+   
+    Dictionary<UnitNames,Dictionary<int,int>> _unitUpgradeDamage; // Id<Lv,룬효과가 적용된 데미지>
 
     public Dictionary<UnitNames,int> UnitUpgradLv => _unitUpgradLv;
 
@@ -72,7 +75,7 @@ public class UnitStatusManager
 
     private void Upgrade(UnitStatus status,int lv)
     {
-        int basicAttackDamage = Managers.Data.GetUnitData(status.unit,lv).attackDamage;
+        int basicAttackDamage = _unitUpgradeDamage[status.unit][lv];
         float basicDamagePerSecond = 0f;
         // damagePerSecond가 필요한 경우
         if(status.unit == UnitNames.PoisonBowMan)
@@ -119,34 +122,44 @@ public class UnitStatusManager
             _unitStatusDict.Clear();
         if (_unitUpgradLv != null)
             _unitStatusDict.Clear();
+        if(_unitUpgradeDamage != null)
+            _unitUpgradeDamage.Clear();
 
         _unitStatusDict = new Dictionary<UnitNames, Dictionary<int, UnitStatus>>();
         _unitUpgradLv = new Dictionary<UnitNames, int>();
+        _unitUpgradeDamage = new Dictionary<UnitNames, Dictionary<int, int>>();
+
         foreach (BaseUnit baseUnit in Managers.Data.BaseUnitDict.Values)
         {
             UnitNames type = baseUnit.baseUnit;
             UnitType attackType = baseUnit.type;
             Dictionary<int,UnitStatus> dict = new Dictionary<int, UnitStatus>();
+            Dictionary<int,int> levelPerUpgradeDamageDict = new Dictionary<int,int>();
 
             for (int lv = 1; lv <= ConstantData.PlayerUnitHighestLevel; lv++)
             {
-                dict.Add(lv, MakeUnitStatus(type, attackType, lv));
+                int upgradeDamage;
+                dict.Add(lv, MakeUnitStatus(type, attackType, lv, out upgradeDamage));
+                levelPerUpgradeDamageDict.Add(lv, upgradeDamage);
             }
             _unitStatusDict.Add(type, dict);
             _unitUpgradLv.Add(type, 1);
+            _unitUpgradeDamage.Add(type, levelPerUpgradeDamageDict);
         }
     }
 
     // 유닛의 스테이터스를 만듬
-    private UnitStatus MakeUnitStatus(UnitNames baseUnit, UnitType unitType, int unitLv)
+    private UnitStatus MakeUnitStatus(UnitNames baseUnit, UnitType unitType, int unitLv, out int upgradeDamage)
     {
         UnitStat_Base baseStat = Managers.Data.GetUnitData(baseUnit, unitLv);
         UnitStatus status = new UnitStatus();
-        // 장착된 룬 효과 적용
-
-
+        
         status.unit = baseUnit;
         status.unitType = unitType;
+
+        float increaseDamageOfRunes = 0f;           // 장착된 룬의 데미지 증가량
+        float increaseAttackSpeedOfRunes = 0f;      // 장착된 룬의 공격속도 증가량
+
         switch (unitType)
         {
             // Common
@@ -155,6 +168,12 @@ public class UnitStatusManager
                 status.attackDamage = baseStat.attackDamage;
                 status.attackRate = baseStat.attackRate;
                 status.attackRange = baseStat.attackRange;
+
+                float runeValue = 0f;
+                if(_runeStatus.AdditionalEffects.TryGetValue(AdditionalEffectName.IncreaseDamageOfCommon, out runeValue))
+                    increaseDamageOfRunes += runeValue;
+                if(_runeStatus.AdditionalEffects.TryGetValue(AdditionalEffectName.InCreaseAttackSpeedOfCommon, out runeValue))
+                    increaseAttackSpeedOfRunes += runeValue;
             }
             break;
             // AOE
@@ -166,6 +185,12 @@ public class UnitStatusManager
                     status.attackRate = aoe.attackRate;
                     status.attackRange = aoe.attackRange;
                     status.wideAttackArea = aoe.wideAttackArea;
+
+                    float runeValue = 0f;
+                    if (_runeStatus.AdditionalEffects.TryGetValue(AdditionalEffectName.IncreaseDamageOfAOE, out runeValue))
+                        increaseDamageOfRunes += runeValue;
+                    if (_runeStatus.AdditionalEffects.TryGetValue(AdditionalEffectName.InCreaseAttackSpeedOfAOE, out runeValue))
+                        increaseAttackSpeedOfRunes += runeValue;
                 }
                 else
                 {
@@ -217,11 +242,18 @@ public class UnitStatusManager
                     {
                         if (baseStat is PoisonBowMan poison)
                         {
+                            float poisonBowManRuneValue = 0f;
+                            _runeStatus.BaseRuneEffects.TryGetValue(BaseRune.PoisonBowMan, out poisonBowManRuneValue);
+                            poisonBowManRuneValue += 1f;
                             status.attackDamage = poison.attackDamage;
                             status.attackRate = poison.attackRate;
                             status.attackRange = poison.attackRange;
                             status.debuffDuration = poison.poisonDuration;
-                            status.damagePerSecond = poison.poisonDamagePerSecond;
+                            status.damagePerSecond = poison.poisonDamagePerSecond * poisonBowManRuneValue;
+
+                            float runeValue = 0f;
+                            if (_runeStatus.AdditionalEffects.TryGetValue(AdditionalEffectName.InCreaseAttackSpeedOfCommon, out runeValue))
+                                increaseAttackSpeedOfRunes += runeValue;
                         }
                         else
                         {
@@ -235,7 +267,38 @@ public class UnitStatusManager
             break;
         }
 
+        float baseRuneValue = 0f;
         // status에 장착된 룬의 효과를 부여하기
+        bool isUnitRune = false;
+        for(int i = 0; i < (int)BaseRune.Count; ++i)
+        {
+            if($"{baseUnit}" == $"{(BaseRune)i}")
+            {
+                isUnitRune = true;
+                break;
+            }
+        }
+        if (isUnitRune == true && 
+            _runeStatus.BaseRuneEffects.TryGetValue(Util.Parse<BaseRune>($"{baseUnit}"), out baseRuneValue))
+        {
+            if(baseUnit != UnitNames.PoisonBowMan)
+            {
+                increaseDamageOfRunes += baseRuneValue;
+            }
+        }
+        if (_runeStatus.BaseRuneEffects.TryGetValue(BaseRune.Fighter, out baseRuneValue))
+            increaseAttackSpeedOfRunes += baseRuneValue;
+
+        // 옵션들이 소수이고, 곱연산 해줘야 하기 때문에 1을 더해줌
+        increaseDamageOfRunes += 1;
+        increaseAttackSpeedOfRunes += 1;
+
+        float attackDamage = status.attackDamage * increaseDamageOfRunes;
+
+        status.attackDamage = (int)attackDamage;
+        status.attackRate /= increaseAttackSpeedOfRunes;
+
+        upgradeDamage = status.attackDamage;
 
         return status;
     }

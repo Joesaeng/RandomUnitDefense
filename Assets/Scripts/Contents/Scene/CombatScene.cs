@@ -150,12 +150,9 @@ public class CombatScene : BaseScene
 
         return isComposeable;
     }
-
-    // 플레이어가 유닛 소환 버튼 클릭 시 호출되는 메서드
-    private void OnSpawnPlayerUnit()
+    // 랜덤 유닛 선택
+    private bool SelectRandomUnit(out int randomSlotIndex, out int randomId)
     {
-        if (Managers.Game.Ruby < ConstantData.RubyRequiredOneSpawnPlayerUnit)
-            return;
         List<int> randIndexList = new List<int>();
         int randSlotIndex = -1;
         for (int i = 0; i < _unitSlots.Length; ++i)
@@ -170,16 +167,43 @@ public class CombatScene : BaseScene
             int idx = UnityEngine.Random.Range(0, randIndexList.Count);
             randSlotIndex = randIndexList[idx];
         }
+        randomId = _selectedUnitIds[UnityEngine.Random.Range(0, _selectedUnitIds.Length)];
+        randomSlotIndex = randSlotIndex;
         if (randSlotIndex == -1)
         {
-            return;
+            return false;
         }
-        int randId = _selectedUnitIds[UnityEngine.Random.Range(0, _selectedUnitIds.Length)];
+        return true;
+    }
+    // 플레이어가 유닛 소환 버튼 클릭 시 호출되는 메서드
+    private void OnSpawnPlayerUnit()
+    {
+        if (Managers.Game.Ruby < ConstantData.RubyRequiredOneSpawnPlayerUnit)
+            return;
+
+        int randSlotIndex;
+        int randId;
+
+        if (SelectRandomUnit(out randSlotIndex, out randId) == false)
+            return;
 
         CreatePlayerUnit(randSlotIndex, randId);
         Managers.Game.Ruby -= ConstantData.RubyRequiredOneSpawnPlayerUnit;
 
         Managers.Sound.Play(Define.SFXNames.SpawnUnit);
+
+        // 운의 룬을 장착중일 때
+        float spawnAnotherUnit;
+        if(Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Lucky,out spawnAnotherUnit))
+        {
+            if(UnityEngine.Random.value <= spawnAnotherUnit)
+            {
+                if (SelectRandomUnit(out randSlotIndex, out randId) == false)
+                    return;
+
+                CreatePlayerUnit(randSlotIndex, randId);
+            }
+        }
     }
 
     // 플레이어 유닛 생성 메서드

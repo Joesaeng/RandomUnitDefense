@@ -41,22 +41,21 @@ public class UnitBullet : MonoBehaviour
 
         _ownUnitStatus = Managers.UnitStatus.GetUnitStatus(baseUnit, unitLv);
         wideAttackArea = _ownUnitStatus.wideAttackArea;
+
+        float criticalChance;
         if (wideAttackArea > 0)
         {
             Managers.Sound.Play(Define.SFXNames.AOE);
-            float criticalChance = 0f;
             Managers.UnitStatus.RuneStatus.AdditionalEffects.
                 TryGetValue(AdditionalEffectName.CriticalChanceOfAOE, out criticalChance);
-            isCritical = Random.value <= criticalChance;
         }
         else
         {
             Managers.Sound.Play(Define.SFXNames.Normal);
-            float criticalChance = 0f;
             Managers.UnitStatus.RuneStatus.AdditionalEffects.
                 TryGetValue(AdditionalEffectName.CriticalChanceOfCommon, out criticalChance);
-            isCritical = Random.value <= criticalChance;
         }
+        isCritical = Random.value <= criticalChance + ConstantData.BaseCriticalChance;
     }
 
     void Update()

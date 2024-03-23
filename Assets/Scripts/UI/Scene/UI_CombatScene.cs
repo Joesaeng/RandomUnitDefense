@@ -195,7 +195,15 @@ public class UI_CombatScene : UI_Scene
         MonsterData monsterData = Managers.Data.GetMonsterData(Managers.Game.CurStage);
         string hp = monsterData.maxHp.ToString();
         hp = Util.ChangeNumber(hp);
-        string defense = monsterData.defense.ToString();
+
+        float reduceDefence = monsterData.defense;
+        float curseRuneValue = 0f;
+        if (Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Curse, out curseRuneValue))
+        {
+            reduceDefence *= (1 - curseRuneValue);
+        }
+
+        string defense = $"{(int)reduceDefence}";
         defense = Util.ChangeNumber(defense);
         GetTMPro((int)Texts.TextMonsterInfo).text = 
             $"<sprite=46> : {hp}\n" +

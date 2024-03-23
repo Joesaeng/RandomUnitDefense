@@ -89,7 +89,7 @@ public class RuneManager
     {
         Rune rune = new Rune();
 
-        int         randomBase  = Random.Range(0,(int)BaseRune.Count - 1);
+        int         randomBase  = Random.Range(0,(int)BaseRune.Count);
         BaseRune    runeBase    = (BaseRune)randomBase;
 
         float       randomGradeSelect   = Random.value;
@@ -134,7 +134,7 @@ public class RuneManager
     {
         AdditionalEffectOfRune effect = new AdditionalEffectOfRune();
 
-        int randomEffect = Random.Range(0,(int)AdditionalEffectName.Count - 1);
+        int randomEffect = Random.Range(0,(int)AdditionalEffectName.Count);
         AdditionalEffectName additionalEffect = (AdditionalEffectName)randomEffect;
 
         effect.name = additionalEffect;

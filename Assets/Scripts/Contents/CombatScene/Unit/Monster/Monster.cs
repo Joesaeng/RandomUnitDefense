@@ -74,6 +74,15 @@ public class Monster : MonoBehaviour
         _curMoveSpeed = _moveSpeed;
         _defense = _monsterStat.defense;
 
+        float reduceDefence = _defense;
+        float curseRuneValue = 0f;
+        if(Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Curse, out curseRuneValue))
+        {
+            reduceDefence *= (1 - curseRuneValue);
+        }
+
+        _defense = (int)reduceDefence;
+
         _debuffs = new List<BaseDebuff>();
 
         _debuffs.Clear();
@@ -174,6 +183,7 @@ public class Monster : MonoBehaviour
             return;
         UnitNames unit = attackerStat.unit;
 
+        // 디버프 유닛에게 피격 시 디버프 적용
         switch (unit)
         {
             case UnitNames.SlowMagician:
@@ -199,13 +209,15 @@ public class Monster : MonoBehaviour
             }
         }
 
+        // 치명타 피해 적용
         float addCriticalDamage = 0f;
-        if(attackerStat.unitType == UnitType.Common)
+        if(attackerStat.unitType == UnitType.Common ||
+            unit == UnitNames.StunGun || unit == UnitNames.PoisonBowMan)
         {
             Managers.UnitStatus.RuneStatus.AdditionalEffects.
                 TryGetValue(AdditionalEffectName.CriticalDamageOfCommon, out addCriticalDamage);
         }
-        else if (attackerStat.unitType == UnitType.AOE)
+        else
         {
             Managers.UnitStatus.RuneStatus.AdditionalEffects.
                 TryGetValue(AdditionalEffectName.CriticalDamageOfAOE, out addCriticalDamage);
@@ -218,7 +230,14 @@ public class Monster : MonoBehaviour
 
         // 유닛의 공격력이 몬스터의 방어력보다 낮은 경우 1의 데미지를 받게 합니다.
         damage = damage - _defense > 1 ? damage - _defense : 1;
-        float addedDamage = Managers.InGameItem.CurrentStatusOnEquipedItem.addedDamage * damageRatio;
+
+        float addedDamageOfRune;
+        Managers.UnitStatus.RuneStatus.AdditionalEffects.
+                TryGetValue(AdditionalEffectName.AddedDamage, out addedDamageOfRune);
+
+        float addedDamage = (Managers.InGameItem.CurrentStatusOnEquipedItem.addedDamage + addedDamageOfRune)
+                            * damageRatio;
+
         ReduceHp(damage + addedDamage);
 
         GameObject damageText = Managers.Resource.Instantiate

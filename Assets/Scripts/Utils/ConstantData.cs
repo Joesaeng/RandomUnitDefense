@@ -31,7 +31,8 @@ public static class ConstantData
 
     public const int     BaseUpgradeCost = 10;                  // 유닛의 기본 업그레이드 필요 값
 
-    public const float   BaseCriticalDamageRatio = 1.5f;             // 기본 치명타 데미지 
+    public const float   BaseCriticalChance = 0.05f;            // 기본 치명타 확률
+    public const float   BaseCriticalDamageRatio = 1.5f;        // 기본 치명타 데미지 
 
     // 유닛 업그레이드 당 증가량                                   // 공격력은 기본 공격력 만큼 증가함
     public const float   IncreaseAttackRate         = 0.95f;    // 공격속도 증가 5%
