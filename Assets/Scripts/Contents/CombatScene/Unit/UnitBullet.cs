@@ -18,6 +18,8 @@ public class UnitBullet : MonoBehaviour
     SpriteRenderer _spriteRenderer;
     Sprite[] _sprites = new Sprite[ConstantData.PlayerUnitHighestLevel];
 
+    bool isCritical = false;
+
     public void Init(Monster targetMonster, UnitNames baseUnit, int unitLv, float bulletSpeed = 25f)
     {
         if (_spriteRenderer == null)
@@ -28,7 +30,7 @@ public class UnitBullet : MonoBehaviour
         _spriteRenderer.sprite = _sprites[unitLv - 1];
 
         _targetMonster = targetMonster;
-        if(targetMonster == null)
+        if (targetMonster == null)
         {
             DestroyBullet();
             return;
@@ -39,13 +41,21 @@ public class UnitBullet : MonoBehaviour
 
         _ownUnitStatus = Managers.UnitStatus.GetUnitStatus(baseUnit, unitLv);
         wideAttackArea = _ownUnitStatus.wideAttackArea;
-        if(wideAttackArea> 0)
+        if (wideAttackArea > 0)
         {
             Managers.Sound.Play(Define.SFXNames.AOE);
+            float criticalChance = 0f;
+            Managers.UnitStatus.RuneStatus.AdditionalEffects.
+                TryGetValue(AdditionalEffectName.CriticalChanceOfAOE, out criticalChance);
+            isCritical = Random.value <= criticalChance;
         }
         else
         {
             Managers.Sound.Play(Define.SFXNames.Normal);
+            float criticalChance = 0f;
+            Managers.UnitStatus.RuneStatus.AdditionalEffects.
+                TryGetValue(AdditionalEffectName.CriticalChanceOfCommon, out criticalChance);
+            isCritical = Random.value <= criticalChance;
         }
     }
 
@@ -65,7 +75,7 @@ public class UnitBullet : MonoBehaviour
                     if (Vector3.Distance(_targetPosition, monster.transform.position) <= wideAttackArea)
                     {
                         float damageRatio = 1 - CalculateWeightedDistance(_targetPosition,monster.transform.position,wideAttackArea);
-                        monster.TakeHit(_ownUnitStatus, damageRatio);
+                        monster.TakeHit(_ownUnitStatus, isCritical ,damageRatio);
                     }
                 }
                 GameObject effect = Managers.Resource.Instantiate
@@ -88,7 +98,7 @@ public class UnitBullet : MonoBehaviour
                 Quaternion.FromToRotation(Vector3.up, dir));
             if (Util.GetDistance(gameObject, _targetMonster.gameObject) < 0.01f)
             {
-                _targetMonster.TakeHit(_ownUnitStatus);
+                _targetMonster.TakeHit(_ownUnitStatus, isCritical);
                 GameObject effect = Managers.Resource.Instantiate
                     ("HitEffect_2",Managers.Game.HitEffects);
                 effect.GetComponent<HitEffect>().Init(_targetMonster.transform.position);

@@ -31,34 +31,35 @@ public class UI_BtnChoiceFinger : UI_Base
 
     public void OnChoiceButtonClicked(PointerEventData eventData)
     {
+        PlayerData playerData = Managers.Player.Data;
         if (_selectedRune == null) // 유닛 선택용 스크립트
         {
             for (int index = 0; index < ConstantData.SetUnitCount; ++index)
             {
-                if (Managers.Player.Data.setUnits[index] == _selectedUnitId)
-                    Managers.Player.Data.setUnits[index] = 0;
+                if (playerData.setUnits[index] == _selectedUnitId)
+                    playerData.setUnits[index] = 0;
             }
-            Managers.Player.Data.setUnits[_setIndex] = _selectedUnitId;
+            playerData.setUnits[_setIndex] = _selectedUnitId;
             FindObjectOfType<UI_LobbyScene>().SetSetUnits();
             Managers.UI.ClosePopupUI();
         }
         else
         {
-            if (Managers.Player.Data.EquipedRunes[_setIndex] != null)
+            if (playerData.EquipedRunes[_setIndex] != null)
             {
-                Managers.Player.Data.EquipedRunes[_setIndex].isEquip = false;
-                Managers.Player.Data.EquipedRunes[_setIndex].equipSlotIndex = -1;
+                playerData.EquipedRunes[_setIndex].isEquip = false;
+                playerData.EquipedRunes[_setIndex].equipSlotIndex = -1;
             }
-            for (int index = 0; index < ConstantData.EquipedRunesCount; ++index)
+            for (int index = 0; index < playerData.EquipedRunes.Length; ++index)
             {
-                if (Managers.Player.Data.EquipedRunes[index] == _selectedRune)
+                if (playerData.EquipedRunes[index] == _selectedRune)
                 {
-                    Managers.Player.Data.EquipedRunes[index] = null;
+                    playerData.EquipedRunes[index] = null;
                 }
             }
-            Managers.Player.Data.EquipedRunes[_setIndex] = _selectedRune;
-            Managers.Player.Data.EquipedRunes[_setIndex].isEquip = true;
-            Managers.Player.Data.EquipedRunes[_setIndex].equipSlotIndex = _setIndex;
+            playerData.EquipedRunes[_setIndex] = _selectedRune;
+            playerData.EquipedRunes[_setIndex].isEquip = true;
+            playerData.EquipedRunes[_setIndex].equipSlotIndex = _setIndex;
             FindObjectOfType<UI_LobbyScene>().SetEquipedRunes();
             Managers.UI.ClosePopupUI();
         }

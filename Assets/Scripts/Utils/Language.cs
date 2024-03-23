@@ -467,6 +467,23 @@ public static class Language
         }
     }
 
+    public static string Clear
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Clear";
+                case Define.GameLanguage.Korean:
+                    return "해제하기";
+                default:
+                    return "Clear";
+            }
+        }
+    }
+
     public static string Cancel
     {
         get
@@ -675,24 +692,33 @@ public static class Language
     public static string GetRuneAdditionalEffectText(AdditionalEffectName effectName, float value)
     {
         string valuetext = $"{value}";
-        if(effectName != AdditionalEffectName.AddedDamage &&
-            effectName != AdditionalEffectName.IncreaseBulletSpeed)
+        if(effectName != AdditionalEffectName.AddedDamage)
             valuetext = $"{MathF.Round(value * 100)}%";
 
         Define.GameLanguage language = Managers.Game.GameLanguage;
         string[] englishEffects =
         {
-            $"{valuetext} Increased Damages",
-            $"{valuetext} Increased Attack Speed",
-            $"{valuetext} Added Damage",
-            $"{valuetext} Increased Bullet Speed",
+            $"+{valuetext} Increased Damages Of Common Type",
+            $"+{valuetext} Increased Damages Of AOE Type",
+            $"+{valuetext} Increased Attack Speed Of Common Type",
+            $"+{valuetext} Increased Attack Speed Of AOE Type",
+            $"+{valuetext} Critical Chance Of Common Type",
+            $"+{valuetext} Critical Chance Of AOE Type",
+            $"+{valuetext} Add Critical Damage Ratio Of Common Type",
+            $"+{valuetext} Add Critical Damage Ratio Of AOE Type",
+            $"+{valuetext} Added Damage",
         };
         string[] koreanEffects =
         {
-            $"{valuetext} 데미지 증가",
-            $"{valuetext} 공격속도 증가",
-            $"{valuetext} 추가 데미지",
-            $"{valuetext} 투사체 속도 증가",
+            $"+{valuetext} 단일 공격 타입 데미지",
+            $"+{valuetext} 광역 공격 타입 데미지",
+            $"+{valuetext} 단일 공격 타입 공격속도",
+            $"+{valuetext} 광역 공격 타입 공격속도",
+            $"+{valuetext} 단일 공격 타입 치명타 확률",
+            $"+{valuetext} 광역 공격 타입 치명타 확률",
+            $"+{valuetext} 단일 공격 타입 치명타 피해 비율",
+            $"+{valuetext} 광역 공격 타입 치명타 피해 비율",
+            $"+{valuetext} 추가 데미지",
         };
         switch (language)
         {

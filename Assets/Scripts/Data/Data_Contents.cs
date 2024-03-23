@@ -55,10 +55,15 @@ namespace Data
     }
     public enum AdditionalEffectName
     {
-        IncreaseDamage,
-        DecreaseAttackRate,
+        IncreaseDamageOfCommon,
+        IncreaseDamageOfAOE,
+        InCreaseAttackSpeedOfCommon,
+        InCreaseAttackSpeedOfAOE,
+        CriticalChanceOfCommon,
+        CriticalChanceOfAOE,
+        CriticalDamageOfCommon,
+        CriticalDamageOfAOE,
         AddedDamage,
-        IncreaseBulletSpeed,
         
 
         Count

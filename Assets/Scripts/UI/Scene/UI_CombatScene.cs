@@ -16,6 +16,7 @@ public class UI_CombatScene : UI_Scene
         PanelItem,
         PanelEquipStatusName,
         PanelEquipStatusValue,
+        PanelEquipedRunes,
     }
 
     GameObject _panelItem;
@@ -45,6 +46,7 @@ public class UI_CombatScene : UI_Scene
         TextLeftTimeStage,
         TextChangeMonsterCount,
         TextFixedMonsterCount,
+        TextEquipedRunesStatus
     }
 
     enum Images
@@ -140,6 +142,37 @@ public class UI_CombatScene : UI_Scene
         }
         #endregion
 
+        #region ÀåÂøµÈ ·é ¼¼ÆÃ
+        for (int i = 0; i < Managers.Player.Data.EquipedRunes.Length; i++)
+        {
+            if (Managers.Player.Data.EquipedRunes[i] != null && 
+                Managers.Player.Data.EquipedRunes[i].equipSlotIndex != -1)
+            {
+                GameObject equipedRune = Managers.UI.MakeSubItem<UI_EquipedRuneCombatScene>
+                    (parent : Get<GameObject>((int)GameObjects.PanelEquipedRunes).transform).gameObject;
+                equipedRune.transform.localScale = new Vector3(1f, 1f, 1f);
+                equipedRune.GetComponent<UI_EquipedRuneCombatScene>().SetUp(i);
+            }
+        }
+        Get<GameObject>((int)GameObjects.PanelEquipedRunes).gameObject.AddUIEvent(OnEquipedRuneClick);
+        GetTMPro((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
+        {
+            EquipedRuneStatus equipedRuneStatus = Managers.UnitStatus.RuneStatus;
+            foreach(KeyValuePair<BaseRune,float> runestat in equipedRuneStatus.BaseRuneEffects)
+            {
+                GetTMPro((int)Texts.TextEquipedRunesStatus).text += 
+                    $"{Language.GetRuneBaseInfo(runestat.Key, runestat.Value)}\n";
+            }
+            foreach (KeyValuePair<AdditionalEffectName, float> runestat in equipedRuneStatus.AdditionalEffects)
+            {
+                GetTMPro((int)Texts.TextEquipedRunesStatus).text +=
+                    $"{Language.GetRuneAdditionalEffectText(runestat.Key, runestat.Value)}\n";
+            }
+        }
+        GetTMPro((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
+
+        #endregion
+
         _text_stageTime = GetTMPro((int)Texts.TextLeftTimeStage);
         _text_monsterCount = GetTMPro((int)Texts.TextChangeMonsterCount);
         _image_monsterGageBar = GetImage((int)Images.FillMonsterGageBar);
@@ -178,6 +211,13 @@ public class UI_CombatScene : UI_Scene
     public void OnGambleButtonClicked(PointerEventData data)
     {
         Managers.InGameItem.GambleItem();
+    }
+
+    bool showEquipRuneStatus = false;
+    public void OnEquipedRuneClick(PointerEventData data)
+    {
+        showEquipRuneStatus = !showEquipRuneStatus;
+        GetTMPro((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
     }
 
     public void OnGameSpeedButtonClicked(PointerEventData data)

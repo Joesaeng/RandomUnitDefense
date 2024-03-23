@@ -3,13 +3,52 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class EquipedRuneStatus
+{
+    Rune[] _equipedRunes;
+    public Rune[] EquipedRunes => _equipedRunes;
+
+    public Dictionary<BaseRune, float> BaseRuneEffects { get => _baseRuneEffects; }
+    public Dictionary<AdditionalEffectName, float> AdditionalEffects { get => _additionalEffects; }
+
+    Dictionary<BaseRune,float> _baseRuneEffects = new Dictionary<BaseRune,float>();
+    Dictionary<AdditionalEffectName,float> _additionalEffects = new Dictionary<AdditionalEffectName,float>();
+    public void SetEquipedRune()
+    {
+        _equipedRunes = Managers.Player.Data.EquipedRunes;
+
+        foreach (Rune rune in _equipedRunes)
+        {
+            if (rune == null)
+                continue;
+
+            // 장착된 룬의 기본 효과 적용
+            if (_baseRuneEffects.ContainsKey(rune.baseRune) == false)
+            {
+                _baseRuneEffects.Add(rune.baseRune, 0f);
+            }
+            _baseRuneEffects[rune.baseRune] += rune.baseRuneEffectValue;
+
+            // 장착된 룬의 추가 효과 적용
+            foreach (AdditionalEffectOfRune effect in rune.additionalEffects)
+            {
+                if (_additionalEffects.ContainsKey(effect.name) == false)
+                {
+                    _additionalEffects.Add(effect.name, 0f);
+                }
+                _additionalEffects[effect.name] += effect.value;
+            }
+        }
+    }
+}
+
 public class RuneManager
 {
     Dictionary<GradeOfRune, Sprite> _runeSprites;
-    public Dictionary<GradeOfRune, Sprite> RuneSprites { get => _runeSprites;}
-    
+    public Dictionary<GradeOfRune, Sprite> RuneSprites { get => _runeSprites; }
+
     Dictionary<BaseRune,string> _runeTextImages;
-    public Dictionary<BaseRune, string> RuneTextImages { get => _runeTextImages;}
+    public Dictionary<BaseRune, string> RuneTextImages { get => _runeTextImages; }
 
     public void Init()
     {
@@ -39,7 +78,7 @@ public class RuneManager
             "福", // 복 복
             "咀", // 씹을 저
         };
-        for(int i = 0; i < (int)BaseRune.Count; i++)
+        for (int i = 0; i < (int)BaseRune.Count; i++)
         {
             _runeTextImages.Add((BaseRune)i, runeTextImages[i]);
         }
@@ -59,13 +98,13 @@ public class RuneManager
         // 룬 그레이드 선택
         if (setGrade == GradeOfRune.None)
         {
-            if (randomGradeSelect       <= ConstantData.PercentOfMythRune)
+            if (randomGradeSelect <= ConstantData.PercentOfMythRune)
                 runeGrade = GradeOfRune.Myth;
-            else if (randomGradeSelect  <= ConstantData.PercentOfLegendRune)
+            else if (randomGradeSelect <= ConstantData.PercentOfLegendRune)
                 runeGrade = GradeOfRune.Legend;
-            else if (randomGradeSelect  <= ConstantData.PercentOfUniqueRune)
+            else if (randomGradeSelect <= ConstantData.PercentOfUniqueRune)
                 runeGrade = GradeOfRune.Unique;
-            else if (randomGradeSelect  <= ConstantData.PercentOfRareRune)
+            else if (randomGradeSelect <= ConstantData.PercentOfRareRune)
                 runeGrade = GradeOfRune.Rare;
             else
                 runeGrade = GradeOfRune.Common;
@@ -80,9 +119,10 @@ public class RuneManager
         rune.baseRuneEffectValue = Managers.Data.RunesDict[$"{runeGrade}{runeBase}"].value;
         rune.isEquip = false;
 
+        // 룬 등급에 맞는 추가 효과 생성 및 부여
         int additionalEftCount = ConstantData.AdditionalEftCountOfRunes[(int)runeGrade];
 
-        for(int i = 0; i < additionalEftCount; ++i)
+        for (int i = 0; i < additionalEftCount; ++i)
         {
             rune.additionalEffects.Add(CreateRandomAdditionalEffect());
         }
@@ -101,13 +141,12 @@ public class RuneManager
         AdditionalEffectOfRuneValueMinMax minMax = Managers.Data.EffectMinMaxs[$"{effect.name}"];
         effect.value = Random.Range(minMax.min, minMax.max);
 
-        // 추가데미지와 투사체속도증가는 소수점이 필요 없으니 없앰
-        if (effect.name == AdditionalEffectName.AddedDamage
-            || effect.name == AdditionalEffectName.IncreaseBulletSpeed)
+        // 추가데미지는 소수점이 필요 없으니 없앰
+        if (effect.name == AdditionalEffectName.AddedDamage)
             effect.value = System.MathF.Round(effect.value);
         // 이 외는 소수점 두자리까지만 사용
         else
-            effect.value = System.MathF.Round(effect.value,2);
+            effect.value = System.MathF.Round(effect.value, 2);
 
         return effect;
     }

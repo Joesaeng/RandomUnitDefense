@@ -2,6 +2,7 @@ using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Define;
@@ -167,7 +168,7 @@ public class Monster : MonoBehaviour
 
     }
 
-    public void TakeHit(UnitStatus attackerStat, float damageRatio = 1)
+    public void TakeHit(UnitStatus attackerStat,bool isCritical ,float damageRatio = 1)
     {
         if (IsDead)
             return;
@@ -198,15 +199,31 @@ public class Monster : MonoBehaviour
             }
         }
 
+        float addCriticalDamage = 0f;
+        if(attackerStat.unitType == UnitType.Common)
+        {
+            Managers.UnitStatus.RuneStatus.AdditionalEffects.
+                TryGetValue(AdditionalEffectName.CriticalDamageOfCommon, out addCriticalDamage);
+        }
+        else if (attackerStat.unitType == UnitType.AOE)
+        {
+            Managers.UnitStatus.RuneStatus.AdditionalEffects.
+                TryGetValue(AdditionalEffectName.CriticalDamageOfAOE, out addCriticalDamage);
+        }
+
+        float damage = attackerStat.attackDamage * damageRatio;
+
+        if (isCritical)
+            damage *= (ConstantData.BaseCriticalDamageRatio + addCriticalDamage);
+
         // 유닛의 공격력이 몬스터의 방어력보다 낮은 경우 1의 데미지를 받게 합니다.
-        float damage = attackerStat.attackDamage * damageRatio - _defense > 1 ? attackerStat.attackDamage * damageRatio - _defense : 1;
+        damage = damage - _defense > 1 ? damage - _defense : 1;
         float addedDamage = Managers.InGameItem.CurrentStatusOnEquipedItem.addedDamage * damageRatio;
-        ReduceHp(damage);
-        ReduceHp(addedDamage); // 추뎀
+        ReduceHp(damage + addedDamage);
 
         GameObject damageText = Managers.Resource.Instantiate
              ("DamageText",Managers.Game.DamageTexts);
-        damageText.GetComponent<DamageText>().SetText(damage + addedDamage, transform.position);
+        damageText.GetComponent<DamageText>().SetText(damage + addedDamage, transform.position, isCritical);
     }
 
     public void ReduceHp(float damage)

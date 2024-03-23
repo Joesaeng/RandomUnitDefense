@@ -45,6 +45,9 @@ public class UI_LobbyScene : UI_Scene
         SelectRunePanel,
         RuneImageBack,
         SetRunesPanel,
+        BtnUseRune,
+        BtnClearRune,
+        BtnSellRune,
         #endregion
         NestedScrollManager,
     }
@@ -69,6 +72,7 @@ public class UI_LobbyScene : UI_Scene
         RuneBaseInfoText,
         RuneSubInfoText,
         BtnUseRuneText,
+        BtnClearRuneText,
         BtnSellRuneText,
         RuneGradeText,
         OneRuneGambleText,
@@ -91,6 +95,7 @@ public class UI_LobbyScene : UI_Scene
         #region RunePanel
         BtnCloseSelectedRune,
         BtnUseRune,
+        BtnClearRune,
         BtnSellRune,
         OneRuneGambleButton,
         TenRuneGambleButton,
@@ -156,7 +161,7 @@ public class UI_LobbyScene : UI_Scene
         Transform equipedRunesTF = Get<GameObject>((int)GameObjects.SetRunesPanel).transform;
         for (int index = 0; index < ConstantData.EquipedRunesCount; index++)
         {
-            GameObject equipedRuneSlot = Managers.UI.MakeSubItem<UI_SetRune>(parent : equipedRunesTF).gameObject;
+            GameObject equipedRuneSlot = Managers.UI.MakeSubItem<UI_EquipedRuneSlot>(parent : equipedRunesTF).gameObject;
             equipedRuneSlot.transform.localScale = new Vector3(1f, 1f, 1f);
             _equipedRunes[index] = equipedRuneSlot;
         }
@@ -168,6 +173,7 @@ public class UI_LobbyScene : UI_Scene
         GetButton((int)Buttons.BtnCloseSelectedRune).gameObject.AddUIEvent(OnCloseSelectedRunePanelButton);
         GetButton((int)Buttons.BtnUseRune).gameObject.AddUIEvent(OnUseRuneButtonClick);
         GetButton((int)Buttons.BtnSellRune).gameObject.AddUIEvent(OnSellRuneButtonClick);
+        GetButton((int)Buttons.BtnClearRune).gameObject.AddUIEvent(OnClearRuneButtonClick);
 
         GetButton((int)Buttons.OneRuneGambleButton).gameObject.AddUIEvent(OnOneRuneGambleButtonClicked);
         GetButton((int)Buttons.TenRuneGambleButton).gameObject.AddUIEvent(OnTenRuneGambleButtonClicked);
@@ -436,13 +442,13 @@ public class UI_LobbyScene : UI_Scene
         Rune[] equipedRunes = Managers.Player.Data.EquipedRunes;
         for (int i = 0; i < ConstantData.EquipedRunesCount; i++)
         {
-            if (equipedRunes[i] != null && equipedRunes[i].baseRuneEffectValue != 0f)
+            if (equipedRunes[i] != null && equipedRunes[i].equipSlotIndex != -1)
             {
                 Rune rune = equipedRunes[i];
-                _equipedRunes[i].GetComponent<UI_SetRune>().SetRuneImage(rune.baseRune, rune.gradeOfRune);
+                _equipedRunes[i].GetComponent<UI_EquipedRuneSlot>().SetRune(rune,this);
             }
             else
-                _equipedRunes[i].GetComponent<UI_SetRune>().OffImage();
+                _equipedRunes[i].GetComponent<UI_EquipedRuneSlot>().OffImage();
         }
         // ÀåÂø ·éÀÌ ¹Ù²î¸é º¸À¯ÇÑ ·éµéµµ ÇÑ¹ø ¾÷µ¥ÀÌÆ®
         StartCoroutine("RuneSlotsUpdate");
@@ -450,8 +456,8 @@ public class UI_LobbyScene : UI_Scene
     }
 
     Rune selectedRune = null;
-    int selectedRuneIndex = int.MaxValue;
-    public void UpdateSelectedRunePanel(Rune rune, int runeIndex)
+    int selectedRuneIndex = -1;
+    public void UpdateSelectedRunePanel(Rune rune, int runeIndex = -1)
     {
         selectedRune = rune;
         selectedRuneIndex = runeIndex;
@@ -470,12 +476,22 @@ public class UI_LobbyScene : UI_Scene
             GetTMPro((int)Texts.RuneSubInfoText).text += $"{additionalEffectText}\n";
         }
 
-
-        GetTMPro((int)Texts.BtnUseRuneText).text = Language.Use;
-
-        // TEMP
-        int sellCost = 100;
-        GetTMPro((int)Texts.BtnSellRuneText).text = $"{Language.Sell} {sellCost}";
+        // rundIndex °¡ -1 ÀÌ¸é ÀåÂøÇÑ ·éÀ» ¼±ÅÃÇÑ °æ¿ì
+        bool clickEquipedRune = runeIndex == -1;
+        Get<GameObject>((int)GameObjects.BtnClearRune).gameObject.SetActive(clickEquipedRune);
+        Get<GameObject>((int)GameObjects.BtnUseRune).gameObject.SetActive(!clickEquipedRune);
+        Get<GameObject>((int)GameObjects.BtnSellRune).gameObject.SetActive(!clickEquipedRune);
+        if (clickEquipedRune)
+        {
+            GetTMPro((int)Texts.BtnClearRuneText).text = Language.Clear;
+        }
+        else
+        {
+            GetTMPro((int)Texts.BtnUseRuneText).text = Language.Use;
+            // TEMP
+            int sellCost = 100;
+            GetTMPro((int)Texts.BtnSellRuneText).text = $"{Language.Sell} {sellCost}";
+        }
 
         GetTMPro((int)Texts.RuneGradeText).text = Language.GetRuneGradeText(rune.gradeOfRune);
         GetTMPro((int)Texts.RuneGradeText).color = ConstantData.RuneGradeColors[(int)rune.gradeOfRune];
@@ -491,10 +507,30 @@ public class UI_LobbyScene : UI_Scene
         Managers.UI.ShowPopupUI<UI_UseRune>().Set(selectedRune);
     }
 
+    public void OnClearRuneButtonClick(PointerEventData eventData)
+    {
+        SelectRunePanel.HideSelectedPanel();
+
+        Managers.Sound.Play(Define.SFXNames.Click);
+        PlayerData playerData = Managers.Player.Data;
+        for(int i = 0; i < playerData.EquipedRunes.Length; ++i)
+        {
+            if (playerData.EquipedRunes[i] == selectedRune)
+            {
+                playerData.EquipedRunes[i].isEquip = false;
+                playerData.EquipedRunes[i].equipSlotIndex = -1;
+                playerData.EquipedRunes[i] = null;
+            }
+        }
+        SetEquipedRunes();
+    }
+
     public void OnSellRuneButtonClick(PointerEventData eventData)
     {
         SelectRunePanel.HideSelectedPanel();
-        if (Managers.Player.Data.ownedRunes[selectedRuneIndex].isEquip == true)
+
+        Managers.Sound.Play(Define.SFXNames.Click);
+        if (selectedRuneIndex == -1 || Managers.Player.Data.ownedRunes[selectedRuneIndex].isEquip == true)
             return;
         Managers.Resource.Destroy(_runeSlotsTF.GetChild(selectedRuneIndex).gameObject);
         Managers.Player.Data.ownedRunes.RemoveAt(selectedRuneIndex);

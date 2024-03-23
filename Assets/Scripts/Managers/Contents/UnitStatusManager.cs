@@ -42,6 +42,9 @@ public class UnitStatusManager
     public Action<int> OnUnitUpgradeSlot;
     public Action OnUnitUpgrade;
 
+    EquipedRuneStatus _runeStatus;
+    public EquipedRuneStatus RuneStatus => _runeStatus;
+
     public UnitStatus GetUnitStatus(UnitNames baseUnit, int unitLv)
     {
         UnitStatus status = _unitStatusDict[baseUnit][unitLv];
@@ -51,6 +54,8 @@ public class UnitStatusManager
 
     public void Init()
     {
+        _runeStatus = new EquipedRuneStatus();
+        _runeStatus.SetEquipedRune();
         MakeUnitStatusDict();
     }
 
@@ -88,6 +93,7 @@ public class UnitStatusManager
         status.debuffRatio      = (float)Math.Round(status.debuffRatio, 2);
     }
 
+    // 인게임 아이템의 스텟을 유닛 스테이터스에 적용
     private UnitStatus ApplyEquipedItemStatus(UnitStatus status)
     {
         UnitStatus _status = status.MyClone();
@@ -106,6 +112,7 @@ public class UnitStatusManager
         return _status;
     }
 
+    // Dictionary<유닛<레벨,스텟>> 형식으로 딕셔너리를 만들어 줌
     private void MakeUnitStatusDict()
     {
         if(_unitStatusDict != null)
@@ -130,10 +137,14 @@ public class UnitStatusManager
         }
     }
 
+    // 유닛의 스테이터스를 만듬
     private UnitStatus MakeUnitStatus(UnitNames baseUnit, UnitType unitType, int unitLv)
     {
         UnitStat_Base baseStat = Managers.Data.GetUnitData(baseUnit, unitLv);
         UnitStatus status = new UnitStatus();
+        // 장착된 룬 효과 적용
+
+
         status.unit = baseUnit;
         status.unitType = unitType;
         switch (unitType)
