@@ -105,7 +105,7 @@ public class UI_LobbyScene : UI_Scene
 
     public override void Init()
     {
-        SetCanvasForLobbyScene();
+        SetCanvasRenderModeCamera();
         Bind<GameObject>(typeof(GameObjects));
         Bind<TextMeshProUGUI>(typeof(Texts));
         Bind<Button>(typeof(Buttons));
@@ -231,16 +231,7 @@ public class UI_LobbyScene : UI_Scene
         Managers.Player.SaveToJson();
     }
 
-    private void SetCanvasForLobbyScene()
-    {
-        Canvas canvas = Util.GetOrAddComponent<Canvas>(this.gameObject);
-        canvas.renderMode = RenderMode.ScreenSpaceCamera;
-        canvas.worldCamera = Camera.main;
-
-        canvas.overrideSorting = true;
-
-        canvas.sortingOrder = ConstantData.SceneUISortOrder;
-    }
+    
 
     public override void OnChangeLanguage()
     {
@@ -581,7 +572,7 @@ public class UI_LobbyScene : UI_Scene
     {
         if (Managers.Player.Data.AmountOfGold < ConstantData.TheCostOfOneRuneGamble)
         {
-            Managers.UI.ShowPopupUI<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
+            Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
             return;
         }
 
@@ -602,7 +593,7 @@ public class UI_LobbyScene : UI_Scene
     {
         if (Managers.Player.Data.AmountOfGold < ConstantData.TheCostOfTenRunesGamble)
         {
-            Managers.UI.ShowPopupUI<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
+            Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
             return;
         }
 

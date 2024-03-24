@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class ResourceManager
 {
@@ -85,6 +86,28 @@ public class ResourceManager
         }
         go.name = original.name;
 
+        return go;
+    }
+
+    public GameObject Instantiate(string path, Vector3 pos)
+    {
+        GameObject original = Load<GameObject>($"Prefabs/{path}");
+        if (original == null)
+        {
+            Debug.Log($"Failed to load prefab : {path}");
+            return null;
+        }
+
+        GameObject go;
+
+        if (original.GetComponent<Poolable>() != null)
+        {
+            go = Managers.Pool.Pop(original).gameObject;
+            go.transform.SetPositionAndRotation(pos, Quaternion.identity);
+            return go;
+        }
+        go = Object.Instantiate(original, pos, Quaternion.identity);
+        
         return go;
     }
 

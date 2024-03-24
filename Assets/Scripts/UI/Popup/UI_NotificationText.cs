@@ -4,15 +4,24 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UI_NotificationText : UI_Popup
+public class UI_NotificationText : UI_Base
 {
+    public override void Init()
+    {
+    }
+
+    public override void OnChangeLanguage()
+    {
+    }
+
     public void SetText(Define.NotiTexts noti)
     {
         GetComponentInChildren<TextMeshProUGUI>().text = Language.GetNotiText(noti);
-        gameObject.AddUIEvent(CloseUI);
+        StartCoroutine("CloseUI");
     }
-    public void CloseUI(PointerEventData eventData)
+    IEnumerator CloseUI()
     {
-        ClosePopupUI();
+        yield return new WaitForSeconds(1.5f);
+        Managers.Resource.Destroy(gameObject);
     }
 }

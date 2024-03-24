@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SceneManagerEx : MonoBehaviour
 {
-    public BaseScene CurrentScene {get {return GameObject.FindObjectOfType<BaseScene>();}}
+    public BaseScene CurrentScene { get { return GameObject.FindObjectOfType<BaseScene>(); } }
 
     UI_LoadingObject loadingScene;
 
@@ -35,6 +37,7 @@ public class SceneManagerEx : MonoBehaviour
         loadingScene.gameObject.SetActive(true);
         loadingScene.ResetEx();
 
+        Image fillGauge = loadingScene.FillGauge;
         WaitForSecondsRealtime forFakeLoad = new WaitForSecondsRealtime(0.01f);
         float fakeRatioIncrease;
         float fakeRatio = 0f;
@@ -43,33 +46,27 @@ public class SceneManagerEx : MonoBehaviour
         else
             fakeRatioIncrease = 0.02f;
 
-        while (true)
+        AsyncOperation ao = SceneManager.LoadSceneAsync(GetSceneName(type));
+        ao.allowSceneActivation = false;
+        while(!ao.isDone)
         {
-            loadingScene.UpdateFillGauge(fakeRatio);
-            fakeRatio += fakeRatioIncrease;
-            yield return forFakeLoad;
-            if (fakeRatio >= 0.9f)
-                break;
-        }
-        AsyncOperation async = SceneManager.LoadSceneAsync(GetSceneName(type));
-
-        while (!async.isDone)
-        {
-            if(async.progress > fakeRatio)
-                loadingScene.UpdateFillGauge(async.progress);
             yield return null;
+            if(ao.progress < 0.9f && fakeRatio < 0.9f)
+            {
+                fillGauge.fillAmount = ao.progress;
+                fakeRatio += fakeRatioIncrease;
+            }
+            else
+            {
+                fillGauge.fillAmount = fakeRatio;
+                fakeRatio += fakeRatioIncrease;
+                if(fakeRatio >= 1f)
+                {
+                    ao.allowSceneActivation = true;
+                }
+            }
+
         }
-
-        while (true)
-        {
-            loadingScene.UpdateFillGauge(fakeRatio);
-            fakeRatio += fakeRatioIncrease;
-            yield return forFakeLoad;
-            if (fakeRatio >= 1f)
-                break;
-        }
-
-
         loadingScene.gameObject.SetActive(false);
         Managers.Time.GameResume();
     }

@@ -195,7 +195,7 @@ public class CombatScene : BaseScene
                 if (SelectRandomUnit(out randSlotIndex, out randId) == false)
                     return;
 
-                Managers.UI.ShowPopupUI<UI_NotificationText>().SetText(Define.NotiTexts.LuckyRuneEffect);
+                Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.LuckyRuneEffect);
                 CreatePlayerUnit(randSlotIndex, randId);
             }
         }

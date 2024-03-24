@@ -10,7 +10,7 @@ public class UI_LoadingObject : UI_Base
     {
         LoadingGaugeFill
     }
-    Image _fillGauge;
+    public Image FillGauge;
     enum Texts
     {
         LoadingText
@@ -28,18 +28,13 @@ public class UI_LoadingObject : UI_Base
         Bind<Image>(typeof(Images));
         Bind<TextMeshProUGUI>(typeof(Texts));
 
-        _fillGauge = GetImage((int)Images.LoadingGaugeFill);
+        FillGauge = GetImage((int)Images.LoadingGaugeFill);
         ResetEx();
     }
     public void ResetEx()
     {
-        _fillGauge.fillAmount = 0f;
+        FillGauge.fillAmount = 0f;
         GetTMPro((int)Texts.LoadingText).text = Language.GetTipText();
-    }
-
-    public void UpdateFillGauge(float ratio)
-    {
-        _fillGauge.fillAmount = ratio;
     }
 
     public override void OnChangeLanguage()
