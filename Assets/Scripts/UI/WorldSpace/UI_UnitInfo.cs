@@ -78,7 +78,7 @@ public class UI_UnitInfo : UI_Base
                 GetTMPro((int)TMPros.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.WideAttackArea)} : {_unitStatus.wideAttackArea}";
                 GetTMPro((int)TMPros.TextInfo5).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowRatio)} : {_unitStatus.debuffRatio}";
                 GetTMPro((int)TMPros.TextInfo6).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowDuration)} : {_unitStatus.debuffDuration}";
-                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImagesn/Debuffer");
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/Debuffer");
                 break;
             }
             case UnitNames.StunGun:

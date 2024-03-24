@@ -107,4 +107,10 @@ public class TimeManager
         }
         return CurTimeScale;
     }
+
+    public void Clear()
+    {
+        CurTimeScale = 1;
+        Time.timeScale = CurTimeScale;
+    }
 }

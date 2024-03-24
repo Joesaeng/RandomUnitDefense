@@ -26,6 +26,8 @@ public class GameManagerEx
     HashSet<Monster> _monsters;
     public HashSet<Monster> Monsters { get { return _monsters; } }
 
+    Transform _monsterSpawnPoint;
+
     public Stack<GameObject> _dyingMonsters;
     public Stack<GameObject> DyingMonsters { get { return _dyingMonsters; } }
 
@@ -50,6 +52,8 @@ public class GameManagerEx
 
     public int CurStage { get; set; }
     public int CurStageMonsterCount { get; set; }
+    public int KillMonsterCount { get; set; }
+    public int EarnedGoldCoin { get; set; }
 
     private int _ruby;
     public int Ruby
@@ -76,6 +80,8 @@ public class GameManagerEx
     {
         CurStage = 1;
         CurStageMonsterCount = 0;
+        KillMonsterCount = 0;
+        EarnedGoldCoin = 0;
 
         CurMap = map;
 
@@ -83,6 +89,7 @@ public class GameManagerEx
         SetUnits = Managers.Player.Data.setUnits;
 
         UnitAttackRange = null;
+        _monsterSpawnPoint = GameObject.Find("SpawnPoint").transform;
         UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
         HpBarPanel = GameObject.Find("UI_HPBarPanel").transform;
         DamageTexts = GameObject.Find("DamageTexts").transform;
@@ -91,6 +98,9 @@ public class GameManagerEx
 
 
         Managers.Game.Ruby = ConstantData.InitialRuby;
+
+        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
+        Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
 
         Managers.Time.OnNextStage -= OnNextStageEvent;
         Managers.Time.OnNextStage += OnNextStageEvent;
@@ -113,6 +123,15 @@ public class GameManagerEx
         else
             _monsters = new HashSet<Monster>();
     }
+    // 이벤트 바인딩 해제
+    public void ClearBindedEvent()
+    {
+        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
+
+        Managers.Time.OnNextStage -= OnNextStageEvent;
+
+        Managers.UnitStatus.OnUnitUpgradeSlot -= OnUnitUpgrade;
+    }
 
     public bool CanUnitUpgrade(int upgradeSlot)
     {
@@ -128,12 +147,44 @@ public class GameManagerEx
     {
         UpgradeCostOfUnits[upgradeSlot] = Managers.UnitStatus.UnitUpgradLv[(UnitNames)SetUnits[upgradeSlot]] * ConstantData.BaseUpgradeCost;
     }
-
+    // 플레이어 최고 스테이지 갱신
+    private void SetPlayerHighestStage()
+    {
+        int highestStage = Managers.Player.Data.HighestStage;
+        Managers.Player.Data.HighestStage =
+            highestStage > CurStage ? highestStage : CurStage;
+    }
+    // 다음 스테이지로 가는 이벤트
     private void OnNextStageEvent()
     {
+        EarnedGoldCoin += CalculateEarendGoldCoinForStage(CurStage);
         CurStage++;
         CurStageMonsterCount = 0;
+        if(CurStage > ConstantData.HighestStage)
+        {
+            SetPlayerHighestStage();
+            GameOver("Victory");
+            return;
+        }
         Util.CheckTheEventAndCall(OnNextStage);
+    }
+
+    // 스테이지 클리어시 획득 금화
+    public int CalculateEarendGoldCoinForStage(int stage)
+    {
+        float fCoin = 0f;
+        float richRuneValue = 0f;
+        Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Rich, out richRuneValue);
+        fCoin += CurStage * (richRuneValue + 1f);
+
+        int coin = (int)fCoin;
+        return coin;
+    }
+
+    private void TheRespawnTime()
+    {
+        if (CurStageMonsterCount < ConstantData.OneStageSpawnCount)
+            SpawnMonster(_monsterSpawnPoint.transform.position);
     }
 
     public void SpawnMonster(Vector3 spawnPoint)
@@ -143,7 +194,21 @@ public class GameManagerEx
         monster.Init(CurStage, CurMap);
         _monsters.Add(monster);
         CurStageMonsterCount++;
+        
+        if(Monsters.Count > ConstantData.MonsterCountForGameOver)
+        {
+            SetPlayerHighestStage();
+            GameOver("Fail");
+            return;
+        }
         go.transform.position = spawnPoint;
+    }
+    public void GameOver(string gameoverType)
+    {
+        Managers.Time.GamePause();
+        Managers.UI.ShowPopupUI<UI_GameOver>().SetUp(gameoverType);
+        Managers.Player.Data.AmountOfGold += EarnedGoldCoin;
+        Managers.Player.SaveToJson();
     }
 
     public void DespawnMonster(GameObject go)
@@ -174,6 +239,7 @@ public class GameManagerEx
         {
             DespawnMonster(DyingMonsters.Pop());
             Ruby += ConstantData.AmountRubyGivenByMonster;
+            KillMonsterCount++;
         }
     }
 
@@ -227,5 +293,10 @@ public class GameManagerEx
         Managers.Player.Data.gameLanguage = (int)_gameLanguage;
         Util.CheckTheEventAndCall(OnChangedLanguage);
         Managers.Player.SaveToJson();
+    }
+
+    public void Clear()
+    {
+        ClearBindedEvent();
     }
 }

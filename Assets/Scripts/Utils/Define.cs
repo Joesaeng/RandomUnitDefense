@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Define
 {
+    public enum NotiTexts
+    {
+        NotEnoughGoldCoin,
+        LuckyRuneEffect,
+    }
+
     public enum SFXNames
     {
         Click,

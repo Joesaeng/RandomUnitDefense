@@ -18,11 +18,12 @@ public static class ConstantData
     public const float   OneStageTime = 15f;                    // 1스테이지 진행 시간
     public const int     OneStageSpawnCount = 50;               // 1스테이지의 몬스터 소환 횟수
     public const int     MonsterCountForGameOver = 100;         // 게임오버까지의 몬스터 개수
+    public const int     HighestStage = 100;                    // 게임 승리 스테이지
     public const int     SetUnitCount = 5;                      // 지정된 유닛 설정 개수
     public const int     EquipedRunesCount = 3;                 // 지정된 룬 장착 가능 개수
-    public const int     InitialRuby = 6000;                    // 게임 시작시 초기 루비 양
+    public const int     InitialRuby = 60;                      // 게임 시작시 초기 루비 양
     public const int     AmountRubyGivenByMonster = 1;          // 몬스터 한마리가 주는 루비의 양
-    public const int     RubyRequiredOneSpawnPlayerUnit = 20;   // 플레이어 유닛을 소환하는데 필요한 루비의 양
+    public const int     RubyRequiredOneSpawnPlayerUnit = 20;   // 플레이어 유닛을 소환하는데 필요한 루비의 
 
     public const float   UnitAttackAnimLength = 0.417f;         // 플레이어 유닛 공격 애니메이션의 길이
 
@@ -55,6 +56,9 @@ public static class ConstantData
     public const float   PercentOfUniqueRune      = 0.21f; // 0.09 ~ 0.21   12%
     public const float   PercentOfLegendRune      = 0.09f; // 0.03 ~ 0.09    6%
     public const float   PercentOfMythRune        = 0.03f; // 0    ~ 0.03    3%
+
+    public const int     TheCostOfOneRuneGamble   = 100;
+    public const int     TheCostOfTenRunesGamble  = 1000;
 
     // 룬 등급 당 부가 효과 개수
     public static readonly int[] AdditionalEftCountOfRunes = {0,1,2,3,5}; // {Common,Rare,Unique,Legend,Myth}

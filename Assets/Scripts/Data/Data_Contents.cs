@@ -20,6 +20,7 @@ namespace Data
         public bool     bgmOn           = true;
         public bool     sfxOn           = true;
         public int      AmountOfGold    = 0;
+        public int      HighestStage    = 0;
 
         public  List<Rune>      ownedRunes      = new List<Rune>();
         private Rune[]          equipedRunes    = new Rune[ConstantData.EquipedRunesCount];

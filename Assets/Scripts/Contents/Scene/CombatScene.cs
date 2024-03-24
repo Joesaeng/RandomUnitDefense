@@ -12,8 +12,6 @@ public class CombatScene : BaseScene
 {
     UI_CombatScene _ui_scene;
 
-    Transform _monsterSpawnPoint;
-
     Define.Map _curMap = Define.Map.Basic;
 
     // SlotIndex,Unit
@@ -27,7 +25,6 @@ public class CombatScene : BaseScene
     {
         base.Init();
         SceneType = Define.Scene.Combat;
-        _monsterSpawnPoint = GameObject.Find("SpawnPoint").transform;
 
         Managers.Game.InitForGameScene(_curMap);
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
@@ -40,9 +37,6 @@ public class CombatScene : BaseScene
 
         Managers.Game.OnClickedSellButton -= OnSellAUnit;
         Managers.Game.OnClickedSellButton += OnSellAUnit;
-
-        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
-        Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
 
         _selectedUnitIds = Managers.Game.SetUnits;
         
@@ -201,6 +195,7 @@ public class CombatScene : BaseScene
                 if (SelectRandomUnit(out randSlotIndex, out randId) == false)
                     return;
 
+                Managers.UI.ShowPopupUI<UI_NotificationText>().SetText(Define.NotiTexts.LuckyRuneEffect);
                 CreatePlayerUnit(randSlotIndex, randId);
             }
         }
@@ -293,30 +288,9 @@ public class CombatScene : BaseScene
         Managers.Game.Ruby = 0;
 
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
-        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
         Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
         Managers.Game.OnClickedSellButton -= OnSellAUnit;
 
         _ui_scene.Clear();
-    }
-
-    // 몬스터를 리스폰할 시간이 되었다! 는 이벤트
-    // 이 이벤트를 굳이 CombatScene에서 받아올 필요가 있는가?
-    // GameManager에서 관리를 하는데 그냥 GameManager가 이벤트를 받을까?
-    // 모르겠땅!
-    private void TheRespawnTime()
-    {
-        if (Managers.Game.CurStageMonsterCount < ConstantData.OneStageSpawnCount)
-            SpawnMonster();
-        else
-        { 
-            // GameOver
-        }
-    }
-
-    // 몬스터 유닛 소환 메서드
-    private void SpawnMonster()
-    {
-        Managers.Game.SpawnMonster(_monsterSpawnPoint.position);
     }
 }
