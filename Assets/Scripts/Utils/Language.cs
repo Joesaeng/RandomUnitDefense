@@ -775,12 +775,14 @@ public static class Language
         string[] englishNoti =
         {
             "Not Enough Gold Coin!",
-            "Lucky Rune Effect Activated!"
+            "Lucky Rune Effect Activated!",
+            "Can't Sell Equiped Rune"
         };
         string[] koreanNoti =
         {
             "금화가 부족합니다!",
-            "운의 룬 효과 발동!"
+            "운의 룬 효과 발동!",
+            "장착한 룬은 판매할 수 없습니다."
         };
         switch (language)
         {

@@ -105,7 +105,7 @@ public class UI_LobbyScene : UI_Scene
 
     public override void Init()
     {
-        SetCanvasRenderModeCamera();
+        //SetCanvasRenderModeCamera();
         Bind<GameObject>(typeof(GameObjects));
         Bind<TextMeshProUGUI>(typeof(Texts));
         Bind<Button>(typeof(Buttons));
@@ -496,7 +496,7 @@ public class UI_LobbyScene : UI_Scene
         {
             GetTMPro((int)Texts.BtnUseRuneText).text = Language.Use;
             // TEMP
-            int sellCost = 100;
+            int sellCost = ConstantData.RuneSellingPrices[(int)rune.gradeOfRune];
             GetTMPro((int)Texts.BtnSellRuneText).text = $"{Language.Sell} {sellCost}";
         }
 
@@ -504,7 +504,7 @@ public class UI_LobbyScene : UI_Scene
         GetTMPro((int)Texts.RuneGradeText).color = ConstantData.RuneGradeColors[(int)rune.gradeOfRune];
 
         GameObject runeImageObj = Get<GameObject>((int)GameObjects.RuneImageBack);
-        Util.FindChild<Image>(runeImageObj, "RuneImage").sprite = Managers.Rune.RuneSprites[rune.gradeOfRune];
+        Util.FindChild<Image>(runeImageObj, "Image").sprite = Managers.Rune.RuneSprites[rune.gradeOfRune];
         Util.FindChild<TextMeshProUGUI>(runeImageObj, "RuneImageText", true).text = Managers.Rune.RuneTextImages[rune.baseRune];
     }
 
@@ -541,9 +541,13 @@ public class UI_LobbyScene : UI_Scene
 
         Managers.Sound.Play(Define.SFXNames.Click);
         if (selectedRuneIndex == -1 || Managers.Player.Data.ownedRunes[selectedRuneIndex].isEquip == true)
+        {
+            Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.CannotSellEquipedRune);
             return;
+        }
         Managers.Resource.Destroy(_runeSlotsTF.GetChild(selectedRuneIndex).gameObject);
         Managers.Player.Data.ownedRunes.RemoveAt(selectedRuneIndex);
+        Managers.Player.Data.AmountOfGold += ConstantData.RuneSellingPrices[(int)selectedRune.gradeOfRune];
 
         StartCoroutine("RuneSlotsUpdate");
         Managers.Player.SaveToJson();

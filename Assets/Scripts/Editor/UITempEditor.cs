@@ -1,16 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class UITempEditor : MonoBehaviour
+public class UITempEditor : Editor
 {
-    void Start()
+    [MenuItem("MyEditor/UI Matarial")]
+    private static void ResolutionUIPrefabMaterial()
     {
-        
-    }
+        // Load Main Material
+        Material uiMat = AssetDatabase.LoadAssetAtPath("Assets/Resources/Art/UIdefault.mat", typeof(Material)) as Material;
+        Sprite sprtie = AssetDatabase.LoadAssetAtPath("Assets/Resources/Art/UI_true", typeof(Sprite)) as Sprite;
+        // Load UI Prefabs
+        string folderPath = "Assets/Resources/Prefabs/UI/";
+        string[] prefabGUIDs = AssetDatabase.FindAssets("t:Prefab", new[] { folderPath });
+        for (int i = 0; i < prefabGUIDs.Length; i++)
+        {
+            string prefabGUID = prefabGUIDs[i];
+            string prefabPath = AssetDatabase.GUIDToAssetPath(prefabGUID);
+            var go = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
 
-    void Update()
-    {
-        
+            // Update Image Material
+            Image[] images = go.GetComponentsInChildren<Image>();
+            for (int j = 0; j < images.Length; j++)
+            {
+                Image image = images[j];
+                if(image.sprite == null)
+                {
+                    image.sprite = sprtie;
+                    image.color = new Color(1f, 1f, 1f, 0f);
+                }
+                if(image.material == image.defaultMaterial)
+                    image.material = uiMat;
+            }
+            EditorUtility.SetDirty(go);
+        }
+
+        // Save
+        AssetDatabase.SaveAssets();
+
+        Debug.Log("Resolution UI Prefab Material!");
     }
 }

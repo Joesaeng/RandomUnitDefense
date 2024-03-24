@@ -63,6 +63,8 @@ public static class ConstantData
     // 룬 등급 당 부가 효과 개수
     public static readonly int[] AdditionalEftCountOfRunes = {0,1,2,3,5}; // {Common,Rare,Unique,Legend,Myth}
 
+    // 룬 등급 당 판매 가격
+    public static readonly int[] RuneSellingPrices = {30,60,100,150,300}; // {Common,Rare,Unique,Legend,Myth}
 
     // 아이템 텍스트 컬러
     public static readonly Color[] ItemColors =

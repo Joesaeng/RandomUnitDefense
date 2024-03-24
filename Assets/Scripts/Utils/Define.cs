@@ -8,6 +8,7 @@ public class Define
     {
         NotEnoughGoldCoin,
         LuckyRuneEffect,
+        CannotSellEquipedRune,
     }
 
     public enum SFXNames
