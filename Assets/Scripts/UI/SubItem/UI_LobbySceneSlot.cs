@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class UI_LobbySceneSlot : UI_Base, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    NestedScrollManager NM;
-    ScrollRect baseScrollRect;
+    protected NestedScrollManager NM;
+    protected ScrollRect baseScrollRect;
     protected ScrollRect parentSlotsScroll;
 
     protected bool forParent;
@@ -23,7 +23,7 @@ public class UI_LobbySceneSlot : UI_Base, IDragHandler, IBeginDragHandler, IEndD
     }
 
     // 스크롤의 드래그를 위함
-    public void OnBeginDrag(PointerEventData eventData)
+    public virtual void OnBeginDrag(PointerEventData eventData)
     {
         forParent = Mathf.Abs(eventData.delta.x) > 1f && Mathf.Abs(eventData.delta.y) > 1f;
         if (forParent)
@@ -37,7 +37,7 @@ public class UI_LobbySceneSlot : UI_Base, IDragHandler, IBeginDragHandler, IEndD
         else
             parentSlotsScroll.OnBeginDrag(eventData);
     }
-    public void OnDrag(PointerEventData eventData)
+    public virtual void OnDrag(PointerEventData eventData)
     {
         if (forParent)
         {
@@ -47,7 +47,7 @@ public class UI_LobbySceneSlot : UI_Base, IDragHandler, IBeginDragHandler, IEndD
         else
             parentSlotsScroll.OnDrag(eventData);
     }
-    public void OnEndDrag(PointerEventData eventData)
+    public virtual void OnEndDrag(PointerEventData eventData)
     {
         if (forParent)
         {

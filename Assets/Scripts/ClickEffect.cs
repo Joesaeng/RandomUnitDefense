@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class ClickEffect : MonoBehaviour
 {
-    SpriteRenderer spriteRenderer;
+    ParticleSystem particle;
     private void Start()
     {
-        if(spriteRenderer == null)
-            spriteRenderer = GetComponent<SpriteRenderer>();
+        if(particle == null)
+            particle = GetComponent<ParticleSystem>();
     }
     void Update()
     {
-        if (spriteRenderer.enabled == false)
+        if (particle.isStopped == true)
             Managers.Resource.Destroy(gameObject);
     }
 }

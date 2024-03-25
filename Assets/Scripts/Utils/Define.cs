@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Define
 {
+    public enum SortModeOfRunes
+    {
+        Type,
+        Grade,
+        Count,
+    }
     public enum NotiTexts
     {
         NotEnoughGoldCoin,

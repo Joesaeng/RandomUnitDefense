@@ -150,8 +150,8 @@ public class GameManagerEx
     // 플레이어 최고 스테이지 갱신
     private void SetPlayerHighestStage()
     {
-        int highestStage = Managers.Player.Data.HighestStage;
-        Managers.Player.Data.HighestStage =
+        int highestStage = Managers.Player.Data.highestStage;
+        Managers.Player.Data.highestStage =
             highestStage > CurStage ? highestStage : CurStage;
     }
     // 다음 스테이지로 가는 이벤트
@@ -207,7 +207,7 @@ public class GameManagerEx
     {
         Managers.Time.GamePause();
         Managers.UI.ShowPopupUI<UI_GameOver>().SetUp(gameoverType);
-        Managers.Player.Data.AmountOfGold += EarnedGoldCoin;
+        Managers.Player.Data.amountOfGold += EarnedGoldCoin;
         Managers.Player.SaveToJson();
     }
 

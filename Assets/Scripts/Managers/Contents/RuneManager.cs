@@ -1,6 +1,8 @@
 ﻿using Data;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class EquipedRuneStatus
@@ -114,7 +116,7 @@ public class RuneManager
 
         return rune;
     }
-
+    // 랜덤한 추가 옵션 생성 함수
     public AdditionalEffectOfRune CreateRandomAdditionalEffect()
     {
         AdditionalEffectOfRune effect = new AdditionalEffectOfRune();
@@ -134,5 +136,45 @@ public class RuneManager
             effect.value = System.MathF.Round(effect.value, 2);
 
         return effect;
+    }
+    // 플레이어가 보유한 룬을 종류/등급 별로 정렬한다
+    public void SortOwnedRunes(Define.SortModeOfRunes sortMode)
+    {
+        Rune[] runes = Managers.Player.Data.ownedRunes.ToArray();
+        switch(sortMode)
+        {
+            case Define.SortModeOfRunes.Grade:
+            {
+                RuneComparerToGrade comparer = new RuneComparerToGrade();
+                System.Array.Sort(runes, comparer);
+                break;
+            }
+            case Define.SortModeOfRunes.Type:
+            {
+                RuneComparerToBase comparer = new RuneComparerToBase();
+                System.Array.Sort(runes, comparer);
+                break;
+            }
+        }
+        Managers.Player.Data.ownedRunes.Clear();
+        Managers.Player.Data.ownedRunes = runes.ToList<Rune>();
+    }
+}
+public class RuneComparerToGrade : IComparer<Rune>
+{
+    public int Compare(Rune x, Rune y)
+    {
+        return (((int)y.gradeOfRune * 1000) + (int)y.baseRune)
+            -
+            (((int)x.gradeOfRune * 1000) + (int)x.baseRune);
+    }
+}
+
+public class RuneComparerToBase : IComparer<Rune>
+{
+    public int Compare(Rune x, Rune y)
+    {
+        return (int)y.gradeOfRune + ((int)y.baseRune * 1000) -
+            ((int)x.gradeOfRune + ((int)x.baseRune * 1000));
     }
 }

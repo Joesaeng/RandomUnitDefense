@@ -62,7 +62,7 @@ public class UI_GameOver : UI_Popup
 
         // ¹ë·ù ¼¼ÆÃ
         GetTMPro((int)Texts.ValueGameOverStage).text = $"{Managers.Game.CurStage}";
-        GetTMPro((int)Texts.ValueHighestStage).text = $"{Managers.Player.Data.HighestStage}";
+        GetTMPro((int)Texts.ValueHighestStage).text = $"{Managers.Player.Data.highestStage}";
         GetTMPro((int)Texts.ValueKillMonsterCount).text = $"{Managers.Game.KillMonsterCount}";
         GetTMPro((int)Texts.ValueEarnedGoldCoin).text = $"{Managers.Game.EarnedGoldCoin}";
 

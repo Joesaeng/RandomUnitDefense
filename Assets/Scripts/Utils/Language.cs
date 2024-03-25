@@ -896,4 +896,20 @@ public static class Language
             }
         }
     }
+
+    public static string GetRuneSortMode(SortModeOfRunes sortMode)
+    {
+        Define.GameLanguage language = Managers.Game.GameLanguage;
+        string[] englishSortMode = {"Type", "Grade"};
+        string[] koreanSortMode = {"종류", "등급"};
+        switch (language)
+        {
+            case Define.GameLanguage.English:
+                return englishSortMode[(int)sortMode];
+            case Define.GameLanguage.Korean:
+                return koreanSortMode[(int)sortMode];
+            default:
+                return englishSortMode[(int)sortMode];
+        }
+    }
 }

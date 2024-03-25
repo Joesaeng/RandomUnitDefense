@@ -20,15 +20,11 @@ public class SelectedPanel : MonoBehaviour
     float _scrollSpeed = 10f;
     public void ShowSelectedPanel()
     {
-        if(_isMoving) 
-            return;
         _movePos = MovePos.Show;
         StartCoroutine("CoMovePanel");
     }
     public void HideSelectedPanel() 
     {
-        if (_isMoving)
-            return;
         _movePos = MovePos.Hide;
         StartCoroutine("CoMovePanel");
     }
@@ -36,7 +32,7 @@ public class SelectedPanel : MonoBehaviour
     IEnumerator CoMovePanel()
     {
         _isMoving = true;
-        while(true)
+        while (_isMoving)
         {
             yield return null;
             transform.localPosition = Vector3.Lerp(transform.localPosition, _movingPos[(int)_movePos], _scrollSpeed * Time.deltaTime);
@@ -50,15 +46,4 @@ public class SelectedPanel : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        // if(_isMoving)
-        // {
-        //     transform.localPosition = Vector3.Lerp(transform.localPosition, _movingPos[(int)_movePos], _scrollSpeed * Time.deltaTime);
-        //     if (Vector3.Distance(transform.localPosition, _movingPos[(int)_movePos]) <= 1f)
-        //     {
-        //         _isMoving = false;
-        //     }
-        // }
-    }
 }

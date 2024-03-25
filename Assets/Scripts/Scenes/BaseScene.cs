@@ -19,6 +19,11 @@ public abstract class BaseScene : MonoBehaviour
         {
             Managers.Resource.Instantiate("EventSystem").name = "@EventSystem";
         }
+        obj = GameObject.FindObjectOfType(typeof(ClickEffectCreator));
+        if (obj == null)
+        {
+            Managers.Resource.Instantiate("ClickEffectCreator").name = "@ClickEffectCreator";
+        }
         Managers.Game.InitScene(SceneType);
     }
 

@@ -22,7 +22,6 @@ public class UI_RuneSlot : UI_LobbySceneSlot
     {
         base.Init();
         Bind<Image>(typeof(Images));
-        parentSlotsScroll = GameObject.FindWithTag("RuneSlotsScroll").GetComponent<ScrollRect>();
 
         gameObject.AddUIEvent(ClickedRuneSlot);
     }
@@ -47,4 +46,32 @@ public class UI_RuneSlot : UI_LobbySceneSlot
         }
     }
 
+    public override void OnBeginDrag(PointerEventData eventData)
+    {
+        forParent = Mathf.Abs(eventData.delta.x) > 1f && Mathf.Abs(eventData.delta.y) > 1f;
+
+        if (forParent)
+        {
+            NM.OnBeginDrag(eventData);
+            baseScrollRect.OnBeginDrag(eventData);
+        }
+    }
+
+    public override void OnDrag(PointerEventData eventData)
+    {
+        if (forParent)
+        {
+            NM.OnDrag(eventData);
+            baseScrollRect.OnDrag(eventData);
+        }
+    }
+
+    public override void OnEndDrag(PointerEventData eventData)
+    {
+        if (forParent)
+        {
+            NM.OnEndDrag(eventData);
+            baseScrollRect.OnEndDrag(eventData);
+        }
+    }
 }

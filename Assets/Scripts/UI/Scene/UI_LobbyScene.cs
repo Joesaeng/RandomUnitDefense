@@ -41,7 +41,7 @@ public class UI_LobbyScene : UI_Scene
         #endregion
         #region RunePanel
         RuneSlots,
-        RuneSlotsScroll,
+        // RuneSlotsScroll,
         SelectRunePanel,
         RuneImageBack,
         SetRunesPanel,
@@ -79,6 +79,9 @@ public class UI_LobbyScene : UI_Scene
         TenRuneGambleText,
         GambleOneRuneCostText,
         GambleTenRuneCostText,
+        SortRunesText,
+        CurListText,
+        LastListText,
         #endregion
         TextAmountGold,
     }
@@ -100,6 +103,9 @@ public class UI_LobbyScene : UI_Scene
         BtnSellRune,
         OneRuneGambleButton,
         TenRuneGambleButton,
+        BtnSortRunes,
+        ListPrevButton,
+        ListNextButton,
         #endregion
     }
 
@@ -114,15 +120,15 @@ public class UI_LobbyScene : UI_Scene
         Get<GameObject>((int)GameObjects.NestedScrollManager).GetOrAddComponent<NestedScrollManager>().Init();
         Get<GameObject>((int)GameObjects.UnitSlotsScroll).GetOrAddComponent<ScrollScript>()
             .Init("UnitSlots", "UnitSlotsViewport", "UnitSlotsScrollBar");
-        Get<GameObject>((int)GameObjects.RuneSlotsScroll).GetOrAddComponent<ScrollScript>()
-            .Init("RuneSlots", "RuneSlotsViewport", "RuneSlotsScrollBar");
+        //Get<GameObject>((int)GameObjects.RuneSlotsScroll).GetOrAddComponent<ScrollScript>()
+        //    .Init("RuneSlots", "RuneSlotsViewport", "RuneSlotsScrollBar");
 
         OnChangeLanguage();
 
 
         GetTMPro((int)Texts.GambleOneRuneCostText).text = $"{ConstantData.TheCostOfOneRuneGamble}";
         GetTMPro((int)Texts.GambleTenRuneCostText).text = $"{ConstantData.TheCostOfTenRunesGamble}";
-        GetTMPro((int)Texts.TextAmountGold).text = $"{Managers.Player.Data.AmountOfGold}";
+        GetTMPro((int)Texts.TextAmountGold).text = $"{Managers.Player.Data.amountOfGold}";
 
         #region CombatPanel
 
@@ -161,8 +167,17 @@ public class UI_LobbyScene : UI_Scene
         #region RunePanel
         _runeSlotsTF = Get<GameObject>((int)GameObjects.RuneSlots).transform;
 
-        SetOwnRunes();
+        // 룬슬롯 리스트 개수 초기화
+        int runeCount = Managers.Player.Data.ownedRunes.Count;
 
+        _curListNum = 0;
+        _lastListNum = (int)Mathf.Floor(runeCount / RuneCountOfTheOneList);
+
+        GetTMPro((int)Texts.CurListText).text = $"{_curListNum + 1}";
+        GetTMPro((int)Texts.LastListText).text = $"{_lastListNum + 1}";
+        //
+
+        StartCoroutine(CoSetOwnRunes());
         Transform equipedRunesTF = Get<GameObject>((int)GameObjects.SetRunesPanel).transform;
         for (int index = 0; index < ConstantData.EquipedRunesCount; index++)
         {
@@ -183,6 +198,11 @@ public class UI_LobbyScene : UI_Scene
 
         GetButton((int)Buttons.OneRuneGambleButton).gameObject.AddUIEvent(OnOneRuneGambleButtonClicked);
         GetButton((int)Buttons.TenRuneGambleButton).gameObject.AddUIEvent(OnTenRuneGambleButtonClicked);
+
+        GetButton((int)Buttons.BtnSortRunes).gameObject.AddUIEvent(OnSortRunesButtonClicked);
+
+        GetButton((int)Buttons.ListPrevButton).gameObject.AddUIEvent(OnListPrevButtonClicked);
+        GetButton((int)Buttons.ListNextButton).gameObject.AddUIEvent(OnListNextButtonClicked);
         #endregion
 
         // 설정된 유닛 슬롯 초기화
@@ -233,8 +253,6 @@ public class UI_LobbyScene : UI_Scene
         Managers.Player.SaveToJson();
     }
 
-    
-
     public override void OnChangeLanguage()
     {
         base.OnChangeLanguage();
@@ -245,6 +263,8 @@ public class UI_LobbyScene : UI_Scene
 
         GetTMPro((int)Texts.OneRuneGambleText).text = Language.OneRuneGambleText;
         GetTMPro((int)Texts.TenRuneGambleText).text = Language.TenRuneGamblesText;
+        GetTMPro((int)Texts.SortRunesText).text =
+            Language.GetRuneSortMode((Define.SortModeOfRunes)Managers.Player.Data.sortModeOfRune);
 
         SetStartCombatButton(_setAllUnits);
 
@@ -257,7 +277,7 @@ public class UI_LobbyScene : UI_Scene
 
     private void UpdateAmountOfGoldText()
     {
-        GetTMPro((int)Texts.TextAmountGold).text = $"{Managers.Player.Data.AmountOfGold}";
+        GetTMPro((int)Texts.TextAmountGold).text = $"{Managers.Player.Data.amountOfGold}";
     }
 
     public void OnOptionMenuButtonClicked(PointerEventData data)
@@ -310,10 +330,10 @@ public class UI_LobbyScene : UI_Scene
         Util.FindChild<SortingGroup>(obj).sortingOrder = ConstantData.SelectedUnitPrefabSortOrder;
 
         Animator selectedUnitPrefabAnimator = Util.FindChild<Animator>(obj);
-        selectedUnitPrefabAnimator.runtimeAnimatorController 
+        selectedUnitPrefabAnimator.runtimeAnimatorController
             = Managers.Resource.Load<RuntimeAnimatorController>("Animations/PrefabUnits/AnimatorController");
         selectedUnitPrefabAnimator.SetFloat("AttackAnimSpeed", 1f);
-        selectedUnitPrefabAnimator.Play($"Attack_{Managers.Data.BaseUnitDict[(int)unitId].job}",0);
+        selectedUnitPrefabAnimator.Play($"Attack_{Managers.Data.BaseUnitDict[(int)unitId].job}", 0);
 
         string infoName,InfoValue;
         SetUnitInfoText(unitId, out infoName, out InfoValue);
@@ -427,22 +447,54 @@ public class UI_LobbyScene : UI_Scene
 
     #region RunePanel
     // 플레이어가 가지고있는 룬들을 UI에 표시
-    public void SetOwnRunes()
+    int _curListNum = 0;
+    int _lastListNum = 0;
+    const int RuneCountOfTheOneList = 15;
+    IEnumerator CoSetOwnRunes()
     {
-        for (int i = 0; i < _runeSlotsTF.childCount; ++i)
+        int runeCount = Managers.Player.Data.ownedRunes.Count;
+
+        // 1을 빼주는 이유는 룬의 개수가 RuneCountOfTheOneList의 배수일 때 비어있는 리스트가 생기기 때문
+        _lastListNum = (int)Mathf.Floor((runeCount - 1) / RuneCountOfTheOneList);
+
+        if (_curListNum > _lastListNum)
+            _curListNum = _lastListNum;
+
+        GetTMPro((int)Texts.CurListText).text = $"{_curListNum + 1}";
+        GetTMPro((int)Texts.LastListText).text = $"{_lastListNum + 1}";
+
+        yield return null;
+
+        int removeCount = 0;
+        // 현재 리스트가 마지막 리스트 일 때
+        if (_curListNum == _lastListNum)
         {
-            Managers.Resource.Destroy(_runeSlotsTF.GetChild(i).gameObject);
+            // 삭제해야 할 슬롯의 개수를 찾음
+            removeCount = (RuneCountOfTheOneList * (_curListNum + 1)) - runeCount;
         }
 
-        for (int runeIndex = 0; runeIndex < Managers.Player.Data.ownedRunes.Count; runeIndex++)
+        // 현재 리스트의 첫번째 룬 인덱스를 구한다. ex) 0, 15, 30 . . .
+        int curListFirstRuneIndex = _curListNum * RuneCountOfTheOneList;
+        for (int runeIndex = curListFirstRuneIndex;
+            runeIndex < curListFirstRuneIndex + RuneCountOfTheOneList; runeIndex++)
         {
-            GameObject ownRune = Managers.UI.MakeSubItem<UI_RuneSlot>(parent : _runeSlotsTF).gameObject;
-            ownRune.transform.localScale = new Vector3(1f, 1f, 1f);
-
+            Transform ownRune;
+            _runeSlotsTF.TryGetChild(runeIndex - curListFirstRuneIndex, out ownRune);
+            if (runeIndex >= curListFirstRuneIndex + RuneCountOfTheOneList - removeCount)
+            {
+                if (ownRune != null)
+                    Managers.Resource.Destroy(ownRune.gameObject);
+                continue;
+            }
+            if (ownRune == null)
+            {
+                ownRune = Managers.UI.MakeSubItem<UI_RuneSlot>(parent: _runeSlotsTF).transform;
+                ownRune.localScale = new Vector3(1f, 1f, 1f);
+            }
             ownRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
         }
-        Managers.Player.SaveToJson();
     }
+    
     // 룬 장착 혹은 해제 시 장착된 룬들을 설정
     public void SetEquipedRunes()
     {
@@ -452,13 +504,13 @@ public class UI_LobbyScene : UI_Scene
             if (equipedRunes[i] != null && equipedRunes[i].equipSlotIndex != -1)
             {
                 Rune rune = equipedRunes[i];
-                _equipedRunes[i].GetComponent<UI_EquipedRuneSlot>().SetRune(rune,this);
+                _equipedRunes[i].GetComponent<UI_EquipedRuneSlot>().SetRune(rune, this);
             }
             else
                 _equipedRunes[i].GetComponent<UI_EquipedRuneSlot>().OffImage();
         }
         // 장착 룬이 바뀌면 보유한 룬들도 한번 업데이트
-        StartCoroutine("RuneSlotsUpdate");
+        StartCoroutine(CoSetOwnRunes());
         Managers.Player.SaveToJson();
     }
 
@@ -518,6 +570,26 @@ public class UI_LobbyScene : UI_Scene
         Managers.UI.ShowPopupUI<UI_UseRune>().Set(selectedRune);
     }
 
+    public void OnListPrevButtonClicked(PointerEventData eventData)
+    {
+        Managers.Sound.Play(Define.SFXNames.Click);
+        if (_curListNum > 0)
+        {
+            _curListNum--;
+            StartCoroutine(CoSetOwnRunes());
+        }
+    }
+
+    public void OnListNextButtonClicked(PointerEventData eventData)
+    {
+        Managers.Sound.Play(Define.SFXNames.Click);
+        if (_curListNum < _lastListNum)
+        {
+            _curListNum++;
+            StartCoroutine(CoSetOwnRunes());
+        }
+    }
+
     // 룬 정보 패널에서 룬 해제(Clear)버튼 클릭했을 때 호출
     public void OnClearRuneButtonClick(PointerEventData eventData)
     {
@@ -525,7 +597,7 @@ public class UI_LobbyScene : UI_Scene
 
         Managers.Sound.Play(Define.SFXNames.Click);
         PlayerData playerData = Managers.Player.Data;
-        for(int i = 0; i < playerData.EquipedRunes.Length; ++i)
+        for (int i = 0; i < playerData.EquipedRunes.Length; ++i)
         {
             if (playerData.EquipedRunes[i] == selectedRune)
             {
@@ -540,34 +612,21 @@ public class UI_LobbyScene : UI_Scene
     // 룬 정보 패널에서 룬 판매 버튼 클릭했을 때 호출
     public void OnSellRuneButtonClick(PointerEventData eventData)
     {
-        SelectRunePanel.HideSelectedPanel();
-
         Managers.Sound.Play(Define.SFXNames.Click);
         if (selectedRuneIndex == -1 || Managers.Player.Data.ownedRunes[selectedRuneIndex].isEquip == true)
         {
             Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.CannotSellEquipedRune);
             return;
         }
-        Managers.Resource.Destroy(_runeSlotsTF.GetChild(selectedRuneIndex).gameObject);
+
+        SelectRunePanel.HideSelectedPanel();
+
         Managers.Player.Data.ownedRunes.RemoveAt(selectedRuneIndex);
-        Managers.Player.Data.AmountOfGold += ConstantData.RuneSellingPrices[(int)selectedRune.gradeOfRune];
+        Managers.Player.Data.amountOfGold += ConstantData.RuneSellingPrices[(int)selectedRune.gradeOfRune];
 
-        StartCoroutine("RuneSlotsUpdate");
         Managers.Player.SaveToJson();
+        StartCoroutine(CoSetOwnRunes());
         UpdateAmountOfGoldText();
-    }
-
-    // 보유중인 룬을 업데이트하는 코루틴, 오브젝트 삭제하는 과정이 필요한데
-    // 오브젝트가 게임 상 1프레임이 지나야 삭제되기 때문에 코루틴으로 구현
-    IEnumerator RuneSlotsUpdate()
-    {
-        yield return null;
-        for (int runeIndex = 0; runeIndex < Managers.Player.Data.ownedRunes.Count; runeIndex++)
-        {
-            GameObject ownRune = _runeSlotsTF.GetChild(runeIndex).gameObject;
-
-            ownRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
-        }
     }
 
     public void OnCloseSelectedRunePanelButton(PointerEventData eventData)
@@ -578,7 +637,7 @@ public class UI_LobbyScene : UI_Scene
 
     public void OnOneRuneGambleButtonClicked(PointerEventData eventData)
     {
-        if (Managers.Player.Data.AmountOfGold < ConstantData.TheCostOfOneRuneGamble)
+        if (Managers.Player.Data.amountOfGold < ConstantData.TheCostOfOneRuneGamble)
         {
             Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
             return;
@@ -586,44 +645,43 @@ public class UI_LobbyScene : UI_Scene
 
         Managers.Player.Data.ownedRunes.Add(Managers.Rune.CreateRandomRune());
 
-        GameObject newRune = Managers.UI.MakeSubItem<UI_RuneSlot>(parent : _runeSlotsTF).gameObject;
-        newRune.transform.localScale = new Vector3(1f, 1f, 1f);
+        Managers.Player.Data.amountOfGold -= ConstantData.TheCostOfOneRuneGamble;
 
-        newRune.GetComponent<UI_RuneSlot>().SetRune(Managers.Player.Data.ownedRunes.Count - 1, this);
-
-        Managers.Player.Data.AmountOfGold -= ConstantData.TheCostOfOneRuneGamble;
-
+        StartCoroutine(CoSetOwnRunes());
         Managers.Player.SaveToJson();
         UpdateAmountOfGoldText();
     }
 
     public void OnTenRuneGambleButtonClicked(PointerEventData eventData)
     {
-        if (Managers.Player.Data.AmountOfGold < ConstantData.TheCostOfTenRunesGamble)
+        if (Managers.Player.Data.amountOfGold < ConstantData.TheCostOfTenRunesGamble)
         {
             Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
             return;
         }
 
-        int beginRuneIndex = Managers.Player.Data.ownedRunes.Count;
         for (int count = 0; count < 10; count++)
         {
             Managers.Player.Data.ownedRunes.Add(Managers.Rune.CreateRandomRune());
         }
         Managers.Player.Data.ownedRunes.Add(Managers.Rune.CreateRandomRune(GradeOfRune.Unique));
 
-        for (int runeIndex = beginRuneIndex; runeIndex < Managers.Player.Data.ownedRunes.Count; runeIndex++)
-        {
-            GameObject newRune = Managers.UI.MakeSubItem<UI_RuneSlot>(parent : _runeSlotsTF).gameObject;
-            newRune.transform.localScale = new Vector3(1f, 1f, 1f);
+        Managers.Player.Data.amountOfGold -= ConstantData.TheCostOfTenRunesGamble;
 
-            newRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
-        }
-
-        Managers.Player.Data.AmountOfGold -= ConstantData.TheCostOfTenRunesGamble;
-
+        StartCoroutine(CoSetOwnRunes());
         Managers.Player.SaveToJson();
         UpdateAmountOfGoldText();
+    }
+
+    public void OnSortRunesButtonClicked(PointerEventData eventData)
+    {
+        int sortMode = (Managers.Player.Data.sortModeOfRune + 1) % (int)Define.SortModeOfRunes.Count;
+        Managers.Rune.SortOwnedRunes((Define.SortModeOfRunes)sortMode);
+        Managers.Player.Data.sortModeOfRune = sortMode;
+        GetTMPro((int)Texts.SortRunesText).text = Language.GetRuneSortMode((Define.SortModeOfRunes)sortMode);
+        StartCoroutine(CoSetOwnRunes());
+
+        Managers.Player.SaveToJson();
     }
     #endregion
     public void Clear()

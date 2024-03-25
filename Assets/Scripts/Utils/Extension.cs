@@ -11,6 +11,16 @@ public static class Extension
         UI_Base.BindEvent(go, action, type);
     }
 
+    public static bool TryGetChild(this Transform parent, int index , out Transform child)
+    {
+        child = null;
+        if (parent.childCount <= index)
+            return false;
+
+        child = parent.GetChild(index);
+        return true;
+    }
+
     public static T GetOrAddComponent<T>(this GameObject go) where T : UnityEngine.Component
     {
         return Util.GetOrAddComponent<T>(go);
