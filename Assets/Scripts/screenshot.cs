@@ -6,14 +6,12 @@ using UnityEngine;
 public class screenshot : MonoBehaviour
 {
     public Camera renderCamera;
-    int i = 0;
     private void Update()
     {
-        string path = Application.persistentDataPath + "/screenshot";
+        string path = "Assets/Resources/CombatSceneTileImage.png";
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            TakeScreenshotAndSave($"{path}/tile{i}");
-            i++;
+            TakeScreenshotAndSave(path);
         }
     }
     public void TakeScreenshotAndSave(string filePath)
@@ -50,7 +48,7 @@ public class screenshot : MonoBehaviour
     private void SaveScreenshotToFile(Texture2D screenshot, string filePath)
     {
         byte[] bytes = screenshot.EncodeToPNG();
-        File.WriteAllBytes(filePath, bytes);
+        System.IO.File.WriteAllBytes(filePath, bytes);
         Debug.Log("Screenshot saved to: " + filePath);
     }
 }

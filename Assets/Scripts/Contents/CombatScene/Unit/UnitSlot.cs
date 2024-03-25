@@ -18,7 +18,7 @@ public class UnitSlot : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Unit unit = collision.GetComponent<Unit>();
+        Unit unit = collision.GetComponentInParent<Unit>();
         if(unit != null && unit.IsDraging == true)
         {
             spriteRenderer.enabled = true;
@@ -27,7 +27,7 @@ public class UnitSlot : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        Unit unit = collision.GetComponent<Unit>();
+        Unit unit = collision.GetComponentInParent<Unit>();
         if (unit != null && unit.IsDraging == true)
         {
             spriteRenderer.enabled = false;

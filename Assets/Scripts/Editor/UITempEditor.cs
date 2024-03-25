@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +34,34 @@ public class UITempEditor : Editor
                 }
                 if(image.material == image.defaultMaterial)
                     image.material = uiMat;
+            }
+            EditorUtility.SetDirty(go);
+        }
+
+        // Save
+        AssetDatabase.SaveAssets();
+
+        Debug.Log("Resolution UI Prefab Material!");
+    }
+
+    [MenuItem("MyEditor/Texts RaycastTarget Off")]
+    private static void OffTextsRaycastTarget()
+    {
+        // Load UI Prefabs
+        string folderPath = "Assets/Resources/Prefabs/UI/";
+        string[] prefabGUIDs = AssetDatabase.FindAssets("t:Prefab", new[] { folderPath });
+        for (int i = 0; i < prefabGUIDs.Length; i++)
+        {
+            string prefabGUID = prefabGUIDs[i];
+            string prefabPath = AssetDatabase.GUIDToAssetPath(prefabGUID);
+            var go = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+
+            // Update Image Material
+            TextMeshProUGUI[] texts = go.GetComponentsInChildren<TextMeshProUGUI>();
+            for (int j = 0; j < texts.Length; j++)
+            {
+                texts[j].raycastTarget = false;
+                Debug.Log($"{texts[j]} Complete!");
             }
             EditorUtility.SetDirty(go);
         }

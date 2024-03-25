@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,13 +8,10 @@ using UnityEngine.UI;
 
 public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    [SerializeField]
     Scrollbar _scrollbar;
 
-    [SerializeField]
     Image[] _tabBtnImages;
 
-    [SerializeField]
     Image[] _menuImages;
 
     const int CountOfLobbyMenu = 3;
@@ -40,11 +38,11 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
         #region NestedScrollBar Setting
         _scrollbar = GameObject.Find("NestedScrollBar").GetComponent<Scrollbar>();
 
-        _tabBtnImages = new Image[] 
+        _tabBtnImages = new Image[]
         {
-            GameObject.Find("CombatBtn").GetComponent<Image>(), 
-            GameObject.Find("BarrackBtn").GetComponent<Image>(), 
-            GameObject.Find("RuneBtn").GetComponent<Image>() 
+            GameObject.Find("CombatBtn").GetComponent<Image>(),
+            GameObject.Find("BarrackBtn").GetComponent<Image>(),
+            GameObject.Find("RuneBtn").GetComponent<Image>()
         };
         _menuImages = new Image[]
         {
@@ -86,7 +84,7 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
     private void SetTargetPos(float pos)
     {
         _targetPos = pos;
-        for(int i = 0; i < _tabBtnImages.Length;++i)
+        for (int i = 0; i < _tabBtnImages.Length; ++i)
         {
             _btnTargetSizes[i] = new Vector2(320f, 190f);
             _btnTargetColors[i] = new Color(0.6f, 0.6f, 0.6f);
@@ -109,10 +107,10 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
 
         SetTargetPos(SetPos());
 
-        if(_curPos == _targetPos)
+        if (_curPos == _targetPos)
         {
             // 스크롤이 왼쪽으로 빠르게 이동 시 목표가 하나 감소
-            if(eventData.delta.x > 18 && _curPos - _distance >= 0)
+            if (eventData.delta.x > 18 && _curPos - _distance >= 0)
             {
                 --_targetIndex;
                 SetTargetPos(_curPos - _distance);
@@ -146,6 +144,6 @@ public class NestedScrollManager : MonoBehaviour, IDragHandler, IBeginDragHandle
                 _menuImages[i].rectTransform.localPosition = Vector3.Lerp(_menuImages[i].rectTransform.localPosition, _menuTargetPoss[i], _scrollSpeed * Time.deltaTime);
             }
         }
-        
+
     }
 }

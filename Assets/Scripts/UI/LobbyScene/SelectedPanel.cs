@@ -15,28 +15,50 @@ public class SelectedPanel : MonoBehaviour
 
     Vector3[] _movingPos = new Vector3[2]{ new Vector3(0f, -300f, 0f), new Vector3(0f, -1200f, 0f) };
     bool _isMoving = false;
+    WaitForSeconds _wfs = new WaitForSeconds(0.05f);
 
     float _scrollSpeed = 10f;
     public void ShowSelectedPanel()
     {
+        if(_isMoving) 
+            return;
         _movePos = MovePos.Show;
-        _isMoving = true;
+        StartCoroutine("CoMovePanel");
     }
     public void HideSelectedPanel() 
-    { 
+    {
+        if (_isMoving)
+            return;
         _movePos = MovePos.Hide;
-        _isMoving = true;
+        StartCoroutine("CoMovePanel");
     }
 
-    void Update()
+    IEnumerator CoMovePanel()
     {
-        if(_isMoving)
+        _isMoving = true;
+        while(true)
         {
+            yield return null;
             transform.localPosition = Vector3.Lerp(transform.localPosition, _movingPos[(int)_movePos], _scrollSpeed * Time.deltaTime);
             if (Vector3.Distance(transform.localPosition, _movingPos[(int)_movePos]) <= 1f)
             {
                 _isMoving = false;
+                if(_movePos == MovePos.Hide)
+                    gameObject.SetActive(false);
+                break;
             }
         }
+    }
+
+    void Update()
+    {
+        // if(_isMoving)
+        // {
+        //     transform.localPosition = Vector3.Lerp(transform.localPosition, _movingPos[(int)_movePos], _scrollSpeed * Time.deltaTime);
+        //     if (Vector3.Distance(transform.localPosition, _movingPos[(int)_movePos]) <= 1f)
+        //     {
+        //         _isMoving = false;
+        //     }
+        // }
     }
 }

@@ -105,6 +105,8 @@ public class UI_LobbyScene : UI_Scene
 
     public override void Init()
     {
+        base.Init();
+        SetCanvasRenderModeCamera();
         Bind<GameObject>(typeof(GameObjects));
         Bind<TextMeshProUGUI>(typeof(Texts));
         Bind<Button>(typeof(Buttons));
@@ -150,7 +152,7 @@ public class UI_LobbyScene : UI_Scene
         }
 
         SelectUnitPanel = Get<GameObject>((int)GameObjects.SelectUnitPanel).GetComponent<SelectedPanel>();
-
+        SelectUnitPanel.gameObject.SetActive(false);
         GetButton((int)Buttons.BtnUseUnit).gameObject.AddUIEvent(OnUseUnitButtonClick);
         GetButton((int)Buttons.BtnCloseSelectedUnit).gameObject.AddUIEvent(OnCloseSelectedUnitPanelButton);
 
@@ -172,6 +174,7 @@ public class UI_LobbyScene : UI_Scene
         SetEquipedRunes();
 
         SelectRunePanel = Get<GameObject>((int)GameObjects.SelectRunePanel).GetComponent<SelectedPanel>();
+        SelectRunePanel.gameObject.SetActive(false);
 
         GetButton((int)Buttons.BtnCloseSelectedRune).gameObject.AddUIEvent(OnCloseSelectedRunePanelButton);
         GetButton((int)Buttons.BtnUseRune).gameObject.AddUIEvent(OnUseRuneButtonClick);
@@ -277,7 +280,6 @@ public class UI_LobbyScene : UI_Scene
         GetButton((int)Buttons.BtnStartCombat).interactable = setAllUnits;
         string text = setAllUnits ? Language.StartCombat : Language.CompleteSetUnits;
         GetTMPro((int)Texts.TextStartCombat).text = text;
-
     }
 
     #endregion
@@ -289,6 +291,7 @@ public class UI_LobbyScene : UI_Scene
     public void UpdateSelectedUnitPanel(UnitNames unitId)
     {
         _selectedUnitId = unitId;
+        SelectUnitPanel.gameObject.SetActive(true);
         SelectUnitPanel.ShowSelectedPanel();
 
         GetTMPro((int)Texts.UnitNameText).text = Language.GetBaseUnitName(unitId);
@@ -466,6 +469,7 @@ public class UI_LobbyScene : UI_Scene
     {
         selectedRune = rune;
         selectedRuneIndex = runeIndex;
+        SelectRunePanel.gameObject.SetActive(true);
         SelectRunePanel.ShowSelectedPanel();
 
         GetTMPro((int)Texts.RuneNameText).text = Language.GetRuneNameText(rune.baseRune);

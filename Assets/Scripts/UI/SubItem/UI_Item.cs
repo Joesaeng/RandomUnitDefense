@@ -49,7 +49,7 @@ public class UI_Item : UI_Base
         _itemdata = itemdata;
         string itemImagePath = $"{_itemdata.itemName}_{_itemdata.itemLevel}";
         gameObject.GetComponent<Image>().sprite =
-            Managers.Resource.Load<Sprite>($"Art/InGameItems/{itemImagePath}");
+            Managers.Resource.Load<Sprite>($"Art/Billinear/InGameItems/{itemImagePath}");
 
         GetTMPro((int)TMPros.TextItemLevel).text = $"{(ItemLevelString)_itemdata.itemLevel}";
         GetTMPro((int)TMPros.TextItemLevel).color = ConstantData.ItemColors[_itemdata.itemLevel];

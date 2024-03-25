@@ -39,9 +39,9 @@ public class UI_BtnUpgrade : UI_Base
     {
         Slot = slot;
         ID = (UnitNames)id;
-        string imagePath = $"{ID.ToString()}_1_Idle";
+        string imagePath = $"{ID}_1_Idle";
         Image image = GetImage((int)Images.ImageUnit);
-        image.sprite = Managers.Resource.Load<Sprite>($"Art/Units/{ID.ToString()}");
+        image.sprite = Managers.Resource.Load<Sprite>($"Art/Units/{ID}");
         image.transform.localScale = Vector3.one * 2;
         SetText();
     }
