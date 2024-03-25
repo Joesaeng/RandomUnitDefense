@@ -14,7 +14,7 @@ public class UI_EquipedRuneCombatScene : UI_Base
     {
         Data.Rune rune = Managers.Player.Data.EquipedRunes[equipRuneIndex];
         GetComponent<Image>().sprite = Managers.Rune.RuneSprites[rune.gradeOfRune];
-        GetComponentInChildren<TextMeshProUGUI>().text = Managers.Rune.RuneTextImages[rune.baseRune];
+        Util.FindChild<Image>(gameObject, "TextImage").sprite = Managers.Rune.RuneTextImages[rune.baseRune];
     }
 
     public override void OnChangeLanguage()

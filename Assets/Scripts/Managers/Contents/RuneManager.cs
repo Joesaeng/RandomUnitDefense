@@ -47,40 +47,25 @@ public class RuneManager
     Dictionary<GradeOfRune, Sprite> _runeSprites;
     public Dictionary<GradeOfRune, Sprite> RuneSprites { get => _runeSprites; }
 
-    Dictionary<BaseRune,string> _runeTextImages;
-    public Dictionary<BaseRune, string> RuneTextImages { get => _runeTextImages; }
+    Dictionary<BaseRune,Sprite> _runeTextImages;
+    public Dictionary<BaseRune, Sprite> RuneTextImages { get => _runeTextImages; }
 
     public void Init()
     {
         Sprite[] runeImages = Resources.LoadAll<Sprite>("Art/UIImages/Runes");
+        Sprite[] runeTextImages = Resources.LoadAll<Sprite>("Art/UIImages/RuneTextImage");
 
         _runeSprites = new Dictionary<GradeOfRune, Sprite>();
-        _runeTextImages = new Dictionary<BaseRune, string>();
+        _runeTextImages = new Dictionary<BaseRune, Sprite>();
 
         // 리소스에 있는 룬 이미지를 딕셔너리에 채움
         foreach (Sprite runeSprite in runeImages)
         {
             _runeSprites.Add(Util.Parse<GradeOfRune>(runeSprite.name), runeSprite);
         }
-
-        // 룬 이미지 내부에 들어갈 한자 채우기
-        string[] runeTextImages = new string[(int)BaseRune.Count]
+        foreach (Sprite runeTextSprite in runeTextImages)
         {
-            "骑", // 말탈 기
-            "弓", // 활 궁
-            "海", // 바다 해
-            "火", // 불 화
-            "矛", // 창 모
-            "於", // 어조사 어(어리어..)
-            "毒", // 독 독
-            "富", // 부유할 부
-            "战", // 싸움 전
-            "福", // 복 복
-            "咀", // 씹을 저
-        };
-        for (int i = 0; i < (int)BaseRune.Count; i++)
-        {
-            _runeTextImages.Add((BaseRune)i, runeTextImages[i]);
+            _runeTextImages.Add(Util.Parse<BaseRune>(runeTextSprite.name), runeTextSprite);
         }
     }
 

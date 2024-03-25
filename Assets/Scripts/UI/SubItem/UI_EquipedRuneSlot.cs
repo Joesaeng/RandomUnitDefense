@@ -14,20 +14,16 @@ public class UI_EquipedRuneSlot : UI_Base
 
     enum Images
     {
-        RuneImage
-    }
-    enum Texts
-    {
-        RuneText
+        RuneImage,
+        RuneTextImage,
     }
 
     public override void Init()
     {
         Bind<Image>(typeof(Images));
-        Bind<TextMeshProUGUI>(typeof(Texts));
 
         GetImage((int)Images.RuneImage).enabled = false;
-        GetTMPro((int)Texts.RuneText).enabled = false;
+        GetImage((int)Images.RuneTextImage).enabled = false;
 
         gameObject.AddUIEvent(ClickedEquipedRuneSlot);
     }
@@ -37,17 +33,17 @@ public class UI_EquipedRuneSlot : UI_Base
         _rune = rune;
         _ui_LobbyScene = uI_LobbyScene;
         GetImage((int)Images.RuneImage).sprite = Managers.Rune.RuneSprites[rune.gradeOfRune];
-        GetTMPro((int)Texts.RuneText).text = Managers.Rune.RuneTextImages[rune.baseRune];
+        GetImage((int)Images.RuneTextImage).sprite = Managers.Rune.RuneTextImages[rune.baseRune];
         GetImage((int)Images.RuneImage).enabled = true;
-        GetTMPro((int)Texts.RuneText).enabled = true;
+        GetImage((int)Images.RuneTextImage).enabled = true;
     }
     public void OffImage()
     {
         _rune = null;
         GetImage((int)Images.RuneImage).sprite = null;
-        GetTMPro((int)Texts.RuneText).text = null;
+        GetImage((int)Images.RuneTextImage).sprite = null;
         GetImage((int)Images.RuneImage).enabled = false;
-        GetTMPro((int)Texts.RuneText).enabled = false;
+        GetImage((int)Images.RuneTextImage).enabled = false;
     }
 
     public void ClickedEquipedRuneSlot(PointerEventData data)

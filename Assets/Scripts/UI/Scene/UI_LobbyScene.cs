@@ -105,7 +105,6 @@ public class UI_LobbyScene : UI_Scene
 
     public override void Init()
     {
-        //SetCanvasRenderModeCamera();
         Bind<GameObject>(typeof(GameObjects));
         Bind<TextMeshProUGUI>(typeof(Texts));
         Bind<Button>(typeof(Buttons));
@@ -505,7 +504,7 @@ public class UI_LobbyScene : UI_Scene
 
         GameObject runeImageObj = Get<GameObject>((int)GameObjects.RuneImageBack);
         Util.FindChild<Image>(runeImageObj, "Image").sprite = Managers.Rune.RuneSprites[rune.gradeOfRune];
-        Util.FindChild<TextMeshProUGUI>(runeImageObj, "RuneImageText", true).text = Managers.Rune.RuneTextImages[rune.baseRune];
+        Util.FindChild<Image>(runeImageObj, "RuneTextImage", true).sprite = Managers.Rune.RuneTextImages[rune.baseRune];
     }
 
     // 룬 정보 패널에서 사용하기 버튼을 클릭했을 때 호출됨
@@ -551,6 +550,7 @@ public class UI_LobbyScene : UI_Scene
 
         StartCoroutine("RuneSlotsUpdate");
         Managers.Player.SaveToJson();
+        UpdateAmountOfGoldText();
     }
 
     // 보유중인 룬을 업데이트하는 코루틴, 오브젝트 삭제하는 과정이 필요한데

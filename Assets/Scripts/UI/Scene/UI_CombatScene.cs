@@ -60,7 +60,6 @@ public class UI_CombatScene : UI_Scene
     public override void Init()
     {
         base.Init();
-        SetCanvasRenderModeCamera();
         Bind<GameObject>(typeof(GameObjects));
         Bind<Button>(typeof(Buttons));
         Bind<TextMeshProUGUI>(typeof(Texts));

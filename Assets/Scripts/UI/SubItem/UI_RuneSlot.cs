@@ -14,19 +14,14 @@ public class UI_RuneSlot : UI_LobbySceneSlot
     enum Images
     {
         RuneImage,
+        RuneTextImage,
         EquipedRuneImage
     }    
-
-    enum Texts
-    {
-        RuneText
-    }
 
     public override void Init()
     {
         base.Init();
         Bind<Image>(typeof(Images));
-        Bind<TextMeshProUGUI>(typeof(Texts));
         parentSlotsScroll = GameObject.FindWithTag("RuneSlotsScroll").GetComponent<ScrollRect>();
 
         gameObject.AddUIEvent(ClickedRuneSlot);
@@ -39,8 +34,8 @@ public class UI_RuneSlot : UI_LobbySceneSlot
         _rune = Managers.Player.Data.ownedRunes[_runeIndex];
 
         GetImage((int)Images.RuneImage).sprite = Managers.Rune.RuneSprites[_rune.gradeOfRune];
+        GetImage((int)Images.RuneTextImage).sprite = Managers.Rune.RuneTextImages[_rune.baseRune];
         GetImage((int)Images.EquipedRuneImage).enabled = _rune.isEquip;
-        GetTMPro((int)Texts.RuneText).text = Managers.Rune.RuneTextImages[_rune.baseRune];
     }
 
     public void ClickedRuneSlot(PointerEventData data)
