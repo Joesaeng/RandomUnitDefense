@@ -62,12 +62,12 @@ public class InGameItemManager
 
     public bool CanGamble()
     {
-        return Managers.Game.Ruby < _gambleCost;
+        return Managers.Game.Ruby > _gambleCost;
     }
 
     public void GambleItem()
     {
-        if (CanGamble())
+        if (CanGamble() == false)
             return;
 
         float randValue = UnityEngine.Random.value;

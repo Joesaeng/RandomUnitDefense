@@ -95,7 +95,7 @@ public class UI_UnitInfo : UI_Base
                 break;
             }
         }
-        int[] sellCosts = new int[3]{10,20,40};
+        int[] sellCosts = ConstantData.UnitSellingPrices;
         sellCost = sellCosts[_unit.Lv - 1];
         GetTMPro((int)TMPros.TextSellBtn).text = $"{Language.Sell} <sprite=25>{sellCost}";
     }

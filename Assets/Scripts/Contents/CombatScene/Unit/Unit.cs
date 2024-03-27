@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public int ID { get; private set; }
+    public UnitNames ID { get; private set; }
     public int Lv { get; private set; }
 
     private UnitStateMachine _stateMachine;
@@ -32,7 +32,7 @@ public class Unit : MonoBehaviour
         _stateMachine.OnUpdate();
     }
 
-    public void Init(int slotIndex, int id, int level,string unitname)
+    public void Init(int slotIndex, UnitNames id, int level,string unitname)
     {
         IsDraging = false;
         ID = id;
@@ -43,11 +43,6 @@ public class Unit : MonoBehaviour
         _stateMachine.Init(gameObject, ID, Lv, unitname);
         BindEvent();
     }
-
-    public UnitNames GetBaseUnit()
-    {
-        return _stateMachine.BaseUnit;
-    }    
 
     public void SlotChange(int slotIndex)
     {

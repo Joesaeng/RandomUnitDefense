@@ -45,16 +45,15 @@ public class UnitBullet : MonoBehaviour
         float criticalChance;
         if (wideAttackArea > 0)
         {
-            Managers.Sound.Play(Define.SFXNames.AOE);
             Managers.UnitStatus.RuneStatus.AdditionalEffects.
                 TryGetValue(AdditionalEffectName.CriticalChanceOfAOE, out criticalChance);
         }
         else
         {
-            Managers.Sound.Play(Define.SFXNames.Normal);
             Managers.UnitStatus.RuneStatus.AdditionalEffects.
                 TryGetValue(AdditionalEffectName.CriticalChanceOfCommon, out criticalChance);
         }
+        // Managers.Sound.Play(Define.SFXNames.Normal);
         isCritical = Random.value <= criticalChance + ConstantData.BaseCriticalChance;
     }
 
@@ -79,6 +78,7 @@ public class UnitBullet : MonoBehaviour
                 }
                 GameObject effect = Managers.Resource.Instantiate
                     ("HitEffect_1",Managers.Game.HitEffects);
+                Managers.Sound.Play(Define.SFXNames.AOEHit);
                 effect.GetComponent<HitEffect>().Init(_targetPosition, wideAttackArea);
                 DestroyBullet();
             }
@@ -100,6 +100,7 @@ public class UnitBullet : MonoBehaviour
                 _targetMonster.TakeHit(_ownUnitStatus, isCritical);
                 GameObject effect = Managers.Resource.Instantiate
                     ("HitEffect_2",Managers.Game.HitEffects);
+                Managers.Sound.Play(Define.SFXNames.NormalHit);
                 effect.GetComponent<HitEffect>().Init(_targetMonster.transform.position);
 
                 DestroyBullet();

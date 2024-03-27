@@ -24,7 +24,9 @@ public class Define
         SpawnUnit,
         UnitUpgrade,
         Normal,
+        NormalHit,
         AOE,
+        AOEHit,
     }
 
     public enum EquipItemStatus

@@ -27,19 +27,25 @@ public class UI_BtnUpgrade : UI_Base
     {
         TextUpgradeLevel,
         TextUpgradeCost,
+        TextSellAll
+    }
+    enum Buttons
+    {
+        BtnSellAll,
     }
     public override void Init()
     {
         Bind<TextMeshProUGUI>(typeof(TMPros));
         Bind<Image>(typeof(Images));
+        Bind<Button>(typeof(Buttons));
 
         gameObject.AddUIEvent(ClickedUpgradeButton);
+        GetButton((int)Buttons.BtnSellAll).gameObject.AddUIEvent(ClickedSellAllButton);    
     }
-    public void SetInfo(int slot, int id)
+    public void SetInfo(int slot, UnitNames id)
     {
         Slot = slot;
-        ID = (UnitNames)id;
-        string imagePath = $"{ID}_1_Idle";
+        ID = id;
         Image image = GetImage((int)Images.ImageUnit);
         image.sprite = Managers.Resource.Load<Sprite>($"Art/Units/{ID}");
         image.transform.localScale = Vector3.one * 2;
@@ -60,6 +66,12 @@ public class UI_BtnUpgrade : UI_Base
             Managers.UnitStatus.ClickedUnitUpgrade(ID, Slot);
             SetText();
         }
+    }
+
+    public void ClickedSellAllButton(PointerEventData data)
+    {
+        Managers.Sound.Play(Define.SFXNames.Click);
+        Managers.UI.ShowPopupUI<UI_SellAllUnits>().Setup(ID);
     }
 
     public override void OnChangeLanguage()

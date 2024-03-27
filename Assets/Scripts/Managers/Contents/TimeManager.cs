@@ -39,6 +39,7 @@ public class TimeManager
         StageTime += deltatime;
         _curMonsterRespawnTime += deltatime;
 
+        // 데이터로 설정된 스테이지의 정보를 불러와서 지정
         if (_curMonsterRespawnTime >= ConstantData.MonsterRespawnTime)
         {
             Util.CheckTheEventAndCall(OnMonsterRespawnTime);

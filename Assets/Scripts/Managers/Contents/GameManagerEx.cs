@@ -31,6 +31,9 @@ public class GameManagerEx
     public Stack<GameObject> _dyingMonsters;
     public Stack<GameObject> DyingMonsters { get { return _dyingMonsters; } }
 
+    private Dictionary<int,Unit> _unitDict;
+    public Dictionary<int, Unit> UnitDict { get { return _unitDict; } }
+
     public Action OnChangedLanguage;
 
     public Action<int,int> OnMoveUnitEvent;
@@ -40,12 +43,12 @@ public class GameManagerEx
     public Action<int> OnChangedRuby;
 
     public Action OnNextStage;
-    public Action<Unit,int> OnClickedSellButton;
+    public Action<Unit,int> OnSellAUnit;
 
     public GameObject SelectedUnit { get; set; }
     public UI_UnitInfo SelectUnitInfoUI { get; set; }
 
-    public int[] SetUnits { get; set; }
+    public UnitNames[] SetUnits { get; set; }
     public int[] UpgradeCostOfUnits { get; set; }
 
     public UnitAttackRange UnitAttackRange { get; set; }
@@ -85,8 +88,11 @@ public class GameManagerEx
 
         CurMap = map;
 
-        // 플레이어 데이터 매니저에서 선택된 유닛을 가져와서 넣어줘야함
-        SetUnits = Managers.Player.Data.setUnits;
+        // 데이터에 int로 id가 설정되어있는것을 UnitNames로 형변환
+        int[] setunits = Managers.Player.Data.setUnits;
+        SetUnits = new UnitNames[setunits.Length];
+        for(int i = 0; i < setunits.Length; ++i)
+            SetUnits[i] = (UnitNames)setunits[i];
 
         UnitAttackRange = null;
         _monsterSpawnPoint = GameObject.Find("SpawnPoint").transform;
@@ -113,6 +119,10 @@ public class GameManagerEx
         {
             UpgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
         }
+        if(_unitDict != null)
+            _unitDict.Clear();
+        else
+            _unitDict = new Dictionary<int, Unit>();
 
         if (_dyingMonsters != null)
             DyingMonsterDespawn();
@@ -162,6 +172,7 @@ public class GameManagerEx
         CurStageMonsterCount = 0;
         if(CurStage > ConstantData.HighestStage)
         {
+            CurStage = ConstantData.HighestStage;
             SetPlayerHighestStage();
             GameOver("Victory");
             return;
@@ -183,6 +194,7 @@ public class GameManagerEx
 
     private void TheRespawnTime()
     {
+        // 데이터로 정해둔 스테이지의 정보를 불러와서 적용
         if (CurStageMonsterCount < ConstantData.OneStageSpawnCount)
             SpawnMonster(_monsterSpawnPoint.transform.position);
     }
@@ -203,6 +215,7 @@ public class GameManagerEx
         }
         go.transform.position = spawnPoint;
     }
+
     public void GameOver(string gameoverType)
     {
         Managers.Time.GamePause();
@@ -264,10 +277,32 @@ public class GameManagerEx
     {
         if (SelectedUnit != null && SelectUnitInfoUI != null)
         {
-            if (Util.CheckTheEventAndCall(OnClickedSellButton, SelectedUnit.GetComponent<Unit>(), sellCost))
+            if (Util.CheckTheEventAndCall(OnSellAUnit, SelectedUnit.GetComponent<Unit>(), sellCost))
             {
                 UnSelectUnit();
             }
+        }
+    }
+
+    public List<Unit> FindUnitsWithUnitId(UnitNames unitId)
+    {
+        List<Unit> foundUnits = new List<Unit>();
+        foreach (Unit unit in UnitDict.Values)
+        {
+            if(unit.ID == unitId)
+                foundUnits.Add(unit);
+        }
+        return foundUnits;
+    }
+
+    public void SellAllUnits(UnitNames unitId)
+    {
+        List<Unit> foundUnits = FindUnitsWithUnitId(unitId);
+        foreach (Unit unit in foundUnits)
+        {
+            int sellCost = ConstantData.UnitSellingPrices[unit.Lv - 1];
+            if (!Util.CheckTheEventAndCall(OnSellAUnit, unit.GetComponent<Unit>(), sellCost))
+                Debug.Log("SellAllUnits Event Error");
         }
     }
 

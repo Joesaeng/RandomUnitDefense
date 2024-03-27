@@ -39,7 +39,9 @@ public static class ConstantData
     public const float   IncreaseAttackRate         = 0.95f;    // 공격속도 증가 5%
     public const float   IncreaseDebuffDuration     = 1.1f;     // 디버프 지속시간 증가 10%
     public const float   IncreaseDebuffRatio        = 1.1f;     // 디버프 비율 증가 10%
+    //
 
+    public static readonly int[] UnitSellingPrices = {10, 20, 40}; // {Lv1, Lv2, Lv3}
     // 인게임 아이템 뽑기 확률 
     //                   PercentOfCommon                    0.60 ~ 1        40%
     public const float   PercentOfUnCommonItem  = 0.60f; // 0.30 ~ 0.60     30%

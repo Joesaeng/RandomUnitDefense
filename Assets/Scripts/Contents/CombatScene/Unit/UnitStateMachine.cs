@@ -73,11 +73,10 @@ public class UnitStateMachine : MonoBehaviour
         }
     }
 
-    public void Init(GameObject ownObj, int unitId, int level, string unitname)
+    public void Init(GameObject ownObj, UnitNames unitId, int level, string unitname)
     {
         _ownObj = ownObj;
-        _baseUnit = (UnitNames)unitId;
-        _unitId = unitId;
+        _baseUnit = unitId;
         _unitLv = level;
 
         if (_unitAnimator != null)
@@ -94,7 +93,7 @@ public class UnitStateMachine : MonoBehaviour
             _animator = Util.FindChild<Animator>(go);
         }
 
-        _job = Managers.Data.BaseUnitDict[unitId].job.ToString();
+        _job = Managers.Data.BaseUnitDict[(int)unitId].job.ToString();
 
         UpdateUnitStatus();
 

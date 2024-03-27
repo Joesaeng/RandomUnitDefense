@@ -15,11 +15,11 @@ public class CombatScene : BaseScene
     Define.Map _curMap = Define.Map.Basic;
 
     // SlotIndex,Unit
-    Dictionary<int,Unit> _unitDict = new Dictionary<int,Unit>();
+    Dictionary<int,Unit> _unitDict;
     
     UnitSlot[] _unitSlots = null;
 
-    int[] _selectedUnitIds;
+    UnitNames[] _selectedUnitIds;
 
     protected override void Init()
     {
@@ -29,14 +29,16 @@ public class CombatScene : BaseScene
         Managers.Game.InitForGameScene(_curMap);
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
 
+        _unitDict = Managers.Game.UnitDict;
+
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnMoveUnitEvent += OnMoveUnitBetweenSlots;
 
         Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
         Managers.Game.OnSpawnButtonClickEvent += OnSpawnPlayerUnit;
 
-        Managers.Game.OnClickedSellButton -= OnSellAUnit;
-        Managers.Game.OnClickedSellButton += OnSellAUnit;
+        Managers.Game.OnSellAUnit -= OnSellAUnit;
+        Managers.Game.OnSellAUnit += OnSellAUnit;
 
         _selectedUnitIds = Managers.Game.SetUnits;
         
@@ -108,7 +110,7 @@ public class CombatScene : BaseScene
                 // 합성이 가능하다면
                 // 두 유닛이 같고, 레벨 3이상 유닛이 아니라면. 합성가능.
 
-                int id = _unitDict[curSlotIndex].GetComponent<Unit>().ID;
+                UnitNames id = _unitDict[curSlotIndex].GetComponent<Unit>().ID;
                 int nextLevel = _unitDict[nextSlotIndex].GetComponent<Unit>().Lv + 1;
 
                 DestroyPlayerUnit(curSlotIndex);
@@ -145,7 +147,7 @@ public class CombatScene : BaseScene
         return isComposeable;
     }
     // 랜덤 유닛 선택
-    private bool SelectRandomUnit(out int randomSlotIndex, out int randomId)
+    private bool SelectRandomUnit(out int randomSlotIndex, out UnitNames randomId)
     {
         List<int> randIndexList = new List<int>();
         int randSlotIndex = -1;
@@ -175,10 +177,7 @@ public class CombatScene : BaseScene
         if (Managers.Game.Ruby < ConstantData.RubyRequiredOneSpawnPlayerUnit)
             return;
 
-        int randSlotIndex;
-        int randId;
-
-        if (SelectRandomUnit(out randSlotIndex, out randId) == false)
+        if (SelectRandomUnit(out int randSlotIndex, out UnitNames randId) == false)
             return;
 
         CreatePlayerUnit(randSlotIndex, randId);
@@ -187,10 +186,9 @@ public class CombatScene : BaseScene
         Managers.Sound.Play(Define.SFXNames.SpawnUnit);
 
         // 운의 룬을 장착중일 때
-        float spawnAnotherUnit;
-        if(Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Lucky,out spawnAnotherUnit))
+        if (Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Lucky, out float spawnAnotherUnit))
         {
-            if(UnityEngine.Random.value <= spawnAnotherUnit)
+            if (UnityEngine.Random.value <= spawnAnotherUnit)
             {
                 if (SelectRandomUnit(out randSlotIndex, out randId) == false)
                     return;
@@ -202,18 +200,20 @@ public class CombatScene : BaseScene
     }
 
     // 플레이어 유닛 생성 메서드
-    private void CreatePlayerUnit(int slotIndex, int id, int level = 1)
+    private void CreatePlayerUnit(int slotIndex, UnitNames id, int level = 1)
     {
         GameObject obj = Managers.Resource.Instantiate("Unit", newParentName:"Units");
         obj.transform.position = GetUnitMovePos(slotIndex);
 
         Unit unit = obj.GetOrAddComponent<Unit>();
 
-        string unitname = Managers.Data.BaseUnitDict[id].baseUnit.ToString();
+        string unitname = $"{Managers.Data.BaseUnitDict[(int)id].baseUnit}";
         unit.Init(slotIndex, id, level, unitname);
 
-        unit.GetComponent<DraggableUnit>().OnDraggableMouseDragEvent -= OnDraggableUnitDragEventReader;
-        unit.GetComponent<DraggableUnit>().OnDraggableMouseDragEvent += OnDraggableUnitDragEventReader;
+        DraggableUnit draggableUnit = unit.GetComponent<DraggableUnit>();
+
+        draggableUnit.OnDraggableMouseDragEvent -= OnDraggableUnitDragEventReader;
+        draggableUnit.OnDraggableMouseDragEvent += OnDraggableUnitDragEventReader;
 
         obj.name = $"{unitname} Level [{level}]";
 
@@ -242,8 +242,7 @@ public class CombatScene : BaseScene
     // 플레이어가 유닛 판매 버튼을 눌렀을 때
     private void OnSellAUnit(Unit unit,int sellCost)
     {
-        int slotIndex;
-        if(_unitDict.FindKeyByValueInDictionary(unit, out slotIndex))
+        if (_unitDict.FindKeyByValueInDictionary(unit, out int slotIndex))
         {
             DestroyPlayerUnit(slotIndex);
             Managers.Game.Ruby += sellCost;
@@ -253,13 +252,14 @@ public class CombatScene : BaseScene
     // 플레이어 유닛 제거 메서드
     private void DestroyPlayerUnit(int slotIndex)
     {
-        Unit unit;
-        if (_unitDict.TryGetValue(slotIndex, out unit))
+        if (_unitDict.TryGetValue(slotIndex, out Unit unit))
         {
             unit.gameObject.name = "Unit";
 
-            unit.GetComponent<DraggableUnit>().OnDraggableMouseDragEvent -= OnDraggableUnitDragEventReader;
-            unit.GetComponent<DraggableUnit>().OnDraggableMouseUpEvent -= OnDraggableUnitMouseUpEventReader;
+            DraggableUnit draggableUnit = unit.GetComponent<DraggableUnit>();
+
+            draggableUnit.OnDraggableMouseDragEvent -= OnDraggableUnitDragEventReader;
+            draggableUnit.OnDraggableMouseUpEvent -= OnDraggableUnitMouseUpEventReader;
 
             Managers.Resource.Destroy(unit.gameObject);
             _unitDict.Remove(slotIndex);
@@ -289,7 +289,7 @@ public class CombatScene : BaseScene
 
         Managers.Game.OnMoveUnitEvent -= OnMoveUnitBetweenSlots;
         Managers.Game.OnSpawnButtonClickEvent -= OnSpawnPlayerUnit;
-        Managers.Game.OnClickedSellButton -= OnSellAUnit;
+        Managers.Game.OnSellAUnit -= OnSellAUnit;
 
         _ui_scene.Clear();
     }

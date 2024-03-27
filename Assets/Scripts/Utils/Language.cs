@@ -379,6 +379,22 @@ public static class Language
         }
     }
 
+    public static string SellAllUnit(UnitNames unitId)
+    {
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return $"Sell All [{GetBaseUnitName(unitId)}] Unit";
+                case Define.GameLanguage.Korean:
+                    return $"[{GetBaseUnitName(unitId)}] 유닛 전체 판매";
+                default:
+                    return $"Sell All [{GetBaseUnitName(unitId)}] Unit";
+            }
+        }
+    }
+
     public static string Spawn
     {
         get

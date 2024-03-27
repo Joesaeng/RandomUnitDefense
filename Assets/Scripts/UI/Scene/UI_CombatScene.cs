@@ -17,6 +17,8 @@ public class UI_CombatScene : UI_Scene
         PanelEquipStatusName,
         PanelEquipStatusValue,
         PanelEquipedRunes,
+        BlockerUpgrade,
+        BlockerGamble
     }
 
     GameObject _panelItem;
@@ -25,7 +27,9 @@ public class UI_CombatScene : UI_Scene
     GameObject _panelEquipStatusValue;
     List<UI_TextEquipStatusValue> _ui_textEquipStatusValues;
 
-    List<UI_Item> _ui_items;
+    List<UI_IngameItem> _ui_items;
+
+    float _curseRuneValue = 0f;
 
     enum Buttons
     {
@@ -126,7 +130,7 @@ public class UI_CombatScene : UI_Scene
 
         if (_ui_items != null)
             _ui_items.Clear();
-        _ui_items = new List<UI_Item>();
+        _ui_items = new List<UI_IngameItem>();
         #endregion
 
         #region 유닛 업그레이드 초기화
@@ -155,7 +159,7 @@ public class UI_CombatScene : UI_Scene
                 equipedRune.GetComponent<UI_EquipedRuneCombatScene>().SetUp(i);
             }
         }
-        Get<GameObject>((int)GameObjects.PanelEquipedRunes).gameObject.AddUIEvent(OnEquipedRuneClick);
+        Get<GameObject>((int)GameObjects.PanelEquipedRunes).AddUIEvent(OnEquipedRuneClick);
         GetTMPro((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
         {
             EquipedRuneStatus equipedRuneStatus = Managers.UnitStatus.RuneStatus;
@@ -171,6 +175,9 @@ public class UI_CombatScene : UI_Scene
             }
         }
         GetTMPro((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
+
+        // 저주룬(몬스터 방깎)
+        Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Curse, out _curseRuneValue);
 
         #endregion
 
@@ -197,12 +204,7 @@ public class UI_CombatScene : UI_Scene
         string hp = monsterData.maxHp.ToString();
         hp = Util.ChangeNumber(hp);
 
-        float reduceDefence = monsterData.defense;
-        float curseRuneValue = 0f;
-        if (Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Curse, out curseRuneValue))
-        {
-            reduceDefence *= (1 - curseRuneValue);
-        }
+        float reduceDefence = monsterData.defense + (1 - _curseRuneValue);
 
         string defense = $"{(int)reduceDefence}";
         defense = Util.ChangeNumber(defense);
@@ -210,6 +212,14 @@ public class UI_CombatScene : UI_Scene
             $"<sprite=46> : {hp}\n" +
             $"<sprite=50> : {defense}";
 
+        if (Managers.Game.CurStage == 2)
+            DeactiveUpgradeAndGambleBlocker();
+    }
+
+    private void DeactiveUpgradeAndGambleBlocker()
+    {
+        Get<GameObject>((int)GameObjects.BlockerGamble).SetActive(false);
+        Get<GameObject>((int)GameObjects.BlockerUpgrade).SetActive(false);
     }
 
     public void OnSpawnButtonClicked(PointerEventData data)
@@ -247,8 +257,8 @@ public class UI_CombatScene : UI_Scene
     public void OnChangeAmountOfRuby(int value)
     {
         GetTMPro((int)Texts.TextTheAmountOfRuby).text = $"<sprite=25> {value}";
-        GetImage((int)Images.ImageSpawnUnable).enabled = value <= ConstantData.RubyRequiredOneSpawnPlayerUnit;
-        GetImage((int)Images.ImageGambleUnable).enabled = Managers.InGameItem.CanGamble();
+        GetImage((int)Images.ImageSpawnUnable).enabled = value < ConstantData.RubyRequiredOneSpawnPlayerUnit;
+        GetImage((int)Images.ImageGambleUnable).enabled = !Managers.InGameItem.CanGamble();
 
     }
 
@@ -257,9 +267,9 @@ public class UI_CombatScene : UI_Scene
         GetTMPro((int)Texts.TextGambleRuby).text = $"<sprite=25> {value}";
         if(itemdata != null)
         {
-            GameObject item = Managers.UI.MakeSubItem<UI_Item>(parent : _panelItem.transform).gameObject;
+            GameObject item = Managers.UI.MakeSubItem<UI_IngameItem>(parent : _panelItem.transform).gameObject;
             item.transform.localScale = Vector3.one;
-            UI_Item ui_item = item.GetComponent<UI_Item>();
+            UI_IngameItem ui_item = item.GetComponent<UI_IngameItem>();
             ui_item.SetInfo(itemdata);
             ui_item.OnClickedItemButton -= OnClickedItemButton;
             ui_item.OnClickedItemButton += OnClickedItemButton;
@@ -275,7 +285,7 @@ public class UI_CombatScene : UI_Scene
 
     public void OnClickedItemButton()
     {
-        foreach(UI_Item item in _ui_items)
+        foreach(UI_IngameItem item in _ui_items)
         {
             item.DeactiveInfoObject();
         }
