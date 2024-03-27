@@ -19,7 +19,7 @@ namespace Data
         public float    sfxVolume       = 1f;
         public bool     bgmOn           = true;
         public bool     sfxOn           = true;
-        public int      amountOfGold    = 20000;
+        public int      amountOfGold    = 0;
         public int      highestStage    = 0;
         public int      sortModeOfRune  = 0;
 
@@ -294,7 +294,7 @@ namespace Data
 
     #endregion
 
-    #region Monsters
+    #region Stage
 
     [Serializable]
     public class MonsterData
@@ -316,6 +316,36 @@ namespace Data
             foreach (MonsterData data in monsters)
             {
                 dict.Add(data.id, data);
+            }
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class StageData
+    {
+        public int          stageNum;               // 스테이지
+        public bool         isSpecial;              // 특수 스테이지 : true이면 현재 시간이 지나면 패배
+        public int          monsterSpawnCount;      // 몬스터 스폰 수
+        public int          givenRuby;              // 몬스터 한마리가 주는 루비
+        public float        stageTime;              // 스테이지 시간
+        public float        respawnTime;            // 몬스터 리스폰 시간 
+        public float        monsterHp;              // 몬스터Hp
+        public int          monsterdefense;         // 몬스터방어력
+        public float        monstermoveSpeed;       // 몬스터이동속도
+    }
+
+    [Serializable]
+    public class StageDatas : ILoader<int, StageData>
+    {
+        public List<StageData> stageDatas = new List<StageData>();
+
+        public Dictionary<int, StageData> MakeDict()
+        {
+            Dictionary<int,StageData> dict = new Dictionary<int,StageData>();
+            foreach (StageData data in stageDatas)
+            {
+                dict.Add(data.stageNum, data);
             }
             return dict;
         }

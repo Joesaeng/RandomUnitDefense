@@ -499,7 +499,8 @@ public class UI_LobbyScene : UI_Scene
                     Managers.Resource.Destroy(ownRune.gameObject);
                     continue;
                 }
-            ownRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
+            if (runeIndex < Managers.Player.Data.ownedRunes.Count)
+                ownRune.GetComponent<UI_RuneSlot>().SetRune(runeIndex, this);
         }
     }
 

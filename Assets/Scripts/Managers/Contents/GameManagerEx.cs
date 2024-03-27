@@ -28,8 +28,8 @@ public class GameManagerEx
 
     Transform _monsterSpawnPoint;
 
-    public Stack<GameObject> _dyingMonsters;
-    public Stack<GameObject> DyingMonsters { get { return _dyingMonsters; } }
+    public Stack<Monster> _dyingMonsters;
+    public Stack<Monster> DyingMonsters { get { return _dyingMonsters; } }
 
     private Dictionary<int,Unit> _unitDict;
     public Dictionary<int, Unit> UnitDict { get { return _unitDict; } }
@@ -91,7 +91,7 @@ public class GameManagerEx
         // 데이터에 int로 id가 설정되어있는것을 UnitNames로 형변환
         int[] setunits = Managers.Player.Data.setUnits;
         SetUnits = new UnitNames[setunits.Length];
-        for(int i = 0; i < setunits.Length; ++i)
+        for (int i = 0; i < setunits.Length; ++i)
             SetUnits[i] = (UnitNames)setunits[i];
 
         UnitAttackRange = null;
@@ -119,7 +119,7 @@ public class GameManagerEx
         {
             UpgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
         }
-        if(_unitDict != null)
+        if (_unitDict != null)
             _unitDict.Clear();
         else
             _unitDict = new Dictionary<int, Unit>();
@@ -127,7 +127,7 @@ public class GameManagerEx
         if (_dyingMonsters != null)
             DyingMonsterDespawn();
         else
-            _dyingMonsters = new Stack<GameObject>();
+            _dyingMonsters = new Stack<Monster>();
         if (_monsters != null)
             _monsters.Clear();
         else
@@ -170,7 +170,7 @@ public class GameManagerEx
         EarnedGoldCoin += CalculateEarendGoldCoinForStage(CurStage);
         CurStage++;
         CurStageMonsterCount = 0;
-        if(CurStage > ConstantData.HighestStage)
+        if (CurStage > ConstantData.HighestStage)
         {
             CurStage = ConstantData.HighestStage;
             SetPlayerHighestStage();
@@ -195,7 +195,7 @@ public class GameManagerEx
     private void TheRespawnTime()
     {
         // 데이터로 정해둔 스테이지의 정보를 불러와서 적용
-        if (CurStageMonsterCount < ConstantData.OneStageSpawnCount)
+        if (CurStageMonsterCount < Managers.Data.StageDict[Managers.Game.CurStage].monsterSpawnCount)
             SpawnMonster(_monsterSpawnPoint.transform.position);
     }
 
@@ -206,8 +206,8 @@ public class GameManagerEx
         monster.Init(CurStage, CurMap);
         _monsters.Add(monster);
         CurStageMonsterCount++;
-        
-        if(Monsters.Count > ConstantData.MonsterCountForGameOver)
+
+        if (Monsters.Count > ConstantData.MonsterCountForGameOver)
         {
             SetPlayerHighestStage();
             GameOver("Fail");
@@ -224,15 +224,12 @@ public class GameManagerEx
         Managers.Player.SaveToJson();
     }
 
-    public void DespawnMonster(GameObject go)
+    public void DespawnMonster(Monster monster)
     {
-        if (go.TryGetComponent(out Monster monster) == true)
+        if (_monsters.Contains(monster))
         {
-            if (_monsters.Contains(monster))
-            {
-                _monsters.Remove(monster);
-                Managers.Resource.Destroy(go);
-            }
+            _monsters.Remove(monster);
+            Managers.Resource.Destroy(monster.gameObject);
         }
     }
     // 플레이어 유닛 이동 메서드
@@ -241,9 +238,10 @@ public class GameManagerEx
         Util.CheckTheEventAndCall(OnMoveUnitEvent, curSlotIndex, moveSlotIndex);
     }
     // 현재 프레임에 사망하는 몬스터들을 등록하는 메서드
-    public void RegisterDyingMonster(GameObject monster)
+    public void RegisterDyingMonster(Monster monster)
     {
         _dyingMonsters.Push(monster);
+        Ruby += monster.GivenRuny;
     }
     // 현재 프레임에 사망할 몬스터들 디스폰
     public void DyingMonsterDespawn()
@@ -251,7 +249,7 @@ public class GameManagerEx
         while (DyingMonsters.Count > 0)
         {
             DespawnMonster(DyingMonsters.Pop());
-            Ruby += ConstantData.AmountRubyGivenByMonster;
+            
             KillMonsterCount++;
         }
     }
@@ -289,7 +287,7 @@ public class GameManagerEx
         List<Unit> foundUnits = new List<Unit>();
         foreach (Unit unit in UnitDict.Values)
         {
-            if(unit.ID == unitId)
+            if (unit.ID == unitId)
                 foundUnits.Add(unit);
         }
         return foundUnits;

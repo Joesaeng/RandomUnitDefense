@@ -1,3 +1,4 @@
+using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,10 +7,10 @@ using UnityEngine;
 
 public class TimeManager
 {
-    public bool IsPause { get; private set; } = false;
+    public bool IsPause { get; private set; } = true;
 
     public float GameTime { get; private set; } = 0f;
-    public float StageTime { get; private set; } = 0f;
+    public float CurStageTime { get; private set; } = 0f;
     private float _curMonsterRespawnTime = 0f;
 
     public int CurTimeScale { get; private set; } = 1;
@@ -22,7 +23,7 @@ public class TimeManager
         IsPause = false;
 
         GameTime = 0f;
-        StageTime = 0f;
+        CurStageTime = 0f;
         _curMonsterRespawnTime = 0f;
 
         CurTimeScale = 1;
@@ -36,20 +37,41 @@ public class TimeManager
             return;
         float deltatime = Time.deltaTime;
         GameTime += deltatime;
-        StageTime += deltatime;
+        CurStageTime += deltatime;
         _curMonsterRespawnTime += deltatime;
 
+
+        //// 데이터로 설정된 스테이지의 정보를 불러와서 지정
+        //if (_curMonsterRespawnTime >= ConstantData.MonsterRespawnTime)
+        //{
+        //    Util.CheckTheEventAndCall(OnMonsterRespawnTime);
+        //    _curMonsterRespawnTime = 0f;
+        //}
+
+        //if (StageTime > ConstantData.OneStageTime)
+        //{
+        //    StageTime = 0f;
+        //    Util.CheckTheEventAndCall(OnNextStage);
+        //}
+
         // 데이터로 설정된 스테이지의 정보를 불러와서 지정
-        if (_curMonsterRespawnTime >= ConstantData.MonsterRespawnTime)
+        if (_curMonsterRespawnTime >= Managers.Data.StageDict[Managers.Game.CurStage].respawnTime)
         {
             Util.CheckTheEventAndCall(OnMonsterRespawnTime);
             _curMonsterRespawnTime = 0f;
         }
 
-        if (StageTime > ConstantData.OneStageTime)
+        if (CurStageTime > Managers.Data.StageDict[Managers.Game.CurStage].stageTime)
         {
-            StageTime = 0f;
+            // 현재 게임 스테이지가 isSpecial(ex)보스전) 일 때
+            // 몬스터를 전부 잡지 못했다면 게임오버
+            if (Managers.Data.StageDict[Managers.Game.CurStage].isSpecial
+                && Managers.Game.Monsters.Count > 0)
+            {
+                Managers.Game.GameOver("Fail");
+            }
             Util.CheckTheEventAndCall(OnNextStage);
+            CurStageTime = 0f;
         }
     }
 
@@ -63,11 +85,11 @@ public class TimeManager
         switch (type)
         {
             case StageTimeType.LeftTime:
-                return TimeSpan.FromSeconds(ConstantData.OneStageTime - StageTime).ToString(@"mm\:ss");
+                return TimeSpan.FromSeconds(Managers.Data.StageDict[Managers.Game.CurStage].stageTime - CurStageTime).ToString(@"mm\:ss");
             case StageTimeType.StageTime:
-                return TimeSpan.FromSeconds(StageTime).ToString(@"mm\ : ss");
+                return TimeSpan.FromSeconds(CurStageTime).ToString(@"mm\ : ss");
             default:
-                return TimeSpan.FromSeconds(StageTime).ToString(@"mm\ : ss");
+                return TimeSpan.FromSeconds(CurStageTime).ToString(@"mm\ : ss");
 
         }
     }
@@ -111,6 +133,7 @@ public class TimeManager
 
     public void Clear()
     {
+        IsPause = true;
         CurTimeScale = 1;
         Time.timeScale = CurTimeScale;
     }

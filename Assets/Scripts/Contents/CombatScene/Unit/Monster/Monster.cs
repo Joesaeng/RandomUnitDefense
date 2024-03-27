@@ -9,8 +9,6 @@ using static Define;
 
 public class Monster : MonoBehaviour
 {
-    MonsterData _monsterStat = new MonsterData();
-
     UnitAnimator _unitAnimator;
 
     Transform _animatorTF;
@@ -37,14 +35,17 @@ public class Monster : MonoBehaviour
     float _curHp;
     public float CurHp => _curHp;
     public float MaxHp { get; private set; }
+
     int _defense;
+
+    int _givenRuny;
+    public int GivenRuny { get => _givenRuny;}
 
     public void Init(int stageNum, Define.Map map)
     {
         SetMovePoint(map);
         _nextMovePoint = 0;
         _previousMovePoint = 3;
-        _monsterStat = Managers.Data.GetMonsterData(stageNum);
 
         Managers.UI.MakeWorldSpaceUI<UI_HPBar>(Managers.Game.HpBarPanel).InitHPBar(transform);
 
@@ -68,11 +69,13 @@ public class Monster : MonoBehaviour
         _unitAnimator.PlayAnimation("Run");
 
         // stageNum에 따라서 유닛의 형태, 이동속도, 체력 등 초기화
-        MaxHp = _monsterStat.maxHp;
-        _curHp = _monsterStat.maxHp;
-        _moveSpeed = _monsterStat.moveSpeed;
+        StageData stageData = Managers.Data.StageDict[stageNum];
+        MaxHp = stageData.monsterHp;
+        _curHp = MaxHp;
+        _moveSpeed = stageData.monstermoveSpeed;
         _curMoveSpeed = _moveSpeed;
-        _defense = _monsterStat.defense;
+        _defense = stageData.monsterdefense;
+        _givenRuny = stageData.givenRuby;
 
         float reduceDefence = _defense;
         float curseRuneValue = 0f;
@@ -257,7 +260,7 @@ public class Monster : MonoBehaviour
         if (_curHp <= 0)
         {
             _isDead = true;
-            Managers.Game.RegisterDyingMonster(this.gameObject);
+            Managers.Game.RegisterDyingMonster(this);
             QuitAllDebuff();
         }
     }

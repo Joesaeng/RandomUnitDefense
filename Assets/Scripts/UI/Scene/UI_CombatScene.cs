@@ -199,12 +199,13 @@ public class UI_CombatScene : UI_Scene
 
     public void OnNextStageEvent()
     {
-        GetText((int)Texts.TextStage).text = $"STAGE {Managers.Game.CurStage}";
-        MonsterData monsterData = Managers.Data.GetMonsterData(Managers.Game.CurStage);
-        string hp = monsterData.maxHp.ToString();
+        StageData stageData = Managers.Data.StageDict[Managers.Game.CurStage];
+        string isBoss = stageData.isSpecial ? "<sprite=18>" : "";
+        GetText((int)Texts.TextStage).text = $"{isBoss}STAGE {Managers.Game.CurStage}";
+        string hp = stageData.monsterHp.ToString();
         hp = Util.ChangeNumber(hp);
 
-        float reduceDefence = monsterData.defense + (1 - _curseRuneValue);
+        float reduceDefence = stageData.monsterdefense + (1 - _curseRuneValue);
 
         string defense = $"{(int)reduceDefence}";
         defense = Util.ChangeNumber(defense);
