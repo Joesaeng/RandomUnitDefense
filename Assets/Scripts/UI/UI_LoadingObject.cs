@@ -34,7 +34,7 @@ public class UI_LoadingObject : UI_Base
     public void ResetEx()
     {
         FillGauge.fillAmount = 0f;
-        GetTMPro((int)Texts.LoadingText).text = Language.GetTipText();
+        GetText((int)Texts.LoadingText).text = Language.GetTipText();
     }
 
     public override void OnChangeLanguage()

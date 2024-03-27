@@ -51,10 +51,10 @@ public class UI_PauseMenu : UI_Popup
         GetButton((int)Buttons.BtnLobby).gameObject.AddUIEvent(OnLobbyButtonClicked);
         GetButton((int)Buttons.BtnResume).gameObject.AddUIEvent(OnResumeButtonClicked);
 
-        GetTMPro((int)TMPros.TextBGM).text = Language.BGM;
-        GetTMPro((int)TMPros.TextSFX).text = Language.SFX;
-        GetTMPro((int)TMPros.TextLobby).text = Language.ExitToLobby;
-        GetTMPro((int)TMPros.TextResume).text = Language.ResumeToGame;
+        GetText((int)TMPros.TextBGM).text = Language.BGM;
+        GetText((int)TMPros.TextSFX).text = Language.SFX;
+        GetText((int)TMPros.TextLobby).text = Language.ExitToLobby;
+        GetText((int)TMPros.TextResume).text = Language.ResumeToGame;
 
         Get<Slider>((int)Sliders.SliderBGM).value = Managers.Sound.BGMVolume;
         Get<Slider>((int)Sliders.SliderSFX).value = Managers.Sound.SFXVolume;
@@ -77,10 +77,10 @@ public class UI_PauseMenu : UI_Popup
     {
         base.OnChangeLanguage();
 
-        GetTMPro((int)TMPros.TextBGM).text = Language.BGM;
-        GetTMPro((int)TMPros.TextSFX).text = Language.SFX;
-        GetTMPro((int)TMPros.TextLobby).text = Language.ExitToLobby;
-        GetTMPro((int)TMPros.TextResume).text = Language.ResumeToGame;
+        GetText((int)TMPros.TextBGM).text = Language.BGM;
+        GetText((int)TMPros.TextSFX).text = Language.SFX;
+        GetText((int)TMPros.TextLobby).text = Language.ExitToLobby;
+        GetText((int)TMPros.TextResume).text = Language.ResumeToGame;
     }
 
     private void OnBGMButtonClicked(PointerEventData data)

@@ -44,15 +44,15 @@ public class UI_IngameItem : UI_Base
 
     public void SetInfo(InGameItemData itemdata)
     {
-        GameObject infoObject = Get<GameObject>((int)GameObjects.ImageItemInfo);
+        GameObject infoObject = GetObject((int)GameObjects.ImageItemInfo);
         infoObject.SetActive(true);
         _itemdata = itemdata;
         string itemImagePath = $"{_itemdata.itemName}_{_itemdata.itemLevel}";
         gameObject.GetComponent<Image>().sprite =
             Managers.Resource.Load<Sprite>($"Art/Billinear/InGameItems/{itemImagePath}");
 
-        GetTMPro((int)TMPros.TextItemLevel).text = $"{(ItemLevelString)_itemdata.itemLevel}";
-        GetTMPro((int)TMPros.TextItemLevel).color = ConstantData.ItemColors[_itemdata.itemLevel];
+        GetText((int)TMPros.TextItemLevel).text = $"{(ItemLevelString)_itemdata.itemLevel}";
+        GetText((int)TMPros.TextItemLevel).color = ConstantData.ItemColors[_itemdata.itemLevel];
 
         ItemName itemName = Util.Parse<ItemName>(_itemdata.itemName);
         string itemInfoValue = "";
@@ -74,7 +74,7 @@ public class UI_IngameItem : UI_Base
                 itemInfoValue = $"{_itemdata.addedDamage}";
                 break;
         }
-        GetTMPro((int)TMPros.TextItemInfo).text = $"{Language.GetItemInfo(itemName)} : {itemInfoValue}";
+        GetText((int)TMPros.TextItemInfo).text = $"{Language.GetItemInfo(itemName)} : {itemInfoValue}";
         infoObject.SetActive(false);
     }
 
@@ -90,7 +90,7 @@ public class UI_IngameItem : UI_Base
     public void ClickedItem(PointerEventData data)
     {
         Managers.Sound.Play(Define.SFXNames.Click);
-        GameObject infoObject = Get<GameObject>((int)GameObjects.ImageItemInfo);
+        GameObject infoObject = GetObject((int)GameObjects.ImageItemInfo);
         if (infoObject.activeSelf)
         {
             infoObject.SetActive(false);
@@ -102,7 +102,7 @@ public class UI_IngameItem : UI_Base
 
     public void DeactiveInfoObject()
     {
-        GameObject infoObject = Get<GameObject>((int)GameObjects.ImageItemInfo);
+        GameObject infoObject = GetObject((int)GameObjects.ImageItemInfo);
         infoObject.SetActive(false);
     }
 

@@ -99,6 +99,20 @@ public static class Util
         return (T)Enum.Parse(typeof(T), stringData);
     }
 
+    public static string RemovePrefix(string str, string prefix)
+    {
+        // 문자열이 null이거나 비어있을 경우 그대로 반환
+        if (string.IsNullOrEmpty(str))
+            return str;
+
+        // 접두사가 문자열의 시작과 일치하는지 확인하고, 일치하면 해당 부분을 제거한 문자열 반환
+        if (str.StartsWith(prefix))
+            return str.Substring(prefix.Length);
+
+        // 일치하지 않으면 원래 문자열 그대로 반환
+        return str;
+    }
+
     public static float CalculatePercent(int left, int right)
     {
         if (left > right)
@@ -164,4 +178,6 @@ public static class Util
         }
         return false;
     }
+
+
 }

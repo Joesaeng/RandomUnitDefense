@@ -53,18 +53,18 @@ public class UI_GameOver : UI_Popup
         GetImage((int)Images.GameOverImage).SetNativeSize();
 
         // 언어 세팅
-        GetTMPro((int)Texts.TextGameOverStage).text = Language.GameOverStage;
-        GetTMPro((int)Texts.TextHighestStage).text = Language.HighestStage;
-        GetTMPro((int)Texts.TextKillMonsterCount).text = Language.KillMonsterCount;
-        GetTMPro((int)Texts.TextEarnedGoldCoin).text = Language.EarnedGoldCoin;
-        GetTMPro((int)Texts.TextLobby).text = Language.Lobby;
-        GetTMPro((int)Texts.TextRetry).text = Language.Retry;
+        GetText((int)Texts.TextGameOverStage).text = Language.GameOverStage;
+        GetText((int)Texts.TextHighestStage).text = Language.HighestStage;
+        GetText((int)Texts.TextKillMonsterCount).text = Language.KillMonsterCount;
+        GetText((int)Texts.TextEarnedGoldCoin).text = Language.EarnedGoldCoin;
+        GetText((int)Texts.TextLobby).text = Language.Lobby;
+        GetText((int)Texts.TextRetry).text = Language.Retry;
 
         // 밸류 세팅
-        GetTMPro((int)Texts.ValueGameOverStage).text = $"{Managers.Game.CurStage}";
-        GetTMPro((int)Texts.ValueHighestStage).text = $"{Managers.Player.Data.highestStage}";
-        GetTMPro((int)Texts.ValueKillMonsterCount).text = $"{Managers.Game.KillMonsterCount}";
-        GetTMPro((int)Texts.ValueEarnedGoldCoin).text = $"{Managers.Game.EarnedGoldCoin}";
+        GetText((int)Texts.ValueGameOverStage).text = $"{Managers.Game.CurStage}";
+        GetText((int)Texts.ValueHighestStage).text = $"{Managers.Player.Data.highestStage}";
+        GetText((int)Texts.ValueKillMonsterCount).text = $"{Managers.Game.KillMonsterCount}";
+        GetText((int)Texts.ValueEarnedGoldCoin).text = $"{Managers.Game.EarnedGoldCoin}";
 
         // 버튼이벤트 바인딩
         GetButton((int)Buttons.BtnLobby).gameObject.AddUIEvent(OnButtonLobbyClick);

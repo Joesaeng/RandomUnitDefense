@@ -37,9 +37,9 @@ public class UI_UseRune : UI_Popup
 
         GetButton((int)Buttons.BtnCancel).gameObject.AddUIEvent(OnCancelButtonClicked);
 
-        GetTMPro((int)Texts.TextCancel).text = Language.Cancel;
+        GetText((int)Texts.TextCancel).text = Language.Cancel;
 
-        Transform btnPanelTF = Get<GameObject>((int)GameObjects.PanelBtn).transform;
+        Transform btnPanelTF = GetObject((int)GameObjects.PanelBtn).transform;
         int setRunes = ConstantData.EquipedRunesCount;
         for (int index = 0; index < setRunes; index++)
         {

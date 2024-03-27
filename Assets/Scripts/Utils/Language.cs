@@ -379,6 +379,40 @@ public static class Language
         }
     }
 
+    public static string SellAll
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "SellAll";
+                case Define.GameLanguage.Korean:
+                    return "일괄판매";
+                default:
+                    return "SellAll";
+            }
+        }
+    }
+
+    public static string SellWarning
+    {
+        get
+        {
+            Define.GameLanguage language = Managers.Game.GameLanguage;
+            switch (language)
+            {
+                case Define.GameLanguage.English:
+                    return "Warning:\nIrreversible Process";
+                case Define.GameLanguage.Korean:
+                    return "경고:\n복구가 불가능합니다";
+                default:
+                    return "Warning:\nIrreversible Process";
+            }
+        }
+    }
+
     public static string SellAllUnit(UnitNames unitId)
     {
         {

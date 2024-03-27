@@ -75,9 +75,9 @@ public class UI_CombatScene : UI_Scene
         GetButton((int)Buttons.BtnEquipInfo).gameObject.AddUIEvent(OnEquipInfoButtonClicked);
         GetButton((int)Buttons.BtnGameSpeed).gameObject.AddUIEvent(OnGameSpeedButtonClicked);
         GetButton((int)Buttons.BtnPause).gameObject.AddUIEvent(OnPauseButtonClicked);
-        GetTMPro((int)Texts.TextFixedMonsterCount).text = $"{ConstantData.MonsterCountForGameOver}";
-        GetTMPro((int)Texts.TextSpawn).text = Language.Spawn;
-        GetTMPro((int)Texts.TextGamble).text = Language.GambleItem;
+        GetText((int)Texts.TextFixedMonsterCount).text = $"{ConstantData.MonsterCountForGameOver}";
+        GetText((int)Texts.TextSpawn).text = Language.Spawn;
+        GetText((int)Texts.TextGamble).text = Language.GambleItem;
 
         #region 버튼 이벤트 바인딩
         OnChangeAmountOfRuby(Managers.Game.Ruby);
@@ -95,11 +95,11 @@ public class UI_CombatScene : UI_Scene
 
         #region 현재 장비 스테이터스 초기화
 
-        _panelEquipStatusName = Get<GameObject>((int)GameObjects.PanelEquipStatusName);
+        _panelEquipStatusName = GetObject((int)GameObjects.PanelEquipStatusName);
         foreach (Transform child in _panelEquipStatusName.transform)
             Managers.Resource.Destroy(child.gameObject);
 
-        _panelEquipStatusValue = Get<GameObject>((int)GameObjects.PanelEquipStatusValue);
+        _panelEquipStatusValue = GetObject((int)GameObjects.PanelEquipStatusValue);
         foreach (Transform child in _panelEquipStatusValue.transform)
             Managers.Resource.Destroy(child.gameObject);
 
@@ -124,7 +124,7 @@ public class UI_CombatScene : UI_Scene
         #endregion
 
         #region 장비창 초기화
-        _panelItem = Get<GameObject>((int)GameObjects.PanelItem);
+        _panelItem = GetObject((int)GameObjects.PanelItem);
         foreach (Transform child in _panelItem.transform)
             Managers.Resource.Destroy(child.gameObject);
 
@@ -134,7 +134,7 @@ public class UI_CombatScene : UI_Scene
         #endregion
 
         #region 유닛 업그레이드 초기화
-        GameObject panelUpgrade = Get<GameObject>((int)GameObjects.PanelUpgrade);
+        GameObject panelUpgrade = GetObject((int)GameObjects.PanelUpgrade);
         foreach (Transform child in panelUpgrade.transform)
             Managers.Resource.Destroy(child.gameObject);
 
@@ -154,35 +154,35 @@ public class UI_CombatScene : UI_Scene
                 Managers.Player.Data.EquipedRunes[i].equipSlotIndex != -1)
             {
                 GameObject equipedRune = Managers.UI.MakeSubItem<UI_EquipedRuneCombatScene>
-                    (parent : Get<GameObject>((int)GameObjects.PanelEquipedRunes).transform).gameObject;
+                    (parent : GetObject((int)GameObjects.PanelEquipedRunes).transform).gameObject;
                 equipedRune.transform.localScale = new Vector3(1f, 1f, 1f);
                 equipedRune.GetComponent<UI_EquipedRuneCombatScene>().SetUp(i);
             }
         }
-        Get<GameObject>((int)GameObjects.PanelEquipedRunes).AddUIEvent(OnEquipedRuneClick);
-        GetTMPro((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
+        GetObject((int)GameObjects.PanelEquipedRunes).AddUIEvent(OnEquipedRuneClick);
+        GetText((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
         {
             EquipedRuneStatus equipedRuneStatus = Managers.UnitStatus.RuneStatus;
             foreach(KeyValuePair<BaseRune,float> runestat in equipedRuneStatus.BaseRuneEffects)
             {
-                GetTMPro((int)Texts.TextEquipedRunesStatus).text += 
+                GetText((int)Texts.TextEquipedRunesStatus).text += 
                     $"{Language.GetRuneBaseInfo(runestat.Key, runestat.Value)}\n";
             }
             foreach (KeyValuePair<AdditionalEffectName, float> runestat in equipedRuneStatus.AdditionalEffects)
             {
-                GetTMPro((int)Texts.TextEquipedRunesStatus).text +=
+                GetText((int)Texts.TextEquipedRunesStatus).text +=
                     $"{Language.GetRuneAdditionalEffectText(runestat.Key, runestat.Value)}\n";
             }
         }
-        GetTMPro((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
+        GetText((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
 
         // 저주룬(몬스터 방깎)
         Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Curse, out _curseRuneValue);
 
         #endregion
 
-        _text_stageTime = GetTMPro((int)Texts.TextLeftTimeStage);
-        _text_monsterCount = GetTMPro((int)Texts.TextChangeMonsterCount);
+        _text_stageTime = GetText((int)Texts.TextLeftTimeStage);
+        _text_monsterCount = GetText((int)Texts.TextChangeMonsterCount);
         _image_monsterGageBar = GetImage((int)Images.FillMonsterGageBar);
     }
     TextMeshProUGUI _text_stageTime;
@@ -199,7 +199,7 @@ public class UI_CombatScene : UI_Scene
 
     public void OnNextStageEvent()
     {
-        GetTMPro((int)Texts.TextStage).text = $"STAGE {Managers.Game.CurStage}";
+        GetText((int)Texts.TextStage).text = $"STAGE {Managers.Game.CurStage}";
         MonsterData monsterData = Managers.Data.GetMonsterData(Managers.Game.CurStage);
         string hp = monsterData.maxHp.ToString();
         hp = Util.ChangeNumber(hp);
@@ -208,7 +208,7 @@ public class UI_CombatScene : UI_Scene
 
         string defense = $"{(int)reduceDefence}";
         defense = Util.ChangeNumber(defense);
-        GetTMPro((int)Texts.TextMonsterInfo).text = 
+        GetText((int)Texts.TextMonsterInfo).text = 
             $"<sprite=46> : {hp}\n" +
             $"<sprite=50> : {defense}";
 
@@ -218,8 +218,8 @@ public class UI_CombatScene : UI_Scene
 
     private void DeactiveUpgradeAndGambleBlocker()
     {
-        Get<GameObject>((int)GameObjects.BlockerGamble).SetActive(false);
-        Get<GameObject>((int)GameObjects.BlockerUpgrade).SetActive(false);
+        GetObject((int)GameObjects.BlockerGamble).SetActive(false);
+        GetObject((int)GameObjects.BlockerUpgrade).SetActive(false);
     }
 
     public void OnSpawnButtonClicked(PointerEventData data)
@@ -236,7 +236,7 @@ public class UI_CombatScene : UI_Scene
     public void OnEquipedRuneClick(PointerEventData data)
     {
         showEquipRuneStatus = !showEquipRuneStatus;
-        GetTMPro((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
+        GetText((int)Texts.TextEquipedRunesStatus).enabled = showEquipRuneStatus;
     }
 
     public void OnGameSpeedButtonClicked(PointerEventData data)
@@ -256,7 +256,7 @@ public class UI_CombatScene : UI_Scene
 
     public void OnChangeAmountOfRuby(int value)
     {
-        GetTMPro((int)Texts.TextTheAmountOfRuby).text = $"<sprite=25> {value}";
+        GetText((int)Texts.TextTheAmountOfRuby).text = $"<sprite=25> {value}";
         GetImage((int)Images.ImageSpawnUnable).enabled = value < ConstantData.RubyRequiredOneSpawnPlayerUnit;
         GetImage((int)Images.ImageGambleUnable).enabled = !Managers.InGameItem.CanGamble();
 
@@ -264,7 +264,7 @@ public class UI_CombatScene : UI_Scene
 
     public void OnChangeItems(int value,InGameItemData itemdata = null)
     {
-        GetTMPro((int)Texts.TextGambleRuby).text = $"<sprite=25> {value}";
+        GetText((int)Texts.TextGambleRuby).text = $"<sprite=25> {value}";
         if(itemdata != null)
         {
             GameObject item = Managers.UI.MakeSubItem<UI_IngameItem>(parent : _panelItem.transform).gameObject;

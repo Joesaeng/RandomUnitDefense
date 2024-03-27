@@ -295,13 +295,12 @@ public class GameManagerEx
         return foundUnits;
     }
 
-    public void SellAllUnits(UnitNames unitId)
+    public void SellAllUnits(List<Unit> foundUnits)
     {
-        List<Unit> foundUnits = FindUnitsWithUnitId(unitId);
         foreach (Unit unit in foundUnits)
         {
             int sellCost = ConstantData.UnitSellingPrices[unit.Lv - 1];
-            if (!Util.CheckTheEventAndCall(OnSellAUnit, unit.GetComponent<Unit>(), sellCost))
+            if (!Util.CheckTheEventAndCall(OnSellAUnit, unit, sellCost))
                 Debug.Log("SellAllUnits Event Error");
         }
     }

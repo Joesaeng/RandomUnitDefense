@@ -10,7 +10,9 @@ public static class Extension
     {
         UI_Base.BindEvent(go, action, type);
     }
-
+    /// <summary>
+    /// 오브젝트에 index 번째 자식 오브젝트가 있는지 확인하고, 있으면 child로 가져옵니다
+    /// </summary>
     public static bool TryGetChild(this Transform parent, int index , out Transform child)
     {
         child = null;
@@ -46,5 +48,21 @@ public static class Extension
         }
         key = default(K);
         return false;
+    }
+    /// <summary>
+    /// str 문자열에서 prefix 문자열을 제거한 문자열을 반환
+    /// </summary>
+    public static string RemovePrefix(this string str, string prefix)
+    {
+        // 문자열이 null이거나 비어있을 경우 그대로 반환
+        if (string.IsNullOrEmpty(str))
+            return str;
+
+        // 접두사가 문자열의 시작과 일치하는지 확인하고, 일치하면 해당 부분을 제거한 문자열 반환
+        if (str.StartsWith(prefix))
+            return str.Substring(prefix.Length);
+
+        // 일치하지 않으면 원래 문자열 그대로 반환
+        return str;
     }
 }

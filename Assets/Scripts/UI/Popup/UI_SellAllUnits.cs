@@ -19,7 +19,7 @@ public class UI_SellAllUnits : UI_Popup
         TextSellPrices,
         TextBtnSell,
     }
-    UnitNames _selectUnitId;
+    List<Unit> _foundUnits;
     public override void Init()
     {
         base.Init();
@@ -30,17 +30,16 @@ public class UI_SellAllUnits : UI_Popup
     }
     public void Setup(UnitNames unitId)
     {
-        _selectUnitId = unitId;
         int sellPrices = 0;
-        List<Unit> foundUnits = Managers.Game.FindUnitsWithUnitId(unitId);
-        foreach (Unit unit in foundUnits)
+        _foundUnits = Managers.Game.FindUnitsWithUnitId(unitId);
+        foreach (Unit unit in _foundUnits)
         {
             sellPrices += ConstantData.UnitSellingPrices[unit.Lv - 1];
         }
-        GetTMPro((int)Texts.TextSellPrices).text = $"{sellPrices}";
+        GetText((int)Texts.TextSellPrices).text = $"{sellPrices}";
 
-        GetTMPro((int)Texts.TextUnitDesc).text = Language.SellAllUnit(unitId);
-        GetTMPro((int)Texts.TextBtnSell).text = Language.Sell;
+        GetText((int)Texts.TextUnitDesc).text = Language.SellAllUnit(unitId);
+        GetText((int)Texts.TextBtnSell).text = Language.Sell;
     }
     public void CancelButtonClicked(PointerEventData eventData)
     {
@@ -48,7 +47,7 @@ public class UI_SellAllUnits : UI_Popup
     }
     public void SellButtonClicked(PointerEventData eventData)
     {
-        Managers.Game.SellAllUnits(_selectUnitId);
+        Managers.Game.SellAllUnits(_foundUnits);
         ClosePopupUI();
     }
     private void Start()

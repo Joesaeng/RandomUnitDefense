@@ -23,7 +23,7 @@ public class UI_BtnUpgrade : UI_Base
     {
         ImageUnit
     }
-    enum TMPros
+    enum Texts
     {
         TextUpgradeLevel,
         TextUpgradeCost,
@@ -35,12 +35,13 @@ public class UI_BtnUpgrade : UI_Base
     }
     public override void Init()
     {
-        Bind<TextMeshProUGUI>(typeof(TMPros));
+        Bind<TextMeshProUGUI>(typeof(Texts));
         Bind<Image>(typeof(Images));
         Bind<Button>(typeof(Buttons));
 
         gameObject.AddUIEvent(ClickedUpgradeButton);
-        GetButton((int)Buttons.BtnSellAll).gameObject.AddUIEvent(ClickedSellAllButton);    
+        GetButton((int)Buttons.BtnSellAll).gameObject.AddUIEvent(ClickedSellAllButton);
+        GetText((int)Texts.TextSellAll).text = Language.SellAll;
     }
     public void SetInfo(int slot, UnitNames id)
     {
@@ -54,8 +55,8 @@ public class UI_BtnUpgrade : UI_Base
 
     private void SetText()
     {
-        GetTMPro((int)TMPros.TextUpgradeLevel).text = $"Lv.{Managers.UnitStatus.UnitUpgradLv[ID]}";
-        GetTMPro((int)TMPros.TextUpgradeCost).text = $"<sprite=25> {Managers.Game.UpgradeCostOfUnits[Slot]}";
+        GetText((int)Texts.TextUpgradeLevel).text = $"Lv.{Managers.UnitStatus.UnitUpgradLv[ID]}";
+        GetText((int)Texts.TextUpgradeCost).text = $"<sprite=25> {Managers.Game.UpgradeCostOfUnits[Slot]}";
     }
 
     public void ClickedUpgradeButton(PointerEventData data)

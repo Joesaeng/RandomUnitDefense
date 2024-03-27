@@ -70,7 +70,6 @@ public class RuneManager
             _runeTextImages.Add(Util.Parse<BaseRune>(runeTextSprite.name), runeTextSprite);
         }
     }
-
     // 랜덤한 룬을 생성하는 함수, 룬 그레이드 설정 가능
     public Rune CreateRandomRune(GradeOfRune setGrade = GradeOfRune.None)
     {
@@ -158,6 +157,29 @@ public class RuneManager
         }
         Managers.Player.Data.ownedRunes.Clear();
         Managers.Player.Data.ownedRunes = runes.ToList<Rune>();
+    }
+    // 보유한 룬 탐색 후 룬들의 인덱스를 반환
+    public List<int> FindRunesWithGradeOutIndexs(out int prices, GradeOfRune grade = GradeOfRune.None, HashSet<GradeOfRune> grades = null)
+    {
+        HashSet<GradeOfRune> selectGrade = grades ?? new();
+        if (selectGrade.Count == 0)
+            selectGrade.Add(grade);
+        prices = 0;
+        List<int> foundRuneIndexs = new List<int>();
+        List<Rune> ownedRunes = Managers.Player.Data.ownedRunes;
+
+        for(int i = 0; i < ownedRunes.Count; i++)
+        {
+            if (ownedRunes[i].isEquip)
+                continue;
+            if(selectGrade.Contains(ownedRunes[i].gradeOfRune))
+            {
+                foundRuneIndexs.Add(i);
+                prices += ConstantData.RuneSellingPrices[(int)ownedRunes[i].gradeOfRune];
+            }
+        }
+
+        return foundRuneIndexs;
     }
 }
 public class RuneComparerToGrade : IComparer<Rune>

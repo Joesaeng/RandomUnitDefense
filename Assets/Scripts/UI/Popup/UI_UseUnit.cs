@@ -37,9 +37,9 @@ public class UI_UseUnit : UI_Popup
 
         GetButton((int)Buttons.BtnCancel).gameObject.AddUIEvent(OnCancelButtonClicked);
 
-        GetTMPro((int)Texts.TextCancel).text = Language.Cancel;
+        GetText((int)Texts.TextCancel).text = Language.Cancel;
 
-        Transform btnPanelTF = Get<GameObject>((int)GameObjects.PanelBtn).transform;
+        Transform btnPanelTF = GetObject((int)GameObjects.PanelBtn).transform;
         int setUnits = ConstantData.SetUnitCount;
         for (int index = 0; index < setUnits; index++)
         {

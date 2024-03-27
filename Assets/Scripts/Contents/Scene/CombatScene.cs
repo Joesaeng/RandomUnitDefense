@@ -239,12 +239,12 @@ public class CombatScene : BaseScene
             slot.SetBasicImage();
     }
 
-    // 플레이어가 유닛 판매 버튼을 눌렀을 때
+    // 플레이어가 유닛 판매를 시도할 때
     private void OnSellAUnit(Unit unit,int sellCost)
     {
-        if (_unitDict.FindKeyByValueInDictionary(unit, out int slotIndex))
+        if (_unitDict.ContainsKey(unit.SlotIndex))
         {
-            DestroyPlayerUnit(slotIndex);
+            DestroyPlayerUnit(unit.SlotIndex);
             Managers.Game.Ruby += sellCost;
         }
     }

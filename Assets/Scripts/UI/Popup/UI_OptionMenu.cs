@@ -24,13 +24,13 @@ public class UI_OptionMenu : UI_PauseMenu
 
         Bind<GameObject>(typeof(OptionMenuObjects));
 
-        Get<GameObject>((int)OptionMenuObjects.BtnLanguage).gameObject.AddUIEvent(OnLanguageButtonClicked);
-        Get<GameObject>((int)OptionMenuObjects.BtnLanguage2).gameObject.AddUIEvent(OnLanguageButtonClicked);
-        Get<GameObject>((int)OptionMenuObjects.BtnResumeOrGoGame).gameObject.AddUIEvent(OnResumeOrGoGameButtonClicked);
+        GetObject((int)OptionMenuObjects.BtnLanguage).gameObject.AddUIEvent(OnLanguageButtonClicked);
+        GetObject((int)OptionMenuObjects.BtnLanguage2).gameObject.AddUIEvent(OnLanguageButtonClicked);
+        GetObject((int)OptionMenuObjects.BtnResumeOrGoGame).gameObject.AddUIEvent(OnResumeOrGoGameButtonClicked);
 
-        Get<GameObject>((int)OptionMenuObjects.TextBtnLanguage).GetComponent<TextMeshProUGUI>().text = Language.LanguageButton;
-        Get<GameObject>((int)OptionMenuObjects.TextBtnLanguage2).GetComponent<TextMeshProUGUI>().text = Language.LanguageText;
-        Get<GameObject>((int)OptionMenuObjects.TextResumeOrGoGame).GetComponent<TextMeshProUGUI>().text = Language.ResumeOrGoGame;
+        GetObject((int)OptionMenuObjects.TextBtnLanguage).GetComponent<TextMeshProUGUI>().text = Language.LanguageButton;
+        GetObject((int)OptionMenuObjects.TextBtnLanguage2).GetComponent<TextMeshProUGUI>().text = Language.LanguageText;
+        GetObject((int)OptionMenuObjects.TextResumeOrGoGame).GetComponent<TextMeshProUGUI>().text = Language.ResumeOrGoGame;
 
 
     }
@@ -59,9 +59,9 @@ public class UI_OptionMenu : UI_PauseMenu
     {
         base.OnChangeLanguage();
 
-        Get<GameObject>((int)OptionMenuObjects.TextBtnLanguage).GetComponent<TextMeshProUGUI>().text = Language.LanguageButton;
-        Get<GameObject>((int)OptionMenuObjects.TextBtnLanguage2).GetComponent<TextMeshProUGUI>().text = Language.LanguageText;
-        Get<GameObject>((int)OptionMenuObjects.TextResumeOrGoGame).GetComponent<TextMeshProUGUI>().text = Language.ResumeOrGoGame;
+        GetObject((int)OptionMenuObjects.TextBtnLanguage).GetComponent<TextMeshProUGUI>().text = Language.LanguageButton;
+        GetObject((int)OptionMenuObjects.TextBtnLanguage2).GetComponent<TextMeshProUGUI>().text = Language.LanguageText;
+        GetObject((int)OptionMenuObjects.TextResumeOrGoGame).GetComponent<TextMeshProUGUI>().text = Language.ResumeOrGoGame;
 
     }
 }

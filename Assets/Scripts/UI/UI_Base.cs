@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Threading;
 using Unity.VisualScripting;
+using System.Linq;
 
 public abstract class UI_Base : MonoBehaviour
 {
@@ -50,13 +51,19 @@ public abstract class UI_Base : MonoBehaviour
             return null;
 
         return objects[index] as T;
+    }
 
-        
+    protected T[] Gets<T>() where T : UnityEngine.Object
+    {
+        UnityEngine.Object[] objects = null;
+        if (_objects.TryGetValue(typeof(T), out objects) == false)
+            return null;
+        T[] rets = objects.Cast<T>().ToArray();
+        return rets;
     }
 
     protected GameObject GetObject(int index) { return Get<GameObject>(index); }
-    protected Text GetText(int index) { return Get<Text>(index); }
-    protected TextMeshProUGUI GetTMPro(int index) { return Get<TextMeshProUGUI>(index); }
+    protected TextMeshProUGUI GetText(int index) { return Get<TextMeshProUGUI>(index); }
     protected Button GetButton(int index) { return Get<Button>(index); }
     protected Image GetImage(int index) { return Get<Image>(index); }
 
