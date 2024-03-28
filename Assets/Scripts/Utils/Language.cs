@@ -329,24 +329,24 @@ public static class Language
         string[] englishEffects =
         {
             $"+{valuetext} Increased Damages Of Common Type",
-            $"+{valuetext} Increased Damages Of AOE Type",
             $"+{valuetext} Increased Attack Speed Of Common Type",
-            $"+{valuetext} Increased Attack Speed Of AOE Type",
             $"+{valuetext} Critical Chance Of Common Type",
-            $"+{valuetext} Critical Chance Of AOE Type",
             $"+{valuetext} Add Critical Damage Ratio Of Common Type",
+            $"+{valuetext} Increased Damages Of AOE Type",
+            $"+{valuetext} Increased Attack Speed Of AOE Type",
+            $"+{valuetext} Critical Chance Of AOE Type",
             $"+{valuetext} Add Critical Damage Ratio Of AOE Type",
             $"+{valuetext} Added Damage",
         };
         string[] koreanEffects =
         {
             $"+{valuetext} 단일 공격 타입 데미지",
-            $"+{valuetext} 광역 공격 타입 데미지",
             $"+{valuetext} 단일 공격 타입 공격속도",
-            $"+{valuetext} 광역 공격 타입 공격속도",
             $"+{valuetext} 단일 공격 타입 치명타 확률",
-            $"+{valuetext} 광역 공격 타입 치명타 확률",
             $"+{valuetext} 단일 공격 타입 치명타 피해 비율",
+            $"+{valuetext} 광역 공격 타입 데미지",
+            $"+{valuetext} 광역 공격 타입 공격속도",
+            $"+{valuetext} 광역 공격 타입 치명타 확률",
             $"+{valuetext} 광역 공격 타입 치명타 피해 비율",
             $"+{valuetext} 추가 데미지",
         };
@@ -752,7 +752,7 @@ public static class Language
             "광역공격타입의 데미지는 폭발체의 중심에서 100% 피해를 가집니다.",
             "추가데미지는 몬스터의 방어력을 무시합니다.",
             "포이즌보우맨의 독데미지는 몬스터의 방어력을 무시합니다.",
-            "매 10 스테이지 마다 방어력이 매우 높은 몬스터가 출현합니다.",
+            "매 10 스테이지 마다 보스 몬스터가 출현합니다 시간내에 모두 잡지 못하면 패배합니다.",
             "게임 언어는 로비의 일시정지 메뉴에서 언제든지 바꿀 수 있습니다.",
             "좋은 하루 보내지 마세요, 최고의 하루를 보내세요!",
             "게임이 재미없을땐 클라이밍을 해보시는건 어떤가요?"
@@ -762,7 +762,7 @@ public static class Language
             "AOEUnits's Attack Damage Is 100% From The Center Of The Explosive.",
             "AddedDamage Is Ignores The Monster's Defense",
             "PoisonBowman's PoisonDamage Ignores The Monster's Defense",
-            "Monsters With Very High Defense Appear Every 10 Stages",
+            "Boss Monster Appear Every 10 Stages,If You Can't Kill All These In Time, Lose",
             "You Can Change the Game Language At Any Time From The Lobby's Pause Menu",
             "Don't Have A Good Day,Have A Great Day!",
             "If The Game Isn't Fun, Why Not Try Climbing?"
@@ -950,8 +950,8 @@ public static class Language
     public static string GetRuneSortMode(SortModeOfRunes sortMode)
     {
         Define.GameLanguage language = Managers.Game.GameLanguage;
-        string[] englishSortMode = {"Type", "Grade"};
-        string[] koreanSortMode = {"종류", "등급"};
+        string[] englishSortMode = {"Type↑", "Type↓", "Grade↑","Grade↓" };
+        string[] koreanSortMode = { "종류↑", "종류↓", "등급↑", "등급↓", };
         switch (language)
         {
             case Define.GameLanguage.English:

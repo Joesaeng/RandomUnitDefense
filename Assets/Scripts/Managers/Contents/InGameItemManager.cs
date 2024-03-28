@@ -62,7 +62,7 @@ public class InGameItemManager
 
     public bool CanGamble()
     {
-        return Managers.Game.Ruby > _gambleCost;
+        return Managers.Game.Ruby >= _gambleCost;
     }
 
     public void GambleItem()

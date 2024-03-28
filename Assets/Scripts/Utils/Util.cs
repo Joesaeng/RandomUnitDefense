@@ -121,6 +121,13 @@ public static class Util
             return (float)left / (float)right;
     }
 
+    /// <summary>
+    /// 수를 1000의자리마다 끊어서 요약합니다
+    /// </summary>
+    public static string ChangeNumber(int number)
+    {
+        return ChangeNumber(number.ToString());
+    }
     public static string ChangeNumber(string number)
     {
         char[] unitAlphabet = new char[3] { 'K', 'M', 'B' };

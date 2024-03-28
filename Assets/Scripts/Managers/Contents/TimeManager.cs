@@ -55,17 +55,19 @@ public class TimeManager
         //}
 
         // 데이터로 설정된 스테이지의 정보를 불러와서 지정
-        if (_curMonsterRespawnTime >= Managers.Data.StageDict[Managers.Game.CurStage].respawnTime)
+        if (Managers.Data.StageDict.TryGetValue(Managers.Game.CurStage, out StageData stageData) == false)
+            return;
+        if (_curMonsterRespawnTime >= stageData.respawnTime)
         {
             Util.CheckTheEventAndCall(OnMonsterRespawnTime);
             _curMonsterRespawnTime = 0f;
         }
 
-        if (CurStageTime > Managers.Data.StageDict[Managers.Game.CurStage].stageTime)
+        if (CurStageTime > stageData.stageTime)
         {
             // 현재 게임 스테이지가 isSpecial(ex)보스전) 일 때
             // 몬스터를 전부 잡지 못했다면 게임오버
-            if (Managers.Data.StageDict[Managers.Game.CurStage].isSpecial
+            if (stageData.isSpecial
                 && Managers.Game.Monsters.Count > 0)
             {
                 Managers.Game.GameOver("Fail");
@@ -85,7 +87,9 @@ public class TimeManager
         switch (type)
         {
             case StageTimeType.LeftTime:
-                return TimeSpan.FromSeconds(Managers.Data.StageDict[Managers.Game.CurStage].stageTime - CurStageTime).ToString(@"mm\:ss");
+                if (Managers.Data.StageDict.TryGetValue(Managers.Game.CurStage, out StageData stageData) == false)
+                    return "FALSE";
+                return TimeSpan.FromSeconds(stageData.stageTime - CurStageTime).ToString(@"mm\:ss");
             case StageTimeType.StageTime:
                 return TimeSpan.FromSeconds(CurStageTime).ToString(@"mm\ : ss");
             default:

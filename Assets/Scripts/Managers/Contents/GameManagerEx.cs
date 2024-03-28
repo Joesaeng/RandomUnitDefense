@@ -3,10 +3,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Scripting;
 
-public class GameManagerEx
+public class GameManagerEx : MonoBehaviour
 {
     private Define.GameLanguage _gameLanguage = Define.GameLanguage.Korean;
     public Define.GameLanguage GameLanguage
@@ -33,6 +34,9 @@ public class GameManagerEx
 
     private Dictionary<int,Unit> _unitDict;
     public Dictionary<int, Unit> UnitDict { get { return _unitDict; } }
+    WaitForSeconds _aSecond = new WaitForSeconds(1f);
+
+    public Dictionary<UnitNames,Queue<int>> UnitDPSDict { get; set; }
 
     public Action OnChangedLanguage;
 
@@ -44,6 +48,8 @@ public class GameManagerEx
 
     public Action OnNextStage;
     public Action<Unit,int> OnSellAUnit;
+
+    public Action OnDPSChecker;
 
     public GameObject SelectedUnit { get; set; }
     public UI_UnitInfo SelectUnitInfoUI { get; set; }
@@ -94,14 +100,16 @@ public class GameManagerEx
         for (int i = 0; i < setunits.Length; ++i)
             SetUnits[i] = (UnitNames)setunits[i];
 
-        UnitAttackRange = null;
-        _monsterSpawnPoint = GameObject.Find("SpawnPoint").transform;
-        UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
-        HpBarPanel = GameObject.Find("UI_HPBarPanel").transform;
-        DamageTexts = GameObject.Find("DamageTexts").transform;
-        HitEffects = GameObject.Find("HitEffects").transform;
-        UnitBullets = GameObject.Find("UnitBullets").transform;
-
+        
+        { // CombatScene Object 바인딩
+            UnitAttackRange = null;
+            _monsterSpawnPoint = GameObject.Find("SpawnPoint").transform;
+            UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
+            HpBarPanel = GameObject.Find("UI_HPBarPanel").transform;
+            DamageTexts = GameObject.Find("DamageTexts").transform;
+            HitEffects = GameObject.Find("HitEffects").transform;
+            UnitBullets = GameObject.Find("UnitBullets").transform;
+        }
 
         Managers.Game.Ruby = ConstantData.InitialRuby;
 
@@ -119,19 +127,33 @@ public class GameManagerEx
         {
             UpgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
         }
+        // UnitDict 초기화
         if (_unitDict != null)
             _unitDict.Clear();
         else
             _unitDict = new Dictionary<int, Unit>();
 
+        // DyingMonsters 초기화
         if (_dyingMonsters != null)
             DyingMonsterDespawn();
         else
             _dyingMonsters = new Stack<Monster>();
+
+        // Monsters 초기화
         if (_monsters != null)
             _monsters.Clear();
         else
             _monsters = new HashSet<Monster>();
+
+        { // DPS dict 초기화
+            if (UnitDPSDict != null)
+                UnitDPSDict.Clear();
+            else
+                UnitDPSDict = new Dictionary<UnitNames,Queue<int>>();
+
+            for (int i = 0; i < SetUnits.Length; ++i)
+                UnitDPSDict.Add(SetUnits[i], new Queue<int>());
+        }
     }
     // 이벤트 바인딩 해제
     public void ClearBindedEvent()
@@ -173,13 +195,11 @@ public class GameManagerEx
         if (CurStage > ConstantData.HighestStage)
         {
             CurStage = ConstantData.HighestStage;
-            SetPlayerHighestStage();
             GameOver("Victory");
             return;
         }
         Util.CheckTheEventAndCall(OnNextStage);
     }
-
     // 스테이지 클리어시 획득 금화
     public int CalculateEarendGoldCoinForStage(int stage)
     {
@@ -195,8 +215,11 @@ public class GameManagerEx
     private void TheRespawnTime()
     {
         // 데이터로 정해둔 스테이지의 정보를 불러와서 적용
-        if (CurStageMonsterCount < Managers.Data.StageDict[Managers.Game.CurStage].monsterSpawnCount)
-            SpawnMonster(_monsterSpawnPoint.transform.position);
+        if (Managers.Data.StageDict.TryGetValue(CurStage, out var stageData))
+        {
+            if (CurStageMonsterCount < stageData.monsterSpawnCount)
+                SpawnMonster(_monsterSpawnPoint.transform.position);
+        }
     }
 
     public void SpawnMonster(Vector3 spawnPoint)
@@ -209,7 +232,6 @@ public class GameManagerEx
 
         if (Monsters.Count > ConstantData.MonsterCountForGameOver)
         {
-            SetPlayerHighestStage();
             GameOver("Fail");
             return;
         }
@@ -218,6 +240,7 @@ public class GameManagerEx
 
     public void GameOver(string gameoverType)
     {
+        SetPlayerHighestStage();
         Managers.Time.GamePause();
         Managers.UI.ShowPopupUI<UI_GameOver>().SetUp(gameoverType);
         Managers.Player.Data.amountOfGold += EarnedGoldCoin;
@@ -249,7 +272,7 @@ public class GameManagerEx
         while (DyingMonsters.Count > 0)
         {
             DespawnMonster(DyingMonsters.Pop());
-            
+
             KillMonsterCount++;
         }
     }
@@ -325,6 +348,22 @@ public class GameManagerEx
         Managers.Player.Data.gameLanguage = (int)_gameLanguage;
         Util.CheckTheEventAndCall(OnChangedLanguage);
         Managers.Player.SaveToJson();
+    }
+
+    public void AddDamagesInDPSQueue(UnitNames unit,int damage)
+    {
+        if(UnitDPSDict.TryGetValue(unit,out Queue<int> dpsQ))
+        {
+            dpsQ.Enqueue(damage);
+            StartCoroutine(CoRemoveDPSInOverSecond(unit));
+        }
+    }
+
+    IEnumerator CoRemoveDPSInOverSecond(UnitNames unit)
+    {
+        yield return _aSecond;
+        UnitDPSDict[unit].TryDequeue(out int t);
+        Util.CheckTheEventAndCall(OnDPSChecker);
     }
 
     public void Clear()

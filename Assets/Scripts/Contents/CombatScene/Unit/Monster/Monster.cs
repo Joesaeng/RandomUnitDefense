@@ -69,7 +69,11 @@ public class Monster : MonoBehaviour
         _unitAnimator.PlayAnimation("Run");
 
         // stageNum에 따라서 유닛의 형태, 이동속도, 체력 등 초기화
-        StageData stageData = Managers.Data.StageDict[stageNum];
+        if(Managers.Data.StageDict.TryGetValue(stageNum, out StageData stageData) == false)
+        {
+            Debug.Log("Can not Find StageData");
+            return;
+        }
         MaxHp = stageData.monsterHp;
         _curHp = MaxHp;
         _moveSpeed = stageData.monstermoveSpeed;
@@ -78,8 +82,7 @@ public class Monster : MonoBehaviour
         _givenRuny = stageData.givenRuby;
 
         float reduceDefence = _defense;
-        float curseRuneValue = 0f;
-        if(Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Curse, out curseRuneValue))
+        if(Managers.UnitStatus.RuneStatus.BaseRuneEffects.TryGetValue(BaseRune.Curse, out float curseRuneValue))
         {
             reduceDefence *= (1 - curseRuneValue);
         }
@@ -240,6 +243,10 @@ public class Monster : MonoBehaviour
 
         float addedDamage = (Managers.InGameItem.CurrentStatusOnEquipedItem.addedDamage + addedDamageOfRune)
                             * damageRatio;
+
+        // DPS 측정기
+        if (Managers.Game.UnitDPSDict.ContainsKey(unit))
+            Managers.Game.AddDamagesInDPSQueue(unit,(int)damage);
 
         ReduceHp(damage + addedDamage);
 

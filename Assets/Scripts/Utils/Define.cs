@@ -6,8 +6,10 @@ public class Define
 {
     public enum SortModeOfRunes
     {
-        Type,
-        Grade,
+        TypeUp,
+        TypeDown,
+        GradeUp,
+        GradeDown,
         Count,
     }
     public enum NotiTexts

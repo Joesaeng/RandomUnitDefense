@@ -24,9 +24,9 @@ public class UI_OptionMenu : UI_PauseMenu
 
         Bind<GameObject>(typeof(OptionMenuObjects));
 
-        GetObject((int)OptionMenuObjects.BtnLanguage).gameObject.AddUIEvent(OnLanguageButtonClicked);
-        GetObject((int)OptionMenuObjects.BtnLanguage2).gameObject.AddUIEvent(OnLanguageButtonClicked);
-        GetObject((int)OptionMenuObjects.BtnResumeOrGoGame).gameObject.AddUIEvent(OnResumeOrGoGameButtonClicked);
+        GetObject((int)OptionMenuObjects.BtnLanguage).AddUIEvent(OnLanguageButtonClicked);
+        GetObject((int)OptionMenuObjects.BtnLanguage2).AddUIEvent(OnLanguageButtonClicked);
+        GetObject((int)OptionMenuObjects.BtnResumeOrGoGame).AddUIEvent(OnResumeOrGoGameButtonClicked);
 
         GetObject((int)OptionMenuObjects.TextBtnLanguage).GetComponent<TextMeshProUGUI>().text = Language.LanguageButton;
         GetObject((int)OptionMenuObjects.TextBtnLanguage2).GetComponent<TextMeshProUGUI>().text = Language.LanguageText;

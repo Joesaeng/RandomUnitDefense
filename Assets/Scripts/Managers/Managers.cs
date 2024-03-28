@@ -9,7 +9,7 @@ public class Managers : MonoBehaviour
     static Managers Instance { get { Init(); return s_instance; } }
 
     #region Contents
-    GameManagerEx _game = new GameManagerEx();
+    GameManagerEx _game;
     UnitStatusManager _unitStatus = new UnitStatusManager();
     InGameItemManager _inGameItem = new InGameItemManager();
     PlayerManager _player = new PlayerManager();
@@ -78,6 +78,7 @@ public class Managers : MonoBehaviour
             sceneManager.transform.SetParent(go.transform);
             s_instance._scene = sceneManager.GetComponent<SceneManagerEx>();
 
+            s_instance._game = s_instance.AddComponent<GameManagerEx>();
             s_instance._data.Init();
             s_instance._pool.Init();
             s_instance._player.Init();

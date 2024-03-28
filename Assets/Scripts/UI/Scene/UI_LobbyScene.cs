@@ -179,6 +179,8 @@ public class UI_LobbyScene : UI_Scene
         GetText((int)Texts.GambleTenRuneCostText).text = $"{ConstantData.TheCostOfTenRunesGamble}";
         //
 
+        Managers.Rune.SortOwnedRunes((Define.SortModeOfRunes)Managers.Player.Data.sortModeOfRune);
+
         StartCoroutine(CoSetOwnRunes());
         Transform equipedRunesTF = GetObject((int)GameObjects.SetRunesPanel).transform;
         for (int index = 0; index < ConstantData.EquipedRunesCount; index++)
@@ -583,20 +585,21 @@ public class UI_LobbyScene : UI_Scene
     {
         Managers.Sound.Play(Define.SFXNames.Click);
         if (_curListNum > 0)
-        {
             _curListNum--;
-            StartCoroutine(CoSetOwnRunes());
-        }
+        else
+            _curListNum = _lastListNum;
+        StartCoroutine(CoSetOwnRunes());
     }
 
     public void OnListNextButtonClicked(PointerEventData eventData)
     {
         Managers.Sound.Play(Define.SFXNames.Click);
         if (_curListNum < _lastListNum)
-        {
             _curListNum++;
-            StartCoroutine(CoSetOwnRunes());
-        }
+        else
+            _curListNum = 0;
+        StartCoroutine(CoSetOwnRunes());
+
     }
 
     // ·é Á¤º¸ ÆÐ³Î¿¡¼­ ·é ÇØÁ¦(Clear)¹öÆ° Å¬¸¯ÇßÀ» ¶§ È£Ãâ
@@ -661,6 +664,7 @@ public class UI_LobbyScene : UI_Scene
 
     public void OnOneRuneGambleButtonClicked(PointerEventData eventData)
     {
+        Managers.Sound.Play(Define.SFXNames.Click);
         if (Managers.Player.Data.amountOfGold < ConstantData.TheCostOfOneRuneGamble)
         {
             Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
@@ -678,6 +682,7 @@ public class UI_LobbyScene : UI_Scene
 
     public void OnTenRuneGambleButtonClicked(PointerEventData eventData)
     {
+        Managers.Sound.Play(Define.SFXNames.Click);
         if (Managers.Player.Data.amountOfGold < ConstantData.TheCostOfTenRunesGamble)
         {
             Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
@@ -699,6 +704,7 @@ public class UI_LobbyScene : UI_Scene
 
     public void OnSortRunesButtonClicked(PointerEventData eventData)
     {
+        Managers.Sound.Play(Define.SFXNames.Click);
         int sortMode = (Managers.Player.Data.sortModeOfRune + 1) % (int)Define.SortModeOfRunes.Count;
         Managers.Rune.SortOwnedRunes((Define.SortModeOfRunes)sortMode);
         Managers.Player.Data.sortModeOfRune = sortMode;
@@ -709,6 +715,7 @@ public class UI_LobbyScene : UI_Scene
     }
     public void OnSellAllRunesButtonClicked(PointerEventData eventData)
     {
+        Managers.Sound.Play(Define.SFXNames.Click);
         // ·é ÀÏ°ýÆÇ¸Å ÆË¾÷
         Managers.UI.ShowPopupUI<UI_SellAllRunes>().Set(this);
     }

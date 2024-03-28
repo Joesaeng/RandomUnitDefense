@@ -108,10 +108,15 @@ public class RuneManager
         // 룬 등급에 맞는 추가 효과 생성 및 부여
         int additionalEftCount = ConstantData.AdditionalEftCountOfRunes[(int)runeGrade];
 
+        List<AdditionalEffectOfRune> effects = new List<AdditionalEffectOfRune>();
         for (int i = 0; i < additionalEftCount; ++i)
         {
-            rune.additionalEffects.Add(CreateRandomAdditionalEffect());
+            effects.Add(CreateRandomAdditionalEffect());
         }
+        AdditionalEffectComparer comp = new AdditionalEffectComparer();
+        effects.Sort(comp);
+
+        rune.additionalEffects.AddRange(effects);
 
         return rune;
     }
@@ -142,15 +147,27 @@ public class RuneManager
         Rune[] runes = Managers.Player.Data.ownedRunes.ToArray();
         switch(sortMode)
         {
-            case Define.SortModeOfRunes.Grade:
+            case Define.SortModeOfRunes.GradeUp:
             {
-                RuneComparerToGrade comparer = new RuneComparerToGrade();
+                RuneComparerToGradeUp comparer = new RuneComparerToGradeUp();
                 System.Array.Sort(runes, comparer);
                 break;
             }
-            case Define.SortModeOfRunes.Type:
+            case Define.SortModeOfRunes.GradeDown:
             {
-                RuneComparerToBase comparer = new RuneComparerToBase();
+                RuneComparerToGradeDown comparer = new RuneComparerToGradeDown();
+                System.Array.Sort(runes, comparer);
+                break;
+            }
+            case Define.SortModeOfRunes.TypeUp:
+            {
+                RuneComparerToBaseUp comparer = new RuneComparerToBaseUp();
+                System.Array.Sort(runes, comparer);
+                break;
+            }
+            case Define.SortModeOfRunes.TypeDown:
+            {
+                RuneComparerToBaseDown comparer = new RuneComparerToBaseDown();
                 System.Array.Sort(runes, comparer);
                 break;
             }
@@ -182,21 +199,54 @@ public class RuneManager
         return foundRuneIndexs;
     }
 }
-public class RuneComparerToGrade : IComparer<Rune>
+public class RuneComparerToGradeUp : IComparer<Rune>
 {
     public int Compare(Rune x, Rune y)
     {
-        return (((int)y.gradeOfRune * 1000) + (int)y.baseRune)
-            -
-            (((int)x.gradeOfRune * 1000) + (int)x.baseRune);
+        if (x.gradeOfRune == y.gradeOfRune)
+            return (int)x.baseRune - (int)y.baseRune;
+        return (int)y.gradeOfRune - (int)x.gradeOfRune;
     }
 }
 
-public class RuneComparerToBase : IComparer<Rune>
+public class RuneComparerToGradeDown : IComparer<Rune>
 {
     public int Compare(Rune x, Rune y)
     {
-        return (int)y.gradeOfRune + ((int)y.baseRune * 1000) -
-            ((int)x.gradeOfRune + ((int)x.baseRune * 1000));
+        if (x.gradeOfRune == y.gradeOfRune)
+            return (int)x.baseRune - (int)y.baseRune;
+        return (int)x.gradeOfRune - (int)y.gradeOfRune;
+    }
+}
+
+public class RuneComparerToBaseUp : IComparer<Rune>
+{
+    public int Compare(Rune x, Rune y)
+    {
+        if (x.baseRune == y.baseRune)
+            return (int)y.gradeOfRune - (int)x.gradeOfRune;
+        return (int)x.baseRune - (int)y.baseRune;
+    }
+}
+
+public class RuneComparerToBaseDown : IComparer<Rune>
+{
+    public int Compare(Rune x, Rune y)
+    {
+        if (x.baseRune == y.baseRune)
+            return (int)y.gradeOfRune - (int)x.gradeOfRune;
+        return (int)y.baseRune - (int)x.baseRune;
+    }
+}
+
+public class AdditionalEffectComparer : IComparer<AdditionalEffectOfRune>
+{
+    public int Compare(AdditionalEffectOfRune x, AdditionalEffectOfRune y)
+    {
+        int compName = (int)x.name - (int)y.name;
+        if ((int)x.name == (int)y.name)
+            return (int)(y.value * 100 - x.value * 100);
+
+        return compName;
     }
 }

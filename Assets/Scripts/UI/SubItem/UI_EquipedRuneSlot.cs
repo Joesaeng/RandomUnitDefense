@@ -50,6 +50,7 @@ public class UI_EquipedRuneSlot : UI_Base
     {
         if (_rune == null)
             return;
+        Managers.Sound.Play(Define.SFXNames.Click);
         _ui_LobbyScene.UpdateSelectedRunePanel(_rune);
     }
 

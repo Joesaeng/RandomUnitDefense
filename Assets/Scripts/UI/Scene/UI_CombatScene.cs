@@ -141,9 +141,9 @@ public class UI_CombatScene : UI_Scene
         int unitCount = Managers.Game.SetUnits.Length;
         for(int i = 0; i < unitCount; i++)
         {
-            GameObject upgradeBtn = Managers.UI.MakeSubItem<UI_BtnUpgrade>(parent : panelUpgrade.transform).gameObject;
+            GameObject upgradeBtn = Managers.UI.MakeSubItem<UI_UnitDesc>(parent : panelUpgrade.transform).gameObject;
             upgradeBtn.transform.localScale = new Vector3(1f, 1f, 1f);
-            upgradeBtn.GetComponent<UI_BtnUpgrade>().SetInfo(i, Managers.Game.SetUnits[i]);
+            upgradeBtn.GetComponent<UI_UnitDesc>().SetInfo(i, Managers.Game.SetUnits[i]);
         }
         #endregion
 
