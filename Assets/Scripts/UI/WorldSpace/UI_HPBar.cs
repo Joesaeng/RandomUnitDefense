@@ -8,19 +8,21 @@ public class UI_HPBar : UI_Base
 {
     Monster _monster;
     Image _fill;
-
+    float _addPositionY = 0f;
     public void InitHPBar(Transform tf)
     {
         _fill = Util.FindChild<Image>(gameObject,"Fill");
         transform.localScale = new Vector3(0.006f, 0.003f, 1f);
         _monster = tf.GetComponent<Monster>();
+        Collider2D col = tf.GetComponent<Collider2D>();
+        _addPositionY = col.bounds.size.y;
         SetHpRatio(1f);
         _monster.OnReduceHp += SetHpRatio;
     }
 
     private void Update()
     {
-        transform.position = _monster.transform.position + Vector3.up * 0.4f;
+        transform.position = _monster.transform.position + Vector3.up * _addPositionY;
     }
 
     public void SetHpRatio(float ratio)

@@ -61,7 +61,6 @@ public class UITempEditor : Editor
             for (int j = 0; j < texts.Length; j++)
             {
                 texts[j].raycastTarget = false;
-                Debug.Log($"{texts[j]} Complete!");
             }
             EditorUtility.SetDirty(go);
         }
@@ -69,6 +68,6 @@ public class UITempEditor : Editor
         // Save
         AssetDatabase.SaveAssets();
 
-        Debug.Log("Resolution UI Prefab Material!");
+        Debug.Log("TextRaycastTarget Off Complete!");
     }
 }

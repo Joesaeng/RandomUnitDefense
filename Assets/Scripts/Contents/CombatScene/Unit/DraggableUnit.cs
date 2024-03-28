@@ -8,13 +8,19 @@ using UnityEngine.EventSystems;
 public class DraggableUnit : MonoBehaviour
 {
     public Action OnDraggableMouseUpEvent;
-    public Action OnDraggableMouseClickEvent;
+    public Action OnDraggableClickEvent;
+    public Action<Unit> OnDraggableDoubleClickEvent;
     public Action<Unit> OnDraggableMouseDragEvent;
     Vector3 _mousePos;
     Unit _unit;
 
     bool _pressed = false;
+    bool _isDoubleClicked = false;
+
     float _pressedTime = 0;
+    float _doubleClickedTime = -1f;
+    float _clickTime = 0.2f;
+    float _interval = 0.2f;
 
     private void Start()
     {
@@ -30,6 +36,14 @@ public class DraggableUnit : MonoBehaviour
     {
         if (EventSystem.current.IsPointerOverGameObject())
             return;
+
+        if (Time.time - _doubleClickedTime < _interval)
+        {
+            Util.CheckTheEventAndCall(OnDraggableDoubleClickEvent, _unit);
+            _doubleClickedTime = -1f;
+            _isDoubleClicked = true;
+        }
+
         if (!_pressed)
         {
             _pressedTime = Time.time;
@@ -44,7 +58,7 @@ public class DraggableUnit : MonoBehaviour
     {
         if (_pressed)
         {
-            float clickTime = 0.2f * Managers.Time.CurTimeScale;
+            float clickTime = _clickTime * Managers.Time.CurTimeScale;
             if (Time.time > _pressedTime + clickTime)
                 Managers.Game.UnSelectUnit();
         }
@@ -53,16 +67,22 @@ public class DraggableUnit : MonoBehaviour
 
     public void OnMouseUp()
     {
-        if (_pressed)
+        if(Time.time - _doubleClickedTime > _interval)
         {
-            float clickTime = 0.2f * Managers.Time.CurTimeScale;
+            _isDoubleClicked = false;
+            _doubleClickedTime = Time.time;
+        }
+
+        if (_pressed && !_isDoubleClicked)
+        {
+            float clickTime = _clickTime * Managers.Time.CurTimeScale;
             if (Time.time < _pressedTime + clickTime)
             {
-                Util.CheckTheEventAndCall(OnDraggableMouseClickEvent);
+                Util.CheckTheEventAndCall(OnDraggableClickEvent);
             }
         }
         _pressed = false;
-        _pressedTime = 0;
+        _pressedTime = 0f;
         Util.CheckTheEventAndCall(OnDraggableMouseUpEvent);
 
         _unit.IsDraging = false;

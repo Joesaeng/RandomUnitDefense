@@ -110,8 +110,8 @@ public class CombatScene : BaseScene
                 // 합성이 가능하다면
                 // 두 유닛이 같고, 레벨 3이상 유닛이 아니라면. 합성가능.
 
-                UnitNames id = _unitDict[curSlotIndex].GetComponent<Unit>().ID;
-                int nextLevel = _unitDict[nextSlotIndex].GetComponent<Unit>().Lv + 1;
+                UnitNames id = _unitDict[curSlotIndex].ID;
+                int nextLevel = _unitDict[nextSlotIndex].Lv + 1;
 
                 DestroyPlayerUnit(curSlotIndex);
                 DestroyPlayerUnit(nextSlotIndex);
@@ -215,6 +215,9 @@ public class CombatScene : BaseScene
         draggableUnit.OnDraggableMouseDragEvent -= OnDraggableUnitDragEventReader;
         draggableUnit.OnDraggableMouseDragEvent += OnDraggableUnitDragEventReader;
 
+        draggableUnit.OnDraggableDoubleClickEvent -= OnDraggableUnitDoubleClickEventReader;
+        draggableUnit.OnDraggableDoubleClickEvent += OnDraggableUnitDoubleClickEventReader;
+
         obj.name = $"{unitname} Level [{level}]";
 
         _unitDict.Add(slotIndex, unit);
@@ -232,11 +235,27 @@ public class CombatScene : BaseScene
         }
     }
 
-    // 플레이어가 유닛을 드래그하고 뗄 때 호출되는 이벤트
-    private void OnDraggableUnitMouseUpEventReader()
+    // 더블클릭시 씬에 나와있는 유닛들을 돌면서 합성가능한 유닛이 있다면 합성한다
+    private void OnDraggableUnitDoubleClickEventReader(Unit unit)
     {
-        foreach (UnitSlot slot in _unitSlots)
-            slot.SetBasicImage();
+        foreach(Unit nextUnit in _unitDict.Values)
+        {
+            if (nextUnit == unit)
+                continue;
+            if (AreUnitsComposeable(unit, nextUnit))
+            {
+                UnitNames id = unit.ID;
+                int nextLevel = unit.Lv + 1;
+                int createSlotIndex = nextUnit.SlotIndex;
+
+                DestroyPlayerUnit(unit.SlotIndex);
+                DestroyPlayerUnit(nextUnit.SlotIndex);
+
+                CreatePlayerUnit(createSlotIndex, id, nextLevel);
+                return;
+            }
+        }
+        
     }
 
     // 플레이어가 유닛 판매를 시도할 때
@@ -259,7 +278,7 @@ public class CombatScene : BaseScene
             DraggableUnit draggableUnit = unit.GetComponent<DraggableUnit>();
 
             draggableUnit.OnDraggableMouseDragEvent -= OnDraggableUnitDragEventReader;
-            draggableUnit.OnDraggableMouseUpEvent -= OnDraggableUnitMouseUpEventReader;
+            draggableUnit.OnDraggableDoubleClickEvent -= OnDraggableUnitDoubleClickEventReader;
 
             Managers.Resource.Destroy(unit.gameObject);
             _unitDict.Remove(slotIndex);

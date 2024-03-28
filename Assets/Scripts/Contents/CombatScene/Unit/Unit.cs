@@ -55,8 +55,8 @@ public class Unit : MonoBehaviour
         draggableUnit.OnDraggableMouseUpEvent -= MouseUpEventReader;
         draggableUnit.OnDraggableMouseUpEvent += MouseUpEventReader;
 
-        draggableUnit.OnDraggableMouseClickEvent -= MouseClickEventReader;
-        draggableUnit.OnDraggableMouseClickEvent += MouseClickEventReader;
+        draggableUnit.OnDraggableClickEvent -= MouseClickEventReader;
+        draggableUnit.OnDraggableClickEvent += MouseClickEventReader;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

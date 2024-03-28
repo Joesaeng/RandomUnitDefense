@@ -100,8 +100,8 @@ public class GameManagerEx : MonoBehaviour
         for (int i = 0; i < setunits.Length; ++i)
             SetUnits[i] = (UnitNames)setunits[i];
 
-        
-        { // CombatScene Object 바인딩
+        // CombatScene Object 바인딩
+        {
             UnitAttackRange = null;
             _monsterSpawnPoint = GameObject.Find("SpawnPoint").transform;
             UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
@@ -113,15 +113,17 @@ public class GameManagerEx : MonoBehaviour
 
         Managers.Game.Ruby = ConstantData.InitialRuby;
 
-        Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
-        Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
+        // 이벤트 바인드
+        {
+            Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
+            Managers.Time.OnMonsterRespawnTime += TheRespawnTime;
 
-        Managers.Time.OnNextStage -= OnNextStageEvent;
-        Managers.Time.OnNextStage += OnNextStageEvent;
+            Managers.Time.OnNextStage -= OnNextStageEvent;
+            Managers.Time.OnNextStage += OnNextStageEvent;
 
-        Managers.UnitStatus.OnUnitUpgradeSlot -= OnUnitUpgrade;
-        Managers.UnitStatus.OnUnitUpgradeSlot += OnUnitUpgrade;
-
+            Managers.UnitStatus.OnUnitUpgradeSlot -= OnUnitUpgrade;
+            Managers.UnitStatus.OnUnitUpgradeSlot += OnUnitUpgrade;
+        }
         UpgradeCostOfUnits = new int[ConstantData.SetUnitCount];
         for (int i = 0; i < Managers.Game.UpgradeCostOfUnits.Length; ++i)
         {
@@ -189,7 +191,7 @@ public class GameManagerEx : MonoBehaviour
     // 다음 스테이지로 가는 이벤트
     private void OnNextStageEvent()
     {
-        EarnedGoldCoin += CalculateEarendGoldCoinForStage(CurStage);
+        EarnedGoldCoin += CalculateEarendGoldCoinForStage();
         CurStage++;
         CurStageMonsterCount = 0;
         if (CurStage > ConstantData.HighestStage)
@@ -200,8 +202,8 @@ public class GameManagerEx : MonoBehaviour
         }
         Util.CheckTheEventAndCall(OnNextStage);
     }
-    // 스테이지 클리어시 획득 금화
-    public int CalculateEarendGoldCoinForStage(int stage)
+    // 스테이지 클리어시 획득 금화 계산
+    public int CalculateEarendGoldCoinForStage()
     {
         float fCoin = 0f;
         float richRuneValue = 0f;
@@ -227,6 +229,10 @@ public class GameManagerEx : MonoBehaviour
         GameObject go = Managers.Resource.Instantiate("Monster",newParentName:"Monsters");
         Monster monster = go.GetOrAddComponent<Monster>();
         monster.Init(CurStage, CurMap);
+        if (Managers.Data.StageDict[CurStage].isSpecial)
+            go.transform.localScale = Vector3.one * 1.5f;
+        else
+            go.transform.localScale = Vector3.one;
         _monsters.Add(monster);
         CurStageMonsterCount++;
 
