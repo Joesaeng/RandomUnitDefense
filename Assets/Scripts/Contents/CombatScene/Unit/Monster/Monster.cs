@@ -13,6 +13,8 @@ public class Monster : MonoBehaviour
 
     Transform _animatorTF;
 
+    UI_HPBar _hpBar;
+
     Vector3[] _movePoints;
     int _nextMovePoint;
     int _previousMovePoint;
@@ -49,7 +51,8 @@ public class Monster : MonoBehaviour
         _nextMovePoint = 0;
         _previousMovePoint = 3;
 
-        Managers.UI.MakeWorldSpaceUI<UI_HPBar>(Managers.Game.HpBarPanel).InitHPBar(transform);
+        _hpBar = Managers.UI.MakeWorldSpaceUI<UI_HPBar>(Managers.Game.HpBarPanel);
+        _hpBar.InitHPBar(transform);
 
         if (_unitAnimator != null)
         {
@@ -251,7 +254,7 @@ public class Monster : MonoBehaviour
 
         // DPS ÃøÁ¤±â
         if (Managers.Game.UnitDPSDict.ContainsKey(unit))
-            Managers.Game.AddDamagesInDPSQueue(unit,(int)damage);
+            Managers.Game.AddDamagesInDPSQueue(unit,(int)(damage + addedDamage));
 
         ReduceHp(damage + addedDamage);
 
@@ -275,6 +278,7 @@ public class Monster : MonoBehaviour
             _isDead = true;
             Managers.Game.RegisterDyingMonster(this);
             QuitAllDebuff();
+            _hpBar.OwnMonsterDie();
         }
     }
 }

@@ -8,10 +8,17 @@ public class UI_HPBar : UI_Base
 {
     Monster _monster;
     Image _fill;
+    GameObject _barParent;
     float _addPositionY = 0f;
     public void InitHPBar(Transform tf)
     {
-        _fill = Util.FindChild<Image>(gameObject,"Fill");
+        if(_barParent == null)
+        {
+            _barParent = Util.FindChild(gameObject, "Bar");
+        }
+        _barParent.SetActive(true);
+        
+        _fill = Util.FindChild<Image>(gameObject,"Fill", true);
         transform.localScale = new Vector3(0.006f, 0.003f, 1f);
         _monster = tf.GetComponent<Monster>();
         Collider2D col = tf.GetComponent<Collider2D>();
@@ -35,12 +42,16 @@ public class UI_HPBar : UI_Base
         }
     }
 
+    public void OwnMonsterDie()
+    {
+
+    }
+
     public override void OnChangeLanguage()
     {
     }
 
     public override void Init()
     {
-        transform.position = new Vector3(540.5f, 964.9f, -91f);
     }
 }

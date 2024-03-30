@@ -20,7 +20,13 @@ public class PoisonDebuff : BaseDebuff
     {
         base.OnUpdate();
         _posionDamageTime += Time.deltaTime;
-        _monster.ReduceHp(_damagePerSecond * Time.deltaTime);
+        if(_posionDamageTime >= 0.99f)
+        {
+            _monster.ReduceHp(_damagePerSecond);
+            if (Managers.Game.UnitDPSDict.ContainsKey(Data.UnitNames.PoisonBowMan))
+                Managers.Game.AddDamagesInDPSQueue(Data.UnitNames.PoisonBowMan, (int)_damagePerSecond);
+        }
+        
     }
 
     protected override void QuitDebuff()

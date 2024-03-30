@@ -29,6 +29,9 @@ public class UI_CombatScene : UI_Scene
 
     List<UI_IngameItem> _ui_items;
 
+    Animator _autoSkipAnim;
+    Image _autoSkipImage;
+
     float _curseRuneValue = 0f;
 
     enum Buttons
@@ -38,6 +41,8 @@ public class UI_CombatScene : UI_Scene
         BtnEquipInfo,
         BtnPause,
         BtnGameSpeed,
+        BtnSkip,
+        BtnAutoSkip,
     }
     enum Texts
     {
@@ -50,7 +55,8 @@ public class UI_CombatScene : UI_Scene
         TextLeftTimeStage,
         TextChangeMonsterCount,
         TextFixedMonsterCount,
-        TextEquipedRunesStatus
+        TextEquipedRunesStatus,
+        TextSkip,
     }
 
     enum Images
@@ -75,6 +81,18 @@ public class UI_CombatScene : UI_Scene
         GetButton((int)Buttons.BtnEquipInfo).gameObject.AddUIEvent(OnEquipInfoButtonClicked);
         GetButton((int)Buttons.BtnGameSpeed).gameObject.AddUIEvent(OnGameSpeedButtonClicked);
         GetButton((int)Buttons.BtnPause).gameObject.AddUIEvent(OnPauseButtonClicked);
+        GetButton((int)Buttons.BtnSkip).gameObject.AddUIEvent(OnSkipButtonClicked);
+        GetButton((int)Buttons.BtnAutoSkip).gameObject.AddUIEvent(OnAutoSkipButtonClicked);
+
+        GameObject autoSkipObj = GetButton((int)Buttons.BtnAutoSkip).gameObject;
+        _autoSkipAnim = autoSkipObj.GetComponent<Animator>();
+        _autoSkipAnim.enabled = Managers.Game.StageAutoSkip;
+
+        _autoSkipImage = autoSkipObj.GetComponent<Image>();
+        _autoSkipImage.sprite = Managers.Resource.Load<Sprite>("Art/UIImages/ButtonWhite");
+
+        GetButton((int)Buttons.BtnSkip).gameObject.SetActive(false);
+        GetText((int)Texts.TextSkip).enabled = false;
         GetText((int)Texts.TextFixedMonsterCount).text = $"{ConstantData.MonsterCountForGameOver}";
         GetText((int)Texts.TextSpawn).text = Language.Spawn;
         GetText((int)Texts.TextGamble).text = Language.GambleItem;
@@ -141,9 +159,9 @@ public class UI_CombatScene : UI_Scene
         int unitCount = Managers.Game.SetUnits.Length;
         for(int i = 0; i < unitCount; i++)
         {
-            GameObject upgradeBtn = Managers.UI.MakeSubItem<UI_UnitDesc>(parent : panelUpgrade.transform).gameObject;
-            upgradeBtn.transform.localScale = new Vector3(1f, 1f, 1f);
-            upgradeBtn.GetComponent<UI_UnitDesc>().SetInfo(i, Managers.Game.SetUnits[i]);
+            GameObject unitDesc = Managers.UI.MakeSubItem<UI_UnitDesc>(parent : panelUpgrade.transform).gameObject;
+            unitDesc.transform.localScale = new Vector3(1f, 1f, 1f);
+            unitDesc.GetComponent<UI_UnitDesc>().SetInfo(i, Managers.Game.SetUnits[i]);
         }
         #endregion
 
@@ -215,6 +233,15 @@ public class UI_CombatScene : UI_Scene
 
         if (Managers.Game.CurStage == 2)
             DeactiveUpgradeAndGambleBlocker();
+
+        GetButton((int)Buttons.BtnSkip).gameObject.SetActive(false);
+        GetText((int)Texts.TextSkip).enabled = false;
+    }
+
+    public void ActiveSkipButton()
+    {
+        GetButton((int)Buttons.BtnSkip).gameObject.SetActive(true);
+        GetText((int)Texts.TextSkip).enabled = true;
     }
 
     private void DeactiveUpgradeAndGambleBlocker()
@@ -226,6 +253,20 @@ public class UI_CombatScene : UI_Scene
     public void OnSpawnButtonClicked(PointerEventData data)
     {
         Managers.Game.OnSpawnButtonClicked();
+    }
+
+    public void OnSkipButtonClicked(PointerEventData data)
+    {
+        Managers.Sound.Play(Define.SFXNames.Click);
+        Managers.Time.SkipStage();
+    }
+    
+    public void OnAutoSkipButtonClicked(PointerEventData data)
+    {
+        Managers.Sound.Play(Define.SFXNames.Click);
+        Managers.Game.StageAutoSkip = !Managers.Game.StageAutoSkip;
+        _autoSkipAnim.enabled = Managers.Game.StageAutoSkip;
+        _autoSkipImage.sprite = Managers.Resource.Load<Sprite>("Art/UIImages/ButtonWhite");
     }
 
     public void OnGambleButtonClicked(PointerEventData data)

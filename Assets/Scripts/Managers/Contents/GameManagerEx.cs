@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -63,6 +64,7 @@ public class GameManagerEx : MonoBehaviour
     public int CurStageMonsterCount { get; set; }
     public int KillMonsterCount { get; set; }
     public int EarnedGoldCoin { get; set; }
+    public bool StageAutoSkip { get; set; } = false;
 
     private int _ruby;
     public int Ruby
@@ -91,7 +93,7 @@ public class GameManagerEx : MonoBehaviour
         CurStageMonsterCount = 0;
         KillMonsterCount = 0;
         EarnedGoldCoin = 0;
-
+        StageAutoSkip = false;
         CurMap = map;
 
         // 데이터에 int로 id가 설정되어있는것을 UnitNames로 형변환
@@ -219,8 +221,20 @@ public class GameManagerEx : MonoBehaviour
         // 데이터로 정해둔 스테이지의 정보를 불러와서 적용
         if (Managers.Data.StageDict.TryGetValue(CurStage, out var stageData))
         {
+            // 현재 스태이지에 나와야 할 몬스터의 수량만큼 소환
             if (CurStageMonsterCount < stageData.monsterSpawnCount)
                 SpawnMonster(_monsterSpawnPoint.transform.position);
+            // 소환을 다 한 후에 현재 맵에 몬스터가 없으면 스테이지 스킵 활성화
+            else if(Monsters.Count <= 0) 
+            {
+                if (StageAutoSkip)
+                    Managers.Time.SkipStage();
+                else
+                {
+                    FindObjectOfType<UI_CombatScene>().ActiveSkipButton();
+                }
+
+            }
         }
     }
 

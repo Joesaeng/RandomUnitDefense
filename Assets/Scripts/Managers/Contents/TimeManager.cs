@@ -40,20 +40,6 @@ public class TimeManager
         CurStageTime += deltatime;
         _curMonsterRespawnTime += deltatime;
 
-
-        //// 데이터로 설정된 스테이지의 정보를 불러와서 지정
-        //if (_curMonsterRespawnTime >= ConstantData.MonsterRespawnTime)
-        //{
-        //    Util.CheckTheEventAndCall(OnMonsterRespawnTime);
-        //    _curMonsterRespawnTime = 0f;
-        //}
-
-        //if (StageTime > ConstantData.OneStageTime)
-        //{
-        //    StageTime = 0f;
-        //    Util.CheckTheEventAndCall(OnNextStage);
-        //}
-
         // 데이터로 설정된 스테이지의 정보를 불러와서 지정
         if (Managers.Data.StageDict.TryGetValue(Managers.Game.CurStage, out StageData stageData) == false)
             return;
@@ -77,11 +63,19 @@ public class TimeManager
         }
     }
 
+    public void SkipStage()
+    {
+        if (Managers.Game.Monsters.Count > 0)
+            return;
+        Util.CheckTheEventAndCall(OnNextStage);
+        CurStageTime = 0f;
+    }
     public enum StageTimeType
     {
         LeftTime,
         StageTime
     }
+
     public string GetStageTimeByTimeDisplayFormat(StageTimeType type)
     {
         switch (type)

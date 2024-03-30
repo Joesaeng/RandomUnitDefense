@@ -1,4 +1,5 @@
 using Data;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -53,6 +54,12 @@ public class UI_UnitDesc : UI_Base
         image.sprite = Managers.Resource.Load<Sprite>($"Art/Units/{ID}");
         image.transform.localScale = Vector3.one * 2;
         SetText();
+        StartCoroutine(SetPos());
+    }
+    IEnumerator SetPos()
+    {
+        yield return null;
+        transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
     }
 
     private void SetText()

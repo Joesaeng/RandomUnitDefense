@@ -67,7 +67,7 @@ public class DraggableUnit : MonoBehaviour
 
     public void OnMouseUp()
     {
-        if(Time.time - _doubleClickedTime > _interval)
+        if (Time.time - _doubleClickedTime > _interval)
         {
             _isDoubleClicked = false;
             _doubleClickedTime = Time.time;
@@ -87,4 +87,6 @@ public class DraggableUnit : MonoBehaviour
 
         _unit.IsDraging = false;
     }
+
+    
 }
