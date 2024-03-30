@@ -78,9 +78,6 @@ public class GameManagerEx : MonoBehaviour
     }
 
     public Transform HpBarPanel { get; set; }
-    public Transform DamageTexts { get; set; }
-    public Transform HitEffects { get; set; }
-    public Transform UnitBullets { get; set; }
 
     public void InitScene(Define.Scene scene)
     {
@@ -108,9 +105,6 @@ public class GameManagerEx : MonoBehaviour
             _monsterSpawnPoint = GameObject.Find("SpawnPoint").transform;
             UnitAttackRange = GameObject.Find("UnitAttackRange").GetOrAddComponent<UnitAttackRange>();
             HpBarPanel = GameObject.Find("UI_HPBarPanel").transform;
-            DamageTexts = GameObject.Find("DamageTexts").transform;
-            HitEffects = GameObject.Find("HitEffects").transform;
-            UnitBullets = GameObject.Find("UnitBullets").transform;
         }
 
         Managers.Game.Ruby = ConstantData.InitialRuby;
@@ -240,7 +234,7 @@ public class GameManagerEx : MonoBehaviour
 
     public void SpawnMonster(Vector3 spawnPoint)
     {
-        GameObject go = Managers.Resource.Instantiate("Monster",newParentName:"Monsters");
+        GameObject go = Managers.Resource.Instantiate("Monster");
         Monster monster = go.GetOrAddComponent<Monster>();
         monster.Init(CurStage, CurMap);
         if (Managers.Data.StageDict[CurStage].isSpecial)

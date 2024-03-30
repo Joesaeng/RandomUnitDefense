@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Managers : MonoBehaviour
 {
-    static Managers s_instance; // 유일성이 보장된다.
+    static Managers s_instance;
     static Managers Instance { get { Init(); return s_instance; } }
 
     #region Contents
@@ -73,12 +73,13 @@ public class Managers : MonoBehaviour
             s_instance = go.GetComponent<Managers>();
 
             // 초기화가 필요한 매니저들 초기화 작업
-            GameObject sceneManager = new GameObject {name = "@SceneManagerEX"};
-            sceneManager.AddComponent<SceneManagerEx>();
-            sceneManager.transform.SetParent(go.transform);
-            s_instance._scene = sceneManager.GetComponent<SceneManagerEx>();
 
-            s_instance._game = s_instance.AddComponent<GameManagerEx>();
+            // MonoBehaviour를 상속받은 매니저들
+            {
+                s_instance._scene = s_instance.AddComponent<SceneManagerEx>();
+                s_instance._game = s_instance.AddComponent<GameManagerEx>();
+            }
+
             s_instance._data.Init();
             s_instance._pool.Init();
             s_instance._player.Init();

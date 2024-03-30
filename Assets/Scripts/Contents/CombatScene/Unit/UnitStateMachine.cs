@@ -216,8 +216,7 @@ public class UnitStateMachine : MonoBehaviour
             return;
         }
 
-        GameObject bullet = Managers.Resource.Instantiate
-            ("UnitBullet",Managers.Game.UnitBullets);
+        GameObject bullet = Managers.Resource.Instantiate("UnitBullet");
         bullet.transform.position = _ownObj.transform.position;
         bullet.GetComponent<UnitBullet>().Init(_targetMonster, _baseUnit, _unitLv);
     }

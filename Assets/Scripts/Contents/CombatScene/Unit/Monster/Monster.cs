@@ -258,8 +258,7 @@ public class Monster : MonoBehaviour
 
         ReduceHp(damage + addedDamage);
 
-        GameObject damageText = Managers.Resource.Instantiate
-             ("DamageText",Managers.Game.DamageTexts);
+        GameObject damageText = Managers.Resource.Instantiate("DamageText");
         Vector3 pos = new Vector3(transform.position.x,transform.position.y + _damageTextPosUp,transform.position.z);
         damageText.GetComponent<DamageText>().SetText(damage + addedDamage, pos, isCritical);
     }

@@ -76,10 +76,10 @@ public class UnitBullet : MonoBehaviour
                         monster.TakeHit(_ownUnitStatus, isCritical ,damageRatio);
                     }
                 }
-                GameObject effect = Managers.Resource.Instantiate
-                    ("HitEffect_1",Managers.Game.HitEffects);
+                GameObject effect = Managers.Resource.Instantiate("HitEffect_1",transform.position);
                 Managers.Sound.Play(Define.SFXNames.AOEHit);
-                effect.GetComponent<HitEffect>().Init(_targetPosition, wideAttackArea);
+                effect.transform.localScale = Vector3.one * (wideAttackArea * 0.5f + 1);
+
                 DestroyBullet();
             }
         }
@@ -98,10 +98,9 @@ public class UnitBullet : MonoBehaviour
             if (Util.GetDistance(gameObject, _targetMonster.gameObject) < 0.01f)
             {
                 _targetMonster.TakeHit(_ownUnitStatus, isCritical);
-                GameObject effect = Managers.Resource.Instantiate
-                    ("HitEffect_2",Managers.Game.HitEffects);
+                GameObject effect = Managers.Resource.Instantiate("HitEffect_2",transform.position);
                 Managers.Sound.Play(Define.SFXNames.NormalHit);
-                effect.GetComponent<HitEffect>().Init(_targetMonster.transform.position);
+                effect.transform.localScale = Vector3.one;
 
                 DestroyBullet();
             }

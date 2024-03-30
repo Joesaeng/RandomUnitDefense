@@ -48,14 +48,10 @@ public class CombatScene : BaseScene
         Managers.Time.Init();
 
         #region 오브젝트풀 미리 초기화
-        Managers.Resource.Destroy (Managers.Resource.Instantiate
-            ("UnitBullet", Managers.Game.UnitBullets));
-        Managers.Resource.Destroy (Managers.Resource.Instantiate
-             ("DamageText", Managers.Game.DamageTexts));
-        Managers.Resource.Destroy (Managers.Resource.Instantiate
-                    ("HitEffect_1", Managers.Game.HitEffects));
-        Managers.Resource.Destroy (Managers.Resource.Instantiate
-                    ("HitEffect_2", Managers.Game.HitEffects));
+        Managers.Resource.Destroy (Managers.Resource.Instantiate("UnitBullet"));
+        Managers.Resource.Destroy (Managers.Resource.Instantiate("DamageText"));
+        Managers.Resource.Destroy (Managers.Resource.Instantiate("HitEffect_1"));
+        Managers.Resource.Destroy (Managers.Resource.Instantiate("HitEffect_2"));
         #endregion
 
         _ui_scene = Managers.UI.ShowSceneUI<UI_CombatScene>();
@@ -192,7 +188,7 @@ public class CombatScene : BaseScene
     // 플레이어 유닛 생성 메서드
     private void CreatePlayerUnit(int slotIndex, UnitNames id, int level = 1)
     {
-        GameObject obj = Managers.Resource.Instantiate("Unit", newParentName:"Units");
+        GameObject obj = Managers.Resource.Instantiate("Unit");
         obj.transform.position = GetUnitMovePos(slotIndex);
         Managers.Resource.Instantiate("SpawnEffect", GetUnitMovePos(slotIndex));
         Unit unit = obj.GetOrAddComponent<Unit>();
@@ -207,8 +203,6 @@ public class CombatScene : BaseScene
 
         draggableUnit.OnDraggableDoubleClickEvent -= OnDraggableUnitDoubleClickEventReader;
         draggableUnit.OnDraggableDoubleClickEvent += OnDraggableUnitDoubleClickEventReader;
-
-        obj.name = $"{unitname} Level [{level}]";
 
         _unitDict.Add(slotIndex, unit);
     }
