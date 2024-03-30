@@ -37,7 +37,6 @@ public static class ConstantData
 
     // 유닛 업그레이드 당 증가량                                   // 공격력은 기본 공격력 만큼 증가함
     public const float   IncreaseAttackRate         = 0.95f;    // 공격속도 증가 5%
-    public const float   IncreaseDebuffDuration     = 1.1f;     // 디버프 지속시간 증가 10%
     public const float   IncreaseDebuffRatio        = 1.1f;     // 디버프 비율 증가 10%
     //
 

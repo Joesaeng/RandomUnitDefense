@@ -88,7 +88,6 @@ public class UnitStatusManager
         status.damagePerSecond  += basicDamagePerSecond;
 
         status.attackRate       *= ConstantData.IncreaseAttackRate;
-        status.debuffDuration   *= ConstantData.IncreaseDebuffDuration;
         status.debuffRatio      *= ConstantData.IncreaseDebuffRatio;
 
         status.attackRate       = (float)Math.Round(status.attackRate, 2);
