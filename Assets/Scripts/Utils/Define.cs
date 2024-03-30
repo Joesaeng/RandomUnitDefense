@@ -29,6 +29,7 @@ public class Define
         NormalHit,
         AOE,
         AOEHit,
+        UnitLevelUp,
     }
 
     public enum EquipItemStatus

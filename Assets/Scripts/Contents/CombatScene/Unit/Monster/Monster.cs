@@ -41,6 +41,8 @@ public class Monster : MonoBehaviour
     int _givenRuny;
     public int GivenRuny { get => _givenRuny;}
 
+    float _damageTextPosUp;
+
     public void Init(int stageNum, Define.Map map)
     {
         SetMovePoint(map);
@@ -94,6 +96,9 @@ public class Monster : MonoBehaviour
         _debuffs.Clear();
 
         _isDead = false;
+
+        Collider2D col = GetComponent<Collider2D>();
+        _damageTextPosUp = col.bounds.size.y;
     }
 
     private void SetMovePoint(Define.Map map)
@@ -252,7 +257,8 @@ public class Monster : MonoBehaviour
 
         GameObject damageText = Managers.Resource.Instantiate
              ("DamageText",Managers.Game.DamageTexts);
-        damageText.GetComponent<DamageText>().SetText(damage + addedDamage, transform.position, isCritical);
+        Vector3 pos = new Vector3(transform.position.x,transform.position.y + _damageTextPosUp,transform.position.z);
+        damageText.GetComponent<DamageText>().SetText(damage + addedDamage, pos, isCritical);
     }
 
     public void ReduceHp(float damage)

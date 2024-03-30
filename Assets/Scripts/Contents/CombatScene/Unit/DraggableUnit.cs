@@ -20,7 +20,7 @@ public class DraggableUnit : MonoBehaviour
     float _pressedTime = 0;
     float _doubleClickedTime = -1f;
     float _clickTime = 0.2f;
-    float _interval = 0.2f;
+    float _interval = 0.25f;
 
     private void Start()
     {

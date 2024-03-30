@@ -7,6 +7,7 @@ using System.Linq;
 using System.Xml;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 public class CombatScene : BaseScene
 {
@@ -105,25 +106,14 @@ public class CombatScene : BaseScene
         // 합성 가능한 유닛이라면 nextSlot에 합성된 유닛 생성
         if (_unitDict.ContainsKey(curSlotIndex) && _unitDict.ContainsKey(nextSlotIndex))
         {
-            if (AreUnitsComposeable(_unitDict[curSlotIndex], _unitDict[nextSlotIndex]))
+            if (TryCombineUnit(_unitDict[curSlotIndex], _unitDict[nextSlotIndex]))
             {
-                // 합성이 가능하다면
-                // 두 유닛이 같고, 레벨 3이상 유닛이 아니라면. 합성가능.
-
-                UnitNames id = _unitDict[curSlotIndex].ID;
-                int nextLevel = _unitDict[nextSlotIndex].Lv + 1;
-
-                DestroyPlayerUnit(curSlotIndex);
-                DestroyPlayerUnit(nextSlotIndex);
-
-                CreatePlayerUnit(nextSlotIndex, id, nextLevel);
+                return;
             }
             else
             {
-                Unit unit = _unitDict[nextSlotIndex];
-
-                _unitDict[nextSlotIndex] = _unitDict[curSlotIndex];
-                _unitDict[curSlotIndex] = unit;
+                (_unitDict[curSlotIndex], _unitDict[nextSlotIndex]) 
+                    = (_unitDict[nextSlotIndex], _unitDict[curSlotIndex]);
 
                 _unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
                 _unitDict[curSlotIndex].transform.position = GetUnitMovePos(curSlotIndex);
@@ -204,7 +194,7 @@ public class CombatScene : BaseScene
     {
         GameObject obj = Managers.Resource.Instantiate("Unit", newParentName:"Units");
         obj.transform.position = GetUnitMovePos(slotIndex);
-
+        Managers.Resource.Instantiate("SpawnEffect", GetUnitMovePos(slotIndex));
         Unit unit = obj.GetOrAddComponent<Unit>();
 
         string unitname = $"{Managers.Data.BaseUnitDict[(int)id].baseUnit}";
@@ -240,22 +230,32 @@ public class CombatScene : BaseScene
     {
         foreach(Unit nextUnit in _unitDict.Values)
         {
-            if (nextUnit == unit)
-                continue;
-            if (AreUnitsComposeable(unit, nextUnit))
-            {
-                UnitNames id = unit.ID;
-                int nextLevel = unit.Lv + 1;
-                int createSlotIndex = nextUnit.SlotIndex;
-
-                DestroyPlayerUnit(unit.SlotIndex);
-                DestroyPlayerUnit(nextUnit.SlotIndex);
-
-                CreatePlayerUnit(createSlotIndex, id, nextLevel);
+            if (TryCombineUnit(unit, nextUnit))
                 return;
-            }
         }
         
+    }
+
+    // 유닛 합성
+    private bool TryCombineUnit(Unit unit, Unit nextUnit)
+    {
+        if (unit == nextUnit)
+            return false;
+
+        if (AreUnitsComposeable(unit, nextUnit))
+        {
+            UnitNames id = unit.ID;
+            int nextLevel = unit.Lv + 1;
+            int createSlotIndex = nextUnit.SlotIndex;
+
+            DestroyPlayerUnit(unit.SlotIndex);
+            DestroyPlayerUnit(nextUnit.SlotIndex);
+
+            CreatePlayerUnit(createSlotIndex, id, nextLevel);
+            Managers.Sound.Play(Define.SFXNames.UnitLevelUp);
+            return true;
+        }
+        return false;
     }
 
     // 플레이어가 유닛 판매를 시도할 때

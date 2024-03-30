@@ -55,10 +55,13 @@ public class Unit : MonoBehaviour
         draggableUnit.OnDraggableMouseUpEvent -= MouseUpEventReader;
         draggableUnit.OnDraggableMouseUpEvent += MouseUpEventReader;
 
-        draggableUnit.OnDraggableClickEvent -= MouseClickEventReader;
-        draggableUnit.OnDraggableClickEvent += MouseClickEventReader;
-    }
+        draggableUnit.OnDraggableClickEvent -= ClickEventReader;
+        draggableUnit.OnDraggableClickEvent += ClickEventReader;
 
+        draggableUnit.OnDraggableDoubleClickEvent += DoubleClickEventReader;
+        draggableUnit.OnDraggableDoubleClickEvent += DoubleClickEventReader;
+
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("UnitSlot"))
@@ -90,8 +93,13 @@ public class Unit : MonoBehaviour
         _moveSlotIndex = -1;
     }
 
-    private void MouseClickEventReader()
+    private void ClickEventReader()
     {
         Managers.Game.SelectUnit(gameObject);
+    }
+
+    private void DoubleClickEventReader(Unit unit)
+    {
+        Managers.Game.UnSelectUnit();
     }
 }

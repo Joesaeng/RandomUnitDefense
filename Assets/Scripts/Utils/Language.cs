@@ -1,8 +1,6 @@
 using Data;
 using System;
-using System.Runtime.InteropServices.WindowsRuntime;
 using static Define;
-using static Unity.VisualScripting.Icons;
 
 public static class Language
 {

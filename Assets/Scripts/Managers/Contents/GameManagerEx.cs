@@ -338,10 +338,10 @@ public class GameManagerEx : MonoBehaviour
         {
             Managers.UI.CloseWorldSpaceUI(SelectUnitInfoUI.gameObject);
             SelectedUnit = null;
-            if (UnitAttackRange.enabled == true)
-            {
-                UnitAttackRange.UnActiveAttackRange();
-            }
+        }
+        if (UnitAttackRange.enabled == true)
+        {
+            UnitAttackRange.UnActiveAttackRange();
         }
     }
 

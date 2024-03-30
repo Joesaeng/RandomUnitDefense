@@ -19,7 +19,7 @@ namespace Data
         public float    sfxVolume       = 1f;
         public bool     bgmOn           = true;
         public bool     sfxOn           = true;
-        public int      amountOfGold    = 10000;
+        public int      amountOfGold    = 0;
         public int      highestStage    = 0;
         public int      sortModeOfRune  = 0;
 
