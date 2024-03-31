@@ -69,6 +69,8 @@ public class SoundManager
 
         if (type == Define.Sound.Bgm)
         {
+            if (!Managers.Player.Data.bgmOn)
+                return;
             AudioSource audioSource = _audioSources[(int)Define.Sound.Bgm];
             if (audioSource.isPlaying)
                 audioSource.Stop();
@@ -80,6 +82,8 @@ public class SoundManager
         }
         else
         {
+            if (!Managers.Player.Data.sfxOn)
+                return;
             AudioSource audioSource = _audioSources[(int)Define.Sound.Effect];
             audioSource.volume = SFXVolume;
             audioSource.pitch = pitch;

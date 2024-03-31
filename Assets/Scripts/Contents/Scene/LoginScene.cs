@@ -8,10 +8,10 @@ public class LoginScene : BaseScene
     protected override void Init()
     {
         base.Init();
+        Application.targetFrameRate = 60; // 프레임 고정
         Managers.Init();
         SceneType = Define.Scene.Login;
         Managers.Game.CurrentScene = SceneType;
-        Application.targetFrameRate = 60; // 프레임 고정
     }
 
     public override void Clear()

@@ -25,8 +25,8 @@ public class CameraEx : MonoBehaviour
     /* 해상도 설정하는 함수 */
     public void SetResolution()
     {
-        int setWidth = 540; // 사용자 설정 너비
-        int setHeight = 960; // 사용자 설정 높이
+        int setWidth = 1080; // 사용자 설정 너비
+        int setHeight = 1920; // 사용자 설정 높이
 
         int deviceWidth = Screen.width; // 기기 너비 저장
         int deviceHeight = Screen.height; // 기기 높이 저장
