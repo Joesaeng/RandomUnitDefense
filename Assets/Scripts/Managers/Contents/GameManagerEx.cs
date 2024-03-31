@@ -234,8 +234,7 @@ public class GameManagerEx : MonoBehaviour
     {
         GameObject monsterObj = Managers.Resource.Instantiate("Monster", spawnPoint);
 
-        if (!Managers.CompCache.MonsterCache.TryGetValue(monsterObj, out Monster monsterComp))
-            Managers.CompCache.AddComponentCache(monsterObj, out monsterComp);
+        Managers.CompCache.GetOrAddComponentCache(monsterObj, out Monster monsterComp);
 
         monsterComp.Init(CurStage, CurMap);
         if (Managers.Data.StageDict[CurStage].isSpecial)

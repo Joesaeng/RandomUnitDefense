@@ -34,7 +34,9 @@ public class DraggableUnit : MonoBehaviour
 
     public void OnMouseDown()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        // if (EventSystem.current.IsPointerOverGameObject())
+        //     return;
+        if (Managers.Input.IsPointerOverUIObject())
             return;
 
         if (Time.time - _doubleClickedTime < _interval)

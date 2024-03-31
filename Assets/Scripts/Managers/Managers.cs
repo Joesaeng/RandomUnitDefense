@@ -47,10 +47,6 @@ public class Managers : MonoBehaviour
 
     void Start()
     {
-        #region Content
-        Application.targetFrameRate = 60; // 프레임 고정
-
-        #endregion
         Init();
     }
 

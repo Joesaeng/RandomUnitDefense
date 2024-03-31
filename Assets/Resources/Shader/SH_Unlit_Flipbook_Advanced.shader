@@ -108,6 +108,7 @@ Shader "Vefects/SH_Unlit_Flipbook_Advanced"
 
 		ENDCG
 	}
+	CustomEditor "ASEMaterialInspector"
 }
 /*ASEBEGIN
 Version=18935

@@ -11,6 +11,7 @@ public class LoginScene : BaseScene
         Managers.Init();
         SceneType = Define.Scene.Login;
         Managers.Game.CurrentScene = SceneType;
+        Application.targetFrameRate = 60; // 프레임 고정
     }
 
     public override void Clear()

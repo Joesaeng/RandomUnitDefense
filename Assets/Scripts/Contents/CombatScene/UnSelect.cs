@@ -7,7 +7,9 @@ public class UnSelect : MonoBehaviour
 {
     private void OnMouseDown()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        // if (EventSystem.current.IsPointerOverGameObject())
+        //     return;
+        if (Managers.Input.IsPointerOverUIObject())
             return;
         Managers.Game.UnSelectUnit();
     }

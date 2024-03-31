@@ -1,39 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class ComponentCacheManager
 {
-    public Dictionary<GameObject,DamageText> DamageTextCache = new();
-    public Dictionary<GameObject,UnitBullet> UnitBulletCache = new();
-    public Dictionary<GameObject,Monster> MonsterCache = new();
+    public Dictionary<GameObject,List<Component>> CompCache = new();
 
-    public void AddComponentCache(GameObject gameObject, out DamageText component)
+    public void GetOrAddComponentCache<T>(GameObject gameObject, out T component) where T : Component
     {
-        BindComponent(gameObject, out component);
-        DamageTextCache.Add(gameObject, component);
-    }
-
-    public void AddComponentCache(GameObject gameObject, out UnitBullet component)
-    {
-        BindComponent(gameObject, out component);
-        UnitBulletCache.Add(gameObject, component);
-    }
-
-    public void AddComponentCache(GameObject gameObject, out Monster component)
-    {
-        BindComponent(gameObject, out component);
-        MonsterCache.Add(gameObject, component);
-    }
-
-    public void BindComponent<T>(GameObject gameObject, out T component) where T : Component
-    {
-        component = gameObject.GetOrAddComponent<T>();
+        List <Component> comps;
+        if (CompCache.TryGetValue(gameObject, out comps))
+        {
+            foreach(var comp in comps)
+            {
+                if (comp.GetType() == typeof(T))
+                {
+                    component = (T)comp;
+                    return;
+                }
+            }
+            component = gameObject.GetOrAddComponent<T>();
+            comps.Add(component);
+        }
+        else
+        {
+            component = gameObject.GetOrAddComponent<T>();
+            if (CompCache.TryGetValue(gameObject, out comps))
+                comps.Add(component);
+            else
+            {
+                comps = new List<Component>{ component };
+                CompCache.Add(gameObject, comps);
+            }
+        }
     }
 
     public void Clear()
     {
-        DamageTextCache.Clear();
-        UnitBulletCache.Clear();
+        CompCache.Clear();
     }
 }

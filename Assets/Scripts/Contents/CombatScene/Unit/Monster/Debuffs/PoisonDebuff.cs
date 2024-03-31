@@ -29,11 +29,9 @@ public class PoisonDebuff : BaseDebuff
             Transform tf = _monster.transform;
             
             GameObject damageTextObj = Managers.Resource.Instantiate("DamageText", tf.position);
-            if (!Managers.CompCache.DamageTextCache.TryGetValue(damageTextObj, out DamageText damageTextComp))
-                Managers.CompCache.AddComponentCache(damageTextObj, out damageTextComp);
+            Managers.CompCache.GetOrAddComponentCache(damageTextObj , out DamageText damageTextComp);
             damageTextComp.SetText(_damagePerSecond, isPoison: true);
 
-            // damageTextObj.GetComponent<DamageText>().SetText(_damagePerSecond, );
             _posionDamageTime = 0f;
         }
     }

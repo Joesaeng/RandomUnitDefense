@@ -214,12 +214,9 @@ public class UnitStateMachine : MonoBehaviour
         GameObject bulletObj = Managers.Resource.Instantiate("UnitBullet");
         bulletObj.transform.position = _ownObj.transform.position;
 
-        if (!Managers.CompCache.UnitBulletCache.TryGetValue(bulletObj, out UnitBullet bulletComp))
-            Managers.CompCache.AddComponentCache(bulletObj,out bulletComp);
+        Managers.CompCache.GetOrAddComponentCache(bulletObj, out UnitBullet bulletComp);
 
         bulletComp.Init(_targetMonster, _baseUnit, _unitLv);
-
-        // bulletObj.GetComponent<UnitBullet>().Init(_targetMonster, _baseUnit, _unitLv);
     }
 
     IEnumerator CoCreateBullet(WaitForSeconds bullettime)

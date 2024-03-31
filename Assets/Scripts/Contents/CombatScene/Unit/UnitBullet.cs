@@ -77,7 +77,7 @@ public class UnitBullet : MonoBehaviour
                         monster.TakeHit(_ownUnitStatus, isCritical ,damageRatio);
                     }
                 }
-                GameObject effect = Managers.Resource.Instantiate("HitEffect_1",transform.position);
+                GameObject effect = Managers.Resource.Instantiate("HitEffect_2",transform.position);
                 Managers.Sound.Play(Define.SFXNames.AOEHit);
                 effect.transform.localScale = Vector3.one * (wideAttackArea * 0.5f + 1);
 

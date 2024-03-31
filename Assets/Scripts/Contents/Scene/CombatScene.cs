@@ -194,12 +194,13 @@ public class CombatScene : BaseScene
         GameObject obj = Managers.Resource.Instantiate("Unit");
         obj.transform.position = GetUnitMovePos(slotIndex);
         Managers.Resource.Instantiate("SpawnEffect", GetUnitMovePos(slotIndex));
-        Unit unit = obj.GetOrAddComponent<Unit>();
+
+        Managers.CompCache.GetOrAddComponentCache(obj, out Unit unit);
 
         string unitname = $"{Managers.Data.BaseUnitDict[(int)id].baseUnit}";
         unit.Init(slotIndex, id, level, unitname);
 
-        DraggableUnit draggableUnit = unit.GetComponent<DraggableUnit>();
+        Managers.CompCache.GetOrAddComponentCache(obj, out DraggableUnit draggableUnit);
 
         draggableUnit.OnDraggableMouseDragEvent -= OnDraggableUnitDragEventReader;
         draggableUnit.OnDraggableMouseDragEvent += OnDraggableUnitDragEventReader;

@@ -10,30 +10,35 @@ public class UI_HPBar : UI_Base
     Image _fill;
     GameObject _barParent;
     float _addPositionY = 0f;
-    public void InitHPBar(Transform tf)
+    public void InitHPBar(GameObject obj)
     {
-        if(_barParent == null)
+        if (_barParent == null)
         {
             _barParent = Util.FindChild(gameObject, "Bar");
         }
-        _barParent.SetActive(true);
-        
-        _fill = Util.FindChild<Image>(gameObject,"Fill", true);
+        _barParent.SetActive(false);
+
+        if (_fill == null)
+        {
+            _fill = Util.FindChild<Image>(gameObject, "Fill", true);
+        }
         transform.localScale = new Vector3(0.006f, 0.003f, 1f);
-        _monster = tf.GetComponent<Monster>();
-        Collider2D col = tf.GetComponent<Collider2D>();
+        Managers.CompCache.GetOrAddComponentCache(obj, out _monster);
+        Managers.CompCache.GetOrAddComponentCache(obj, out Collider2D col);
         _addPositionY = col.bounds.size.y;
-        SetHpRatio(1f);
         _monster.OnReduceHp += SetHpRatio;
     }
 
     private void Update()
     {
-        transform.position = _monster.transform.position + Vector3.up * _addPositionY;
+        Vector3 addPos = Vector3.up * _addPositionY;
+        transform.position = _monster.transform.position + addPos;
     }
 
     public void SetHpRatio(float ratio)
     {
+        if (_barParent.activeSelf == false)
+            _barParent.SetActive(true);
         _fill.fillAmount = ratio;
         if (ratio <= 0f)
         {

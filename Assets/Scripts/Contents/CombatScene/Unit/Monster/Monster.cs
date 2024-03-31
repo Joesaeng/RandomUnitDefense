@@ -52,7 +52,7 @@ public class Monster : MonoBehaviour
         _previousMovePoint = 3;
 
         _hpBar = Managers.UI.MakeWorldSpaceUI<UI_HPBar>(Managers.Game.HpBarPanel);
-        _hpBar.InitHPBar(transform);
+        _hpBar.InitHPBar(gameObject);
 
         if (_unitAnimator != null)
         {
@@ -262,8 +262,8 @@ public class Monster : MonoBehaviour
         pos.Set(pos.x, pos.y + _damageTextPosUp, pos.z);
 
         GameObject damageTextObj = Managers.Resource.Instantiate("DamageText", pos);
-        if (!Managers.CompCache.DamageTextCache.TryGetValue(damageTextObj, out DamageText damageTextComp))
-            Managers.CompCache.AddComponentCache(damageTextObj, out damageTextComp);
+        Managers.CompCache.GetOrAddComponentCache(damageTextObj, out DamageText damageTextComp);
+        
         damageTextComp.SetText(damage + addedDamage, isCritical);
 
         // GameObject damageText = Managers.Resource.Instantiate("DamageText", pos);

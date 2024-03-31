@@ -183,15 +183,16 @@ public class UI_CombatScene : UI_Scene
 
         #region 유닛 업그레이드 초기화
         GameObject panelUpgrade = GetObject((int)GameObjects.PanelUpgrade);
-        foreach (Transform child in panelUpgrade.transform)
-            Managers.Resource.Destroy(child.gameObject);
+        //foreach (Transform child in panelUpgrade.transform)
+        //    Managers.Resource.Destroy(child.gameObject);
 
         int unitCount = Managers.Game.SetUnits.Length;
         for(int i = 0; i < unitCount; i++)
         {
-            GameObject unitDesc = Managers.UI.MakeSubItem<UI_UnitDesc>(parent : panelUpgrade.transform).gameObject;
+            // GameObject unitDesc = Managers.UI.MakeSubItem<UI_UnitDesc>(parent : panelUpgrade.transform).gameObject;
+            GameObject unitDesc = panelUpgrade.transform.GetChild(i).gameObject;
             unitDesc.transform.localScale = Vector3.one;
-            unitDesc.GetComponent<UI_UnitDesc>().SetInfo(i, Managers.Game.SetUnits[i]);
+            unitDesc.GetOrAddComponent<UI_UnitDesc>().SetInfo(i, Managers.Game.SetUnits[i]);
         }
         #endregion
 
@@ -453,5 +454,9 @@ public class UI_CombatScene : UI_Scene
         Managers.Game.OnNextStage -= OnNextStageEvent;
 
         Managers.InGameItem.OnGambleItem -= OnChangeItems;
+
+        Managers.Game.OnSelectUnit -= OnSelectUnitEventReader;
+
+        Managers.Game.OnUnselectUnit -= OnUnselectUnitEventReader;
     }
 }
