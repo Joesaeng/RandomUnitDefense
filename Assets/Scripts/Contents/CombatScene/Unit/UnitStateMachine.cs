@@ -30,14 +30,12 @@ public class UnitStateMachine : MonoBehaviour
 
     UnitStatus _unitStatus;
 
-    private Action<Define.UnitAnimationState> OnAnimStateChanged;
     private Define.UnitAnimationState _currentAnimState;
     public Define.UnitAnimationState CurrentAnimState
     {
         get => _currentAnimState;
         set
         {
-            Util.CheckTheEventAndCall(OnAnimStateChanged, value);
             _currentAnimState = value;
         }
     }

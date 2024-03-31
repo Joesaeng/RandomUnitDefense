@@ -6,6 +6,7 @@ public class ComponentCacheManager
 {
     public Dictionary<GameObject,DamageText> DamageTextCache = new();
     public Dictionary<GameObject,UnitBullet> UnitBulletCache = new();
+    public Dictionary<GameObject,Monster> MonsterCache = new();
 
     public void AddComponentCache(GameObject gameObject, out DamageText component)
     {
@@ -17,6 +18,12 @@ public class ComponentCacheManager
     {
         BindComponent(gameObject, out component);
         UnitBulletCache.Add(gameObject, component);
+    }
+
+    public void AddComponentCache(GameObject gameObject, out Monster component)
+    {
+        BindComponent(gameObject, out component);
+        MonsterCache.Add(gameObject, component);
     }
 
     public void BindComponent<T>(GameObject gameObject, out T component) where T : Component

@@ -115,7 +115,6 @@ public class UI_CombatScene : UI_Scene
         Managers.Game.OnNextStage -= OnNextStageEvent;
         Managers.Game.OnNextStage += OnNextStageEvent;
 
-        OnChangeItems(Managers.InGameItem.GambleCost);
         Managers.InGameItem.OnGambleItem -= OnChangeItems;
         Managers.InGameItem.OnGambleItem += OnChangeItems;
         #endregion
@@ -314,9 +313,9 @@ public class UI_CombatScene : UI_Scene
         _image_gambleUnable.enabled = !Managers.InGameItem.CanGamble();
     }
 
-    public void OnChangeItems(int value,InGameItemData itemdata = null)
+    public void OnChangeItems(int value,InGameItemData itemdata)
     {
-        _text_amountOfRuby.text = $"<sprite=25> {value}";
+        GetText((int)Texts.TextGambleRuby).text = $"<sprite=25> {value}";
         if(itemdata != null)
         {
             GameObject item = Managers.UI.MakeSubItem<UI_IngameItem>(parent : _panelItem.transform).gameObject;

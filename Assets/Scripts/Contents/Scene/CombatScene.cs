@@ -65,6 +65,8 @@ public class CombatScene : BaseScene
 
         _ui_scene = Managers.UI.ShowSceneUI<UI_CombatScene>();
 
+        Managers.Game.Ruby = ConstantData.InitialRuby;
+
         Managers.Sound.Play("GameScene",Define.Sound.Bgm);
     }
 

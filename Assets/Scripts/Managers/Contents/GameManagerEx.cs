@@ -103,8 +103,6 @@ public class GameManagerEx : MonoBehaviour
             HpBarPanel = GameObject.Find("UI_HPBarPanel").transform;
         }
 
-        Managers.Game.Ruby = ConstantData.InitialRuby;
-
         // 이벤트 바인드
         {
             Managers.Time.OnMonsterRespawnTime -= TheRespawnTime;
@@ -230,14 +228,17 @@ public class GameManagerEx : MonoBehaviour
 
     public void SpawnMonster(Vector3 spawnPoint)
     {
-        GameObject go = Managers.Resource.Instantiate("Monster");
-        Monster monster = go.GetOrAddComponent<Monster>();
-        monster.Init(CurStage, CurMap);
+        GameObject monsterObj = Managers.Resource.Instantiate("Monster", spawnPoint);
+
+        if (!Managers.CompCache.MonsterCache.TryGetValue(monsterObj, out Monster monsterComp))
+            Managers.CompCache.AddComponentCache(monsterObj, out monsterComp);
+
+        monsterComp.Init(CurStage, CurMap);
         if (Managers.Data.StageDict[CurStage].isSpecial)
-            go.transform.localScale = Vector3.one * 1.5f;
+            monsterObj.transform.localScale = Vector3.one * 1.5f;
         else
-            go.transform.localScale = Vector3.one;
-        _monsters.Add(monster);
+            monsterObj.transform.localScale = Vector3.one;
+        _monsters.Add(monsterComp);
         CurStageMonsterCount++;
 
         if (Monsters.Count > ConstantData.MonsterCountForGameOver)
@@ -245,7 +246,6 @@ public class GameManagerEx : MonoBehaviour
             GameOver("Fail");
             return;
         }
-        go.transform.position = spawnPoint;
     }
 
     public void GameOver(string gameoverType)

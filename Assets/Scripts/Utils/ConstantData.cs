@@ -21,7 +21,7 @@ public static class ConstantData
     public const int     HighestStage = 100;                    // 게임 승리 스테이지
     public const int     SetUnitCount = 5;                      // 지정된 유닛 설정 개수
     public const int     EquipedRunesCount = 3;                 // 지정된 룬 장착 가능 개수
-    public const int     InitialRuby = 6000;                      // 게임 시작시 초기 루비 양
+    public const int     InitialRuby = 60;                      // 게임 시작시 초기 루비 양
     public const int     AmountRubyGivenByMonster = 1;          // 몬스터 한마리가 주는 루비의 양
     public const int     RubyRequiredOneSpawnPlayerUnit = 20;   // 플레이어 유닛을 소환하는데 필요한 루비의 
 
