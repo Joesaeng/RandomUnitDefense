@@ -21,7 +21,7 @@ public class UI_NotificationText : UI_Base
     }
     IEnumerator CloseUI()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return YieldCache.WaitForSeconds(1.5f);
         Managers.Resource.Destroy(gameObject);
     }
 }

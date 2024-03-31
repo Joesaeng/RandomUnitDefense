@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HitEffect : MonoBehaviour
 {
+    WaitForSeconds wfs = new WaitForSeconds(1);
     public void Init(Vector3 pos, float wideAttackArea = 0)
     {
         transform.position = pos;
@@ -15,7 +16,8 @@ public class HitEffect : MonoBehaviour
 
     IEnumerator DestroyThisObject()
     {
-        yield return new WaitForSeconds(1f);
+        // yield return YieldCache.WaitForSeconds(1f);
+        yield return wfs;
 
         Managers.Resource.Destroy(gameObject);
     }

@@ -5,14 +5,13 @@ using UnityEngine;
 
 public class DamageText : MonoBehaviour
 {
+    // WaitForSeconds restime = YieldCache.WaitForSeconds(0.5f);
     WaitForSeconds restime = new WaitForSeconds(0.5f);
     TextMeshPro tmpro;
     Color criticalColor;
     Color posionColor;
-    public void SetText(float damage, Vector3 pos, bool isCritical = false, bool isPoison = false)
+    public void SetText(float damage, bool isCritical = false, bool isPoison = false)
     {
-
-        transform.position = pos;
         string text = Util.ChangeNumber($"{(int)damage}");
         if (tmpro == null)
             tmpro = GetComponent<TextMeshPro>();

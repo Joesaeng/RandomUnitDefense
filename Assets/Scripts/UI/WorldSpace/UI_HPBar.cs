@@ -44,7 +44,7 @@ public class UI_HPBar : UI_Base
 
     public void OwnMonsterDie()
     {
-
+        _barParent.gameObject.SetActive(false);
     }
 
     public override void OnChangeLanguage()

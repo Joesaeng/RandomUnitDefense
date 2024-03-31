@@ -254,13 +254,20 @@ public class Monster : MonoBehaviour
 
         // DPS ÃøÁ¤±â
         if (Managers.Game.UnitDPSDict.ContainsKey(unit))
-            Managers.Game.AddDamagesInDPSQueue(unit,(int)(damage + addedDamage));
+            Managers.Game.AddDamagesInDPSDict(unit,(int)(damage + addedDamage));
 
         ReduceHp(damage + addedDamage);
 
-        GameObject damageText = Managers.Resource.Instantiate("DamageText");
-        Vector3 pos = new Vector3(transform.position.x,transform.position.y + _damageTextPosUp,transform.position.z);
-        damageText.GetComponent<DamageText>().SetText(damage + addedDamage, pos, isCritical);
+        Vector3 pos = transform.position;
+        pos.Set(pos.x, pos.y + _damageTextPosUp, pos.z);
+
+        GameObject damageTextObj = Managers.Resource.Instantiate("DamageText", pos);
+        if (!Managers.CompCache.DamageTextCache.TryGetValue(damageTextObj, out DamageText damageTextComp))
+            Managers.CompCache.AddComponentCache(damageTextObj, out damageTextComp);
+        damageTextComp.SetText(damage + addedDamage, isCritical);
+
+        // GameObject damageText = Managers.Resource.Instantiate("DamageText", pos);
+        // damageText.GetComponent<DamageText>().SetText(damage + addedDamage, isCritical);
     }
 
     public void ReduceHp(float damage)

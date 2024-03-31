@@ -1,4 +1,5 @@
 using Data;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -9,11 +10,22 @@ public class PlayerManager
     PlayerData _playerData;
     public PlayerData Data
     {
-        get 
+        get
         {
             return _playerData;
         }
         set { _playerData = value; }
+    }
+
+    public Action OnAmountOfGoldChanged;
+    public int AmountOfGold
+    {
+        get { return _playerData.amountOfGold; }
+        set
+        {
+            _playerData.amountOfGold = value;
+            OnAmountOfGoldChanged?.Invoke();
+        }
     }
 
     string _path;
@@ -37,7 +49,7 @@ public class PlayerManager
     // 플레이어 데이터를 UTF-8 인코딩하여 저장
     public void SaveToJson()
     {
-        if(File.Exists(_path))
+        if (File.Exists(_path))
             File.Delete(_path);
 
         string json = JsonUtility.ToJson(_playerData);
@@ -46,7 +58,7 @@ public class PlayerManager
 
         string encodedJson = System.Convert.ToBase64String(bytes);
 
-        File.WriteAllText(_path , encodedJson);
+        File.WriteAllText(_path, encodedJson);
 
     }
 

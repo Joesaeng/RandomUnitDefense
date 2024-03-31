@@ -15,7 +15,6 @@ public class SelectedPanel : MonoBehaviour
 
     Vector3[] _movingPos = new Vector3[2]{ new Vector3(0f, -300f, 0f), new Vector3(0f, -1200f, 0f) };
     bool _isMoving = false;
-    WaitForSeconds _wfs = new WaitForSeconds(0.05f);
 
     float _scrollSpeed = 10f;
     public void ShowSelectedPanel()

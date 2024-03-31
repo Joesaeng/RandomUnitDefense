@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using Unity.VisualScripting;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using static UnityEngine.UI.CanvasScaler;
 
@@ -52,6 +53,14 @@ public class CombatScene : BaseScene
         Managers.Resource.Destroy (Managers.Resource.Instantiate("DamageText"));
         Managers.Resource.Destroy (Managers.Resource.Instantiate("HitEffect_1"));
         Managers.Resource.Destroy (Managers.Resource.Instantiate("HitEffect_2"));
+        Managers.Resource.Destroy (Managers.Resource.Instantiate("Unit"));
+        Managers.Resource.Destroy (Managers.Resource.Instantiate("Monster"));
+        for(int i = 1; i <= ConstantData.HighestStage; ++i)
+        {
+            string stage = $"{i}";
+            string tstage = stage.PadLeft(3, '0');
+            Managers.Resource.Destroy(Managers.Resource.Instantiate($"Units/Monster{tstage}"));
+        }
         #endregion
 
         _ui_scene = Managers.UI.ShowSceneUI<UI_CombatScene>();
@@ -70,9 +79,9 @@ public class CombatScene : BaseScene
         {
             monster.MonsterUpdate();
         }
-        foreach (KeyValuePair<int, Unit> pair in _unitDict)
+        foreach (Unit unit in _unitDict.Values)
         {
-            pair.Value.UnitUpdate();
+            unit.UnitUpdate();
         }
         if(Managers.Game._dyingMonsters.Count > 0)
         {

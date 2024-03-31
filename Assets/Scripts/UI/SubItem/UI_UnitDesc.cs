@@ -33,6 +33,8 @@ public class UI_UnitDesc : UI_Base
     {
         BtnSellAll,
     }
+
+    TextMeshProUGUI _dpsText;
     public override void Init()
     {
         Bind<TextMeshProUGUI>(typeof(Texts));
@@ -42,6 +44,8 @@ public class UI_UnitDesc : UI_Base
         gameObject.AddUIEvent(ClickedUpgradeButton);
         GetButton((int)Buttons.BtnSellAll).gameObject.AddUIEvent(ClickedSellAllButton);
         GetText((int)Texts.TextSellAll).text = Language.SellAll;
+
+        _dpsText = GetText((int)Texts.TextDPS);
 
         Managers.Game.OnDPSChecker -= SetDPSText;
         Managers.Game.OnDPSChecker += SetDPSText;
@@ -70,15 +74,9 @@ public class UI_UnitDesc : UI_Base
 
     public void SetDPSText()
     {
-        if (Managers.Game.UnitDPSDict.TryGetValue(ID, out Queue<int> dpsQ))
+        if (Managers.Game.UnitDPSDict.TryGetValue(ID, out int dps))
         {
-            int[] dpss = dpsQ.ToArray();
-            int dps = 0;
-            for (int i = 0; i < dpss.Length; i++)
-            {
-                dps += dpss[i];
-            }
-            GetText((int)Texts.TextDPS).text = $"{Util.ChangeNumber(dps)}/s";
+            _dpsText.text = $"{Util.ChangeNumber(dps)}/s";
         }
     }
 

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class SceneManagerEx : MonoBehaviour
 {
-    public BaseScene CurrentScene { get { return GameObject.FindObjectOfType<BaseScene>(); } }
+    public BaseScene CurrentScene { get; set; }
 
     UI_LoadingObject loadingScene;
 

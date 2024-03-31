@@ -22,12 +22,13 @@ public class UnitBullet : MonoBehaviour
 
     public void Init(Monster targetMonster, UnitNames baseUnit, int unitLv, float bulletSpeed = 25f)
     {
+        int spriteIndex = unitLv - 1;
         if (_spriteRenderer == null)
             _spriteRenderer = GetComponent<SpriteRenderer>();
-        if (_sprites[unitLv - 1] == null)
-            _sprites[unitLv - 1] = Managers.Resource.Load<Sprite>($"Art/Billinear/Bullets/{unitLv}");
+        if (_sprites[spriteIndex] == null)
+            _sprites[spriteIndex] = Managers.Resource.Load<Sprite>($"Art/Billinear/Bullets/{unitLv}");
 
-        _spriteRenderer.sprite = _sprites[unitLv - 1];
+        _spriteRenderer.sprite = _sprites[spriteIndex];
 
         _targetMonster = targetMonster;
         if (targetMonster == null)

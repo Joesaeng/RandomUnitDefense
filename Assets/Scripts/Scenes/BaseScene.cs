@@ -25,6 +25,7 @@ public abstract class BaseScene : MonoBehaviour
             Managers.Resource.Instantiate("ClickEffectCreator").name = "@ClickEffectCreator";
         }
         Managers.Game.InitScene(SceneType);
+        Managers.Scene.CurrentScene = this;
     }
 
     public abstract void Clear();

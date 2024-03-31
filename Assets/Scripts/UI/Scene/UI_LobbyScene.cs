@@ -50,6 +50,7 @@ public class UI_LobbyScene : UI_Scene
         BtnSellRune,
         #endregion
         NestedScrollManager,
+        ImageCoin,
     }
 
     enum Texts
@@ -123,11 +124,16 @@ public class UI_LobbyScene : UI_Scene
         GetObject((int)GameObjects.UnitSlotsScroll).GetOrAddComponent<ScrollScript>()
             .Init("UnitSlots", "UnitSlotsViewport", "UnitSlotsScrollBar");
 
+        // Æ÷Æ®Æú¸®¿À¿ë °ñµå ¾ò±â
+        GetObject((int)GameObjects.ImageCoin).AddUIEvent(OnGainGoldCoinForTest);
+
         OnChangeLanguage();
 
+        // EventBind
+        Managers.Player.OnAmountOfGoldChanged -= UpdateAmountOfGoldText;
+        Managers.Player.OnAmountOfGoldChanged += UpdateAmountOfGoldText;
 
-
-        GetText((int)Texts.TextAmountGold).text = $"{Managers.Player.Data.amountOfGold}";
+        GetText((int)Texts.TextAmountGold).text = $"{Managers.Player.AmountOfGold}";
 
         #region CombatPanel
 
@@ -148,7 +154,7 @@ public class UI_LobbyScene : UI_Scene
         for (int i = 0; i < baseSlotCount; i++)
         {
             GameObject unitSlot = Managers.UI.MakeSubItem<UI_UnitSlot>(parent : _unitSlotsTF).gameObject;
-            unitSlot.transform.localScale = new Vector3(1f, 1f, 1f);
+            unitSlot.transform.localScale = Vector3.one;
             int unitId = i + ConstantData.FirstOfUnitID;
             if (unitId < (int)UnitNames.Count)
             {
@@ -186,7 +192,7 @@ public class UI_LobbyScene : UI_Scene
         for (int index = 0; index < ConstantData.EquipedRunesCount; index++)
         {
             GameObject equipedRuneSlot = Managers.UI.MakeSubItem<UI_EquipedRuneSlot>(parent : equipedRunesTF).gameObject;
-            equipedRuneSlot.transform.localScale = new Vector3(1f, 1f, 1f);
+            equipedRuneSlot.transform.localScale = Vector3.one;
             _equipedRunes[index] = equipedRuneSlot;
         }
 
@@ -216,11 +222,11 @@ public class UI_LobbyScene : UI_Scene
             for (int index = 0; index < ConstantData.SetUnitCount; index++)
             {
                 GameObject setUnit = Managers.UI.MakeSubItem<UI_SetUnit>(parent : setUnitsTF).gameObject;
-                setUnit.transform.localScale = new Vector3(1f, 1f, 1f);
+                setUnit.transform.localScale = Vector3.one;
                 _barrackSetUnits[index] = setUnit;
 
                 GameObject setUnit2 = Managers.UI.MakeSubItem<UI_SetUnit>(parent : GetObject(index).transform).gameObject;
-                setUnit2.transform.localScale = new Vector3(1f, 1f, 1f);
+                setUnit2.transform.localScale = Vector3.one;
                 setUnit2.transform.localPosition = Vector3.zero;
                 setUnit2.GetComponent<Image>().enabled = false;
                 setUnit2.GetComponent<UI_SetUnit>().SelectImageOff();
@@ -284,13 +290,19 @@ public class UI_LobbyScene : UI_Scene
 
     private void UpdateAmountOfGoldText()
     {
-        GetText((int)Texts.TextAmountGold).text = $"{Managers.Player.Data.amountOfGold}";
+        GetText((int)Texts.TextAmountGold).text = $"{Managers.Player.AmountOfGold}";
     }
 
     public void OnOptionMenuButtonClicked(PointerEventData data)
     {
         Managers.Sound.Play(Define.SFXNames.Click);
         Managers.UI.ShowPopupUI<UI_OptionMenu>();
+    }
+
+    public void OnGainGoldCoinForTest(PointerEventData data)
+    {
+        Managers.Player.AmountOfGold += 1000;
+        Managers.Player.SaveToJson();
     }
 
     #region CombatPanel
@@ -484,7 +496,7 @@ public class UI_LobbyScene : UI_Scene
         {
             // ½½·ÔÀ» ¸¸µé¾î Ã¤¿î´Ù
             Transform ownRune = Managers.UI.MakeSubItem<UI_RuneSlot>(parent: _runeSlotsTF).transform;
-            ownRune.localScale = new Vector3(1f, 1f, 1f);
+            ownRune.localScale = Vector3.one;
         }
 
         // ÇöÀç ¸®½ºÆ®ÀÇ Ã¹¹øÂ° ·é ÀÎµ¦½º¸¦ ±¸ÇÑ´Ù. ex) 0, 15, 30 . . .
@@ -635,11 +647,10 @@ public class UI_LobbyScene : UI_Scene
         SelectRunePanel.HideSelectedPanel();
 
         Managers.Player.Data.ownedRunes.RemoveAt(selectedRuneIndex);
-        Managers.Player.Data.amountOfGold += ConstantData.RuneSellingPrices[(int)selectedRune.gradeOfRune];
+        Managers.Player.AmountOfGold += ConstantData.RuneSellingPrices[(int)selectedRune.gradeOfRune];
 
         Managers.Player.SaveToJson();
         StartCoroutine(CoSetOwnRunes());
-        UpdateAmountOfGoldText();
     }
     // ·é ÀÏ°ýÆÇ¸Å
     public void SellAllRunes(List<int> sellRunesIndexs, int sellPrices)
@@ -650,11 +661,10 @@ public class UI_LobbyScene : UI_Scene
             Managers.Player.Data.ownedRunes.RemoveAt(sellRunesIndexs[i]);
         }
 
-        Managers.Player.Data.amountOfGold += sellPrices;
+        Managers.Player.AmountOfGold += sellPrices;
 
         Managers.Player.SaveToJson();
         StartCoroutine(CoSetOwnRunes());
-        UpdateAmountOfGoldText();
     }
 
     public void OnCloseSelectedRunePanelButton(PointerEventData eventData)
@@ -666,7 +676,7 @@ public class UI_LobbyScene : UI_Scene
     public void OnOneRuneGambleButtonClicked(PointerEventData eventData)
     {
         Managers.Sound.Play(Define.SFXNames.Click);
-        if (Managers.Player.Data.amountOfGold < ConstantData.TheCostOfOneRuneGamble)
+        if (Managers.Player.AmountOfGold < ConstantData.TheCostOfOneRuneGamble)
         {
             Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
             return;
@@ -674,19 +684,18 @@ public class UI_LobbyScene : UI_Scene
 
         Managers.Player.Data.ownedRunes.Add(Managers.Rune.CreateRandomRune());
 
-        Managers.Player.Data.amountOfGold -= ConstantData.TheCostOfOneRuneGamble;
+        Managers.Player.AmountOfGold -= ConstantData.TheCostOfOneRuneGamble;
 
         // ·é »Ì±â ¿¬Ãâ
 
         StartCoroutine(CoSetOwnRunes());
         Managers.Player.SaveToJson();
-        UpdateAmountOfGoldText();
     }
 
     public void OnTenRuneGambleButtonClicked(PointerEventData eventData)
     {
         Managers.Sound.Play(Define.SFXNames.Click);
-        if (Managers.Player.Data.amountOfGold < ConstantData.TheCostOfTenRunesGamble)
+        if (Managers.Player.AmountOfGold < ConstantData.TheCostOfTenRunesGamble)
         {
             Managers.UI.MakeSubItem<UI_NotificationText>().SetText(Define.NotiTexts.NotEnoughGoldCoin);
             return;
@@ -698,13 +707,12 @@ public class UI_LobbyScene : UI_Scene
         }
         Managers.Player.Data.ownedRunes.Add(Managers.Rune.CreateRandomRune(GradeOfRune.Unique));
 
-        Managers.Player.Data.amountOfGold -= ConstantData.TheCostOfTenRunesGamble;
+        Managers.Player.AmountOfGold -= ConstantData.TheCostOfTenRunesGamble;
 
         // ·é »Ì±â ¿¬Ãâ
 
         StartCoroutine(CoSetOwnRunes());
         Managers.Player.SaveToJson();
-        UpdateAmountOfGoldText();
     }
 
     public void OnSortRunesButtonClicked(PointerEventData eventData)

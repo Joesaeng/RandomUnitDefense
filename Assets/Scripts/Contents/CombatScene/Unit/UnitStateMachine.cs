@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using static Unit;
+using static UnityEditor.PlayerSettings;
 
 public enum UnitState
 {
@@ -200,6 +201,7 @@ public class UnitStateMachine : MonoBehaviour
         _unitAnimator.PlayAnimation($"Attack_{_job}");
 
         float bullettime = ConstantData.UnitAttackAnimLength / attackAnimSpeed * 0.66f;
+        // WaitForSeconds wBulletTime = YieldCache.WaitForSeconds(bullettime);
         WaitForSeconds wBulletTime = new WaitForSeconds(bullettime);
         StartCoroutine("CoCreateBullet", wBulletTime);
         _curAttackRateTime = 0f;
@@ -216,9 +218,15 @@ public class UnitStateMachine : MonoBehaviour
             return;
         }
 
-        GameObject bullet = Managers.Resource.Instantiate("UnitBullet");
-        bullet.transform.position = _ownObj.transform.position;
-        bullet.GetComponent<UnitBullet>().Init(_targetMonster, _baseUnit, _unitLv);
+        GameObject bulletObj = Managers.Resource.Instantiate("UnitBullet");
+        bulletObj.transform.position = _ownObj.transform.position;
+
+        if (!Managers.CompCache.UnitBulletCache.TryGetValue(bulletObj, out UnitBullet bulletComp))
+            Managers.CompCache.AddComponentCache(bulletObj,out bulletComp);
+
+        bulletComp.Init(_targetMonster, _baseUnit, _unitLv);
+
+        // bulletObj.GetComponent<UnitBullet>().Init(_targetMonster, _baseUnit, _unitLv);
     }
 
     IEnumerator CoCreateBullet(WaitForSeconds bullettime)

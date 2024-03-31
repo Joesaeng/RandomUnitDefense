@@ -2,11 +2,7 @@ using Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Scripting;
 
 public class GameManagerEx : MonoBehaviour
 {
@@ -37,7 +33,7 @@ public class GameManagerEx : MonoBehaviour
     public Dictionary<int, Unit> UnitDict { get { return _unitDict; } }
     WaitForSeconds _aSecond = new WaitForSeconds(1f);
 
-    public Dictionary<UnitNames,Queue<int>> UnitDPSDict { get; set; }
+    public Dictionary<UnitNames,int> UnitDPSDict { get; set; }
 
     public Action OnChangedLanguage;
 
@@ -147,10 +143,10 @@ public class GameManagerEx : MonoBehaviour
             if (UnitDPSDict != null)
                 UnitDPSDict.Clear();
             else
-                UnitDPSDict = new Dictionary<UnitNames,Queue<int>>();
+                UnitDPSDict = new Dictionary<UnitNames,int>();
 
             for (int i = 0; i < SetUnits.Length; ++i)
-                UnitDPSDict.Add(SetUnits[i], new Queue<int>());
+                UnitDPSDict.Add(SetUnits[i], 0);
         }
     }
     // 이벤트 바인딩 해제
@@ -257,7 +253,7 @@ public class GameManagerEx : MonoBehaviour
         SetPlayerHighestStage();
         Managers.Time.GamePause();
         Managers.UI.ShowPopupUI<UI_GameOver>().SetUp(gameoverType);
-        Managers.Player.Data.amountOfGold += EarnedGoldCoin;
+        Managers.Player.AmountOfGold += EarnedGoldCoin;
         Managers.Player.SaveToJson();
     }
 
@@ -364,19 +360,19 @@ public class GameManagerEx : MonoBehaviour
         Managers.Player.SaveToJson();
     }
 
-    public void AddDamagesInDPSQueue(UnitNames unit,int damage)
+    public void AddDamagesInDPSDict(UnitNames unit,int damage)
     {
-        if(UnitDPSDict.TryGetValue(unit,out Queue<int> dpsQ))
+        if (UnitDPSDict.TryGetValue(unit,out _))
         {
-            dpsQ.Enqueue(damage);
-            StartCoroutine(CoRemoveDPSInOverSecond(unit));
+            UnitDPSDict[unit] += damage;
+            StartCoroutine(CoRemoveDPSInOverSecond(unit, damage));
         }
     }
 
-    IEnumerator CoRemoveDPSInOverSecond(UnitNames unit)
+    IEnumerator CoRemoveDPSInOverSecond(UnitNames unit,int damage)
     {
         yield return _aSecond;
-        UnitDPSDict[unit].TryDequeue(out int t);
+        UnitDPSDict[unit] -= damage;
         Util.CheckTheEventAndCall(OnDPSChecker);
     }
 

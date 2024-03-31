@@ -24,12 +24,16 @@ public class PoisonDebuff : BaseDebuff
         {
             _monster.ReduceHp(_damagePerSecond);
             if (Managers.Game.UnitDPSDict.ContainsKey(Data.UnitNames.PoisonBowMan))
-                Managers.Game.AddDamagesInDPSQueue(Data.UnitNames.PoisonBowMan, (int)_damagePerSecond);
-            GameObject damageText = Managers.Resource.Instantiate("DamageText");
+                 Managers.Game.AddDamagesInDPSDict(Data.UnitNames.PoisonBowMan, (int)_damagePerSecond);
 
             Transform tf = _monster.transform;
-            Vector3 pos = new Vector3(tf.position.x,tf.position.y ,tf.position.z);
-            damageText.GetComponent<DamageText>().SetText(_damagePerSecond, pos, isPoison: true);
+            
+            GameObject damageTextObj = Managers.Resource.Instantiate("DamageText", tf.position);
+            if (!Managers.CompCache.DamageTextCache.TryGetValue(damageTextObj, out DamageText damageTextComp))
+                Managers.CompCache.AddComponentCache(damageTextObj, out damageTextComp);
+            damageTextComp.SetText(_damagePerSecond, isPoison: true);
+
+            // damageTextObj.GetComponent<DamageText>().SetText(_damagePerSecond, );
             _posionDamageTime = 0f;
         }
     }

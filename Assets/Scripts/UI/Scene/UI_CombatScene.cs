@@ -97,6 +97,15 @@ public class UI_CombatScene : UI_Scene
         GetText((int)Texts.TextSpawn).text = Language.Spawn;
         GetText((int)Texts.TextGamble).text = Language.GambleItem;
 
+        // 거의 매 프레임마다 호출되는 오브젝트 캐싱
+        _text_amountOfRuby = GetText((int)Texts.TextTheAmountOfRuby);
+        _image_spawnUnable = GetImage((int)Images.ImageSpawnUnable);
+        _image_gambleUnable = GetImage((int)Images.ImageGambleUnable);
+
+        _text_stageTime = GetText((int)Texts.TextLeftTimeStage);
+        _text_monsterCount = GetText((int)Texts.TextChangeMonsterCount);
+        _image_monsterGageBar = GetImage((int)Images.FillMonsterGageBar);
+
         #region 버튼 이벤트 바인딩
         OnChangeAmountOfRuby(Managers.Game.Ruby);
         Managers.Game.OnChangedRuby -= OnChangeAmountOfRuby;
@@ -160,7 +169,7 @@ public class UI_CombatScene : UI_Scene
         for(int i = 0; i < unitCount; i++)
         {
             GameObject unitDesc = Managers.UI.MakeSubItem<UI_UnitDesc>(parent : panelUpgrade.transform).gameObject;
-            unitDesc.transform.localScale = new Vector3(1f, 1f, 1f);
+            unitDesc.transform.localScale = Vector3.one;
             unitDesc.GetComponent<UI_UnitDesc>().SetInfo(i, Managers.Game.SetUnits[i]);
         }
         #endregion
@@ -173,7 +182,7 @@ public class UI_CombatScene : UI_Scene
             {
                 GameObject equipedRune = Managers.UI.MakeSubItem<UI_EquipedRuneCombatScene>
                     (parent : GetObject((int)GameObjects.PanelEquipedRunes).transform).gameObject;
-                equipedRune.transform.localScale = new Vector3(1f, 1f, 1f);
+                equipedRune.transform.localScale = Vector3.one;
                 equipedRune.GetComponent<UI_EquipedRuneCombatScene>().SetUp(i);
             }
         }
@@ -199,10 +208,12 @@ public class UI_CombatScene : UI_Scene
 
         #endregion
 
-        _text_stageTime = GetText((int)Texts.TextLeftTimeStage);
-        _text_monsterCount = GetText((int)Texts.TextChangeMonsterCount);
-        _image_monsterGageBar = GetImage((int)Images.FillMonsterGageBar);
+        
     }
+    TextMeshProUGUI _text_amountOfRuby;
+    Image _image_spawnUnable;
+    Image _image_gambleUnable;
+
     TextMeshProUGUI _text_stageTime;
     TextMeshProUGUI _text_monsterCount;
     Image _image_monsterGageBar;
@@ -298,15 +309,14 @@ public class UI_CombatScene : UI_Scene
 
     public void OnChangeAmountOfRuby(int value)
     {
-        GetText((int)Texts.TextTheAmountOfRuby).text = $"<sprite=25> {value}";
-        GetImage((int)Images.ImageSpawnUnable).enabled = value < ConstantData.RubyRequiredOneSpawnPlayerUnit;
-        GetImage((int)Images.ImageGambleUnable).enabled = !Managers.InGameItem.CanGamble();
-
+        _text_amountOfRuby.text = $"<sprite=25> {value}";
+        _image_spawnUnable.enabled = value < ConstantData.RubyRequiredOneSpawnPlayerUnit;
+        _image_gambleUnable.enabled = !Managers.InGameItem.CanGamble();
     }
 
     public void OnChangeItems(int value,InGameItemData itemdata = null)
     {
-        GetText((int)Texts.TextGambleRuby).text = $"<sprite=25> {value}";
+        _text_amountOfRuby.text = $"<sprite=25> {value}";
         if(itemdata != null)
         {
             GameObject item = Managers.UI.MakeSubItem<UI_IngameItem>(parent : _panelItem.transform).gameObject;

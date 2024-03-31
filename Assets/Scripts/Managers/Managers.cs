@@ -14,6 +14,7 @@ public class Managers : MonoBehaviour
     InGameItemManager _inGameItem = new InGameItemManager();
     PlayerManager _player = new PlayerManager();
     RuneManager _rune = new RuneManager();
+    ComponentCacheManager _compCache = new ComponentCacheManager();
 
 
     public static GameManagerEx Game { get { return Instance._game; } }
@@ -21,6 +22,7 @@ public class Managers : MonoBehaviour
     public static InGameItemManager InGameItem { get {  return Instance._inGameItem; } }
     public static PlayerManager Player { get {  return Instance._player; } }
     public static RuneManager Rune { get {  return Instance._rune; } }
+    public static ComponentCacheManager CompCache { get {  return Instance._compCache; } }
     #endregion
 
     #region Core
@@ -97,6 +99,7 @@ public class Managers : MonoBehaviour
         Game.Clear();
         Time.Clear();
 
+        CompCache.Clear();
         Pool.Clear();
     }
 }

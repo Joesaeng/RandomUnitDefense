@@ -118,10 +118,6 @@ public class TimeManager
                 CurTimeScale = 2;
                 break;
             case 2:
-                Time.timeScale = 3f;
-                CurTimeScale = 3;
-                break;
-            case 3:
                 Time.timeScale = 1f;
                 CurTimeScale = 1;
                 break;
