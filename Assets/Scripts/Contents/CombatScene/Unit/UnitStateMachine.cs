@@ -82,7 +82,7 @@ public class UnitStateMachine : MonoBehaviour
             GameObject go = Managers.Resource.Instantiate($"Units/{unitname}_{level}",_ownObj.transform);
             go.transform.localPosition = new Vector3(0, -0.2f, 0);
             go.transform.localScale = new Vector3(1.3f, 1.3f, 1);
-            _unitAnimator = go.GetOrAddComponent<UnitAnimator>();
+            Managers.CompCache.GetOrAddComponentCache(go, out _unitAnimator);
             _unitAnimator.Init();
             _animator = Util.FindChild<Animator>(go);
         }

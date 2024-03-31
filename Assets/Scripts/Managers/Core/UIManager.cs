@@ -74,7 +74,9 @@ public class UIManager
         //canvas.worldCamera = Camera.main;
         //canvas.sortingOrder = ConstantData.WorldSpaceUISortOrder;
 
-        return Util.GetOrAddComponent<T>(go);
+        Managers.CompCache.GetOrAddComponentCache(go, out T component);
+
+        return component;
     }
 
     public void CloseWorldSpaceUI(GameObject closeUI)
@@ -92,7 +94,9 @@ public class UIManager
         if (parent != null)
             go.transform.SetParent(parent);
 
-        return Util.GetOrAddComponent<T>(go);
+        Managers.CompCache.GetOrAddComponentCache(go, out T component);
+
+        return component;
     }
 
     public T ShowPopupUI<T>(string name = null) where T : UI_Popup

@@ -31,9 +31,10 @@ public class GameManagerEx : MonoBehaviour
 
     private Dictionary<int,Unit> _unitDict;
     public Dictionary<int, Unit> UnitDict { get { return _unitDict; } }
-    WaitForSeconds _aSecond = new WaitForSeconds(1f);
+    WaitForSeconds _asecond = new WaitForSeconds(1f);
+    WaitForSeconds _wfsDpsUpdate = new WaitForSeconds(0.1f);
 
-    public Dictionary<UnitNames,int> UnitDPSDict { get; set; }
+    public Dictionary<UnitNames, int> UnitDPSDict { get; set; }
 
     public Action OnChangedLanguage;
 
@@ -145,10 +146,12 @@ public class GameManagerEx : MonoBehaviour
             if (UnitDPSDict != null)
                 UnitDPSDict.Clear();
             else
-                UnitDPSDict = new Dictionary<UnitNames,int>();
+                UnitDPSDict = new Dictionary<UnitNames, int>();
 
             for (int i = 0; i < SetUnits.Length; ++i)
                 UnitDPSDict.Add(SetUnits[i], 0);
+
+            StartCoroutine(CoDPSUpdate());
         }
     }
     // 이벤트 바인딩 해제
@@ -173,7 +176,7 @@ public class GameManagerEx : MonoBehaviour
 
     private void OnUnitUpgrade(int upgradeSlot)
     {
-        UpgradeCostOfUnits[upgradeSlot] = Managers.UnitStatus.UnitUpgradLv[(UnitNames)SetUnits[upgradeSlot]] * ConstantData.BaseUpgradeCost;
+        UpgradeCostOfUnits[upgradeSlot] = Managers.UnitStatus.UnitUpgradLv[SetUnits[upgradeSlot]] * ConstantData.BaseUpgradeCost;
     }
     // 플레이어 최고 스테이지 갱신
     private void SetPlayerHighestStage()
@@ -217,7 +220,7 @@ public class GameManagerEx : MonoBehaviour
             if (CurStageMonsterCount < stageData.monsterSpawnCount)
                 SpawnMonster(_monsterSpawnPoint.transform.position);
             // 소환을 다 한 후에 현재 맵에 몬스터가 없으면 스테이지 스킵 활성화
-            else if(Monsters.Count <= 0) 
+            else if (Monsters.Count <= 0)
             {
                 if (StageAutoSkip)
                     Managers.Time.SkipStage();
@@ -299,7 +302,7 @@ public class GameManagerEx : MonoBehaviour
     {
         SelectedUnit = unit;
 
-        Util.CheckTheEventAndCall(OnSelectUnit,unit.ID,unit.Lv);
+        Util.CheckTheEventAndCall(OnSelectUnit, unit.ID, unit.Lv);
         UnitAttackRange.ActiveAttackRange(unit);
     }
 
@@ -359,24 +362,33 @@ public class GameManagerEx : MonoBehaviour
         Managers.Player.SaveToJson();
     }
 
-    public void AddDamagesInDPSDict(UnitNames unit,int damage)
+    public void AddDamagesInDPSDict(UnitNames unit, int damage)
     {
-        if (UnitDPSDict.TryGetValue(unit,out _))
+        if (UnitDPSDict.TryGetValue(unit, out _))
         {
             UnitDPSDict[unit] += damage;
             StartCoroutine(CoRemoveDPSInOverSecond(unit, damage));
         }
     }
 
-    IEnumerator CoRemoveDPSInOverSecond(UnitNames unit,int damage)
+    IEnumerator CoRemoveDPSInOverSecond(UnitNames unit, int damage)
     {
-        yield return _aSecond;
+        yield return _asecond;
         UnitDPSDict[unit] -= damage;
-        Util.CheckTheEventAndCall(OnDPSChecker);
+    }
+
+    IEnumerator CoDPSUpdate()
+    {
+        while(true)
+        {
+            yield return _wfsDpsUpdate;
+            Util.CheckTheEventAndCall(OnDPSChecker);
+        }
     }
 
     public void Clear()
     {
         ClearBindedEvent();
+        StopAllCoroutines();
     }
 }

@@ -26,7 +26,7 @@ public class UnitBullet : MonoBehaviour
         if (_spriteRenderer == null)
             _spriteRenderer = GetComponent<SpriteRenderer>();
         if (_sprites[spriteIndex] == null)
-            _sprites[spriteIndex] = Managers.Resource.Load<Sprite>($"Art/Billinear/Bullets/{unitLv}");
+            _sprites[spriteIndex] = Managers.Resource.Load<Sprite>($"Art/Bullets/{unitLv}");
 
         _spriteRenderer.sprite = _sprites[spriteIndex];
 

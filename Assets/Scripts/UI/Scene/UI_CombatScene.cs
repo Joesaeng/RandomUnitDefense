@@ -13,7 +13,7 @@ public class UI_CombatScene : UI_Scene
 {
     enum GameObjects
     {
-        PanelUpgrade,
+        PanelUnitDesc,
         PanelItem,
         PanelEquipStatusName,
         PanelEquipStatusValue,
@@ -182,18 +182,18 @@ public class UI_CombatScene : UI_Scene
         #endregion
 
         #region 유닛 업그레이드 초기화
-        GameObject panelUpgrade = GetObject((int)GameObjects.PanelUpgrade);
-        //foreach (Transform child in panelUpgrade.transform)
-        //    Managers.Resource.Destroy(child.gameObject);
 
-        int unitCount = Managers.Game.SetUnits.Length;
-        for(int i = 0; i < unitCount; i++)
-        {
-            // GameObject unitDesc = Managers.UI.MakeSubItem<UI_UnitDesc>(parent : panelUpgrade.transform).gameObject;
-            GameObject unitDesc = panelUpgrade.transform.GetChild(i).gameObject;
-            unitDesc.transform.localScale = Vector3.one;
-            unitDesc.GetOrAddComponent<UI_UnitDesc>().SetInfo(i, Managers.Game.SetUnits[i]);
-        }
+        GameObject panelUnitDesc = GetObject((int)GameObjects.PanelUnitDesc);
+        panelUnitDesc.GetOrAddComponent<UI_PanelUnitDesc>();
+
+        // int unitCount = Managers.Game.SetUnits.Length;
+        // for(int i = 0; i < unitCount; i++)
+        // {
+        //     // GameObject unitDesc = Managers.UI.MakeSubItem<UI_UnitDesc>(parent : panelUpgrade.transform).gameObject;
+        //     GameObject unitDesc = panelUnitDesc.transform.GetChild(i).gameObject;
+        //     unitDesc.transform.localScale = Vector3.one;
+        //     unitDesc.GetOrAddComponent<UI_UnitDesc>().SetInfo(i, Managers.Game.SetUnits[i]);
+        // }
         #endregion
 
         #region 장착된 룬 세팅
@@ -386,6 +386,7 @@ public class UI_CombatScene : UI_Scene
     {
         _panelUnitInfo.SetActive(false);
     }
+
     int _unitInfoSellCost = 0;
     public void SetAndActiveUnitInfo(UnitNames id, int lv)
     {
@@ -439,7 +440,7 @@ public class UI_CombatScene : UI_Scene
         }
         int[] sellCosts = ConstantData.UnitSellingPrices;
         _unitInfoSellCost = sellCosts[lv - 1];
-        GetText((int)Texts.TextSellBtn).text = $"{Language.Sell} <sprite=25>{_unitInfoSellCost}";
+        GetText((int)Texts.TextSellBtn).text = $"{Language.Sell}  {_unitInfoSellCost}";
     }
 
     public void OnSellButtonClicked(PointerEventData data)
