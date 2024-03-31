@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,11 +18,14 @@ public class UI_CombatScene : UI_Scene
         PanelEquipStatusName,
         PanelEquipStatusValue,
         PanelEquipedRunes,
+        PanelUnitInfo,
         BlockerUpgrade,
         BlockerGamble
     }
 
     GameObject _panelItem;
+
+    GameObject _panelUnitInfo;
 
     GameObject _panelEquipStatusName;
     GameObject _panelEquipStatusValue;
@@ -43,6 +47,7 @@ public class UI_CombatScene : UI_Scene
         BtnGameSpeed,
         BtnSkip,
         BtnAutoSkip,
+        BtnSell,
     }
     enum Texts
     {
@@ -57,6 +62,15 @@ public class UI_CombatScene : UI_Scene
         TextFixedMonsterCount,
         TextEquipedRunesStatus,
         TextSkip,
+        TextName,
+        TextLevel,
+        TextInfo1,
+        TextInfo2,
+        TextInfo3,
+        TextInfo4,
+        TextInfo5,
+        TextInfo6,
+        TextSellBtn,
     }
 
     enum Images
@@ -64,7 +78,8 @@ public class UI_CombatScene : UI_Scene
         FillMonsterGageBar,
         ImageSpawnUnable,
         ImageGambleUnable,
-        ImageGameSpeedValue
+        ImageGameSpeedValue,
+        TypeImage
     }
 
     public override void Init()
@@ -115,8 +130,15 @@ public class UI_CombatScene : UI_Scene
         Managers.Game.OnNextStage -= OnNextStageEvent;
         Managers.Game.OnNextStage += OnNextStageEvent;
 
+        GetText((int)Texts.TextGambleRuby).text = $"<sprite=25> {ConstantData.BaseGambleCost}";
         Managers.InGameItem.OnGambleItem -= OnChangeItems;
         Managers.InGameItem.OnGambleItem += OnChangeItems;
+
+        Managers.Game.OnSelectUnit -= OnSelectUnitEventReader;
+        Managers.Game.OnSelectUnit += OnSelectUnitEventReader;
+
+        Managers.Game.OnUnselectUnit -= OnUnselectUnitEventReader;
+        Managers.Game.OnUnselectUnit += OnUnselectUnitEventReader;
         #endregion
 
         #region 현재 장비 스테이터스 초기화
@@ -207,7 +229,13 @@ public class UI_CombatScene : UI_Scene
 
         #endregion
 
-        
+        #region UnitInfo 오브젝트 세팅
+        _panelUnitInfo = GetObject((int)GameObjects.PanelUnitInfo);
+        _panelUnitInfo.SetActive(false);
+
+        GetButton((int)Buttons.BtnSell).gameObject.AddUIEvent(OnSellButtonClicked);
+        #endregion
+
     }
     TextMeshProUGUI _text_amountOfRuby;
     Image _image_spawnUnable;
@@ -346,6 +374,76 @@ public class UI_CombatScene : UI_Scene
     {
         _panelEquipStatusName.SetActive(!_panelEquipStatusName.activeSelf);
         _panelEquipStatusValue.SetActive(!_panelEquipStatusValue.activeSelf);
+    }
+
+    public void OnSelectUnitEventReader(UnitNames id, int lv)
+    {
+        SetAndActiveUnitInfo(id, lv);
+    }    
+
+    public void OnUnselectUnitEventReader()
+    {
+        _panelUnitInfo.SetActive(false);
+    }
+    int _unitInfoSellCost = 0;
+    public void SetAndActiveUnitInfo(UnitNames id, int lv)
+    {
+        _panelUnitInfo.SetActive(true);
+
+        UnitStatus _unitStatus = Managers.UnitStatus.GetUnitStatus(id, lv);
+        GetText((int)Texts.TextName).text = Language.GetBaseUnitName(_unitStatus.unit);
+        GetText((int)Texts.TextLevel).text = $"{Language.GetUnitInfo(Language.UnitInfos.Level)} : {lv}";
+        string damage = _unitStatus.attackDamage.ToString();
+        damage = Util.ChangeNumber(damage);
+        GetText((int)Texts.TextInfo1).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackDamage)} : {damage}";
+        GetText((int)Texts.TextInfo2).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackRate)} : {_unitStatus.attackRate}";
+        GetText((int)Texts.TextInfo3).text = $"{Language.GetUnitInfo(Language.UnitInfos.AttackRange)} : {_unitStatus.attackRange}";
+
+        switch (id)
+        {
+            case UnitNames.Knight:
+            case UnitNames.Spearman:
+            case UnitNames.Archer:
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/Common");
+                break;
+            case UnitNames.FireMagician:
+            case UnitNames.Viking:
+            case UnitNames.Warrior:
+            {
+                GetText((int)Texts.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.WideAttackArea)} : {_unitStatus.wideAttackArea}";
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/AOE");
+                break;
+            }
+            case UnitNames.SlowMagician:
+            {
+                GetText((int)Texts.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.WideAttackArea)} : {_unitStatus.wideAttackArea}";
+                GetText((int)Texts.TextInfo5).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowRatio)} : {_unitStatus.debuffRatio}";
+                GetText((int)Texts.TextInfo6).text = $"{Language.GetUnitInfo(Language.UnitInfos.SlowDuration)} : {_unitStatus.debuffDuration}";
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/Debuffer");
+                break;
+            }
+            case UnitNames.StunGun:
+            {
+                GetText((int)Texts.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.StunDuration)} : {_unitStatus.debuffDuration}";
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/Debuffer");
+                break;
+            }
+            case UnitNames.PoisonBowMan:
+            {
+                GetText((int)Texts.TextInfo4).text = $"{Language.GetUnitInfo(Language.UnitInfos.PosionDamagePerSecond)} : {_unitStatus.damagePerSecond}/s";
+                GetText((int)Texts.TextInfo5).text = $"{Language.GetUnitInfo(Language.UnitInfos.PosionDuration)} : {_unitStatus.debuffDuration}";
+                GetImage((int)Images.TypeImage).sprite = Managers.Resource.Load<Sprite>($"Art/UIImages/Debuffer");
+                break;
+            }
+        }
+        int[] sellCosts = ConstantData.UnitSellingPrices;
+        _unitInfoSellCost = sellCosts[lv - 1];
+        GetText((int)Texts.TextSellBtn).text = $"{Language.Sell} <sprite=25>{_unitInfoSellCost}";
+    }
+
+    public void OnSellButtonClicked(PointerEventData data)
+    {
+        Managers.Game.ClickedSellButton(_unitInfoSellCost);
     }
 
     public void Clear()

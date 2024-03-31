@@ -1,12 +1,7 @@
 using Data;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
-using static Unit;
-using static UnityEditor.PlayerSettings;
 
 public enum UnitState
 {

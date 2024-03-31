@@ -95,7 +95,7 @@ public class Unit : MonoBehaviour
 
     private void ClickEventReader()
     {
-        Managers.Game.SelectUnit(gameObject);
+        Managers.Game.SelectUnit(this);
     }
 
     private void DoubleClickEventReader(Unit unit)

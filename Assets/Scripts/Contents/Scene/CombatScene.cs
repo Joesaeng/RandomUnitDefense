@@ -1,14 +1,6 @@
 using Data;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml;
-using Unity.VisualScripting;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 public class CombatScene : BaseScene
 {

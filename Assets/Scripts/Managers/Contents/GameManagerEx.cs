@@ -44,12 +44,16 @@ public class GameManagerEx : MonoBehaviour
     public Action<int> OnChangedRuby;
 
     public Action OnNextStage;
+
+    public Action<UnitNames,int> OnSelectUnit;
+
+    public Action OnUnselectUnit;
+
     public Action<Unit,int> OnSellAUnit;
 
     public Action OnDPSChecker;
 
-    public GameObject SelectedUnit { get; set; }
-    public UI_UnitInfo SelectUnitInfoUI { get; set; }
+    public Unit SelectedUnit { get; set; }
 
     public UnitNames[] SetUnits { get; set; }
     public int[] UpgradeCostOfUnits { get; set; }
@@ -292,23 +296,19 @@ public class GameManagerEx : MonoBehaviour
         Util.CheckTheEventAndCall(OnSpawnButtonClickEvent);
     }
     // 유닛 선택 메서드(공격범위 및 UI_UnitInfo 생성)
-    public void SelectUnit(GameObject unit)
+    public void SelectUnit(Unit unit)
     {
-        if (SelectedUnit != null && SelectUnitInfoUI != null)
-        {
-            Managers.UI.CloseWorldSpaceUI(SelectUnitInfoUI.gameObject);
-        }
-
         SelectedUnit = unit;
-        SelectUnitInfoUI = Managers.UI.MakeWorldSpaceUI<UI_UnitInfo>(unit.transform);
+
+        Util.CheckTheEventAndCall(OnSelectUnit,unit.ID,unit.Lv);
         UnitAttackRange.ActiveAttackRange(unit);
     }
 
     public void ClickedSellButton(int sellCost)
     {
-        if (SelectedUnit != null && SelectUnitInfoUI != null)
+        if (SelectedUnit != null)
         {
-            if (Util.CheckTheEventAndCall(OnSellAUnit, SelectedUnit.GetComponent<Unit>(), sellCost))
+            if (Util.CheckTheEventAndCall(OnSellAUnit, SelectedUnit, sellCost))
             {
                 UnSelectUnit();
             }
@@ -338,10 +338,10 @@ public class GameManagerEx : MonoBehaviour
 
     public void UnSelectUnit()
     {
-        if (SelectedUnit != null && SelectUnitInfoUI != null)
+        if (SelectedUnit != null)
         {
-            Managers.UI.CloseWorldSpaceUI(SelectUnitInfoUI.gameObject);
             SelectedUnit = null;
+            Util.CheckTheEventAndCall(OnUnselectUnit);
         }
         if (UnitAttackRange.enabled == true)
         {

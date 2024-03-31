@@ -9,12 +9,12 @@ public class UnitAttackRange : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void ActiveAttackRange(GameObject unit)
+    public void ActiveAttackRange(Unit unit)
     {
         gameObject.SetActive(true);
 
         // 공격 범위 크기
-        float diameter = unit.GetComponent<Unit>().StateMachine.AttackRange * 2.0f;
+        float diameter = unit.StateMachine.AttackRange * 2.0f;
         transform.localScale = Vector3.one * diameter;
         transform.position = unit.transform.position;
     }
