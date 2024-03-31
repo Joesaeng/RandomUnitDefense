@@ -25,6 +25,8 @@ public class SoundManager
             {
                 GameObject go = new GameObject { name = soundNames[i] };
                 _audioSources[i] = go.AddComponent<AudioSource>();
+                _audioSources[i].dopplerLevel = 0f;
+                _audioSources[i].reverbZoneMix = 0f;
                 go.transform.parent = root.transform;
             }
 
