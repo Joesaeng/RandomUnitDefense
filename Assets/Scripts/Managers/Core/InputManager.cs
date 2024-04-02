@@ -7,7 +7,6 @@ using UnityEngine.UIElements;
 
 public class InputManager
 {
-    public Action KeyAction = null;
     public Action<Define.MouseEvent> MouseAction = null;
 
     bool _pressed = false;
@@ -20,8 +19,6 @@ public class InputManager
         //     return;
         if (IsPointerOverUIObject())
             return;
-        if (Input.anyKey && KeyAction != null)
-            KeyAction.Invoke();
 
         if (MouseAction != null)
         {
@@ -53,7 +50,6 @@ public class InputManager
 
     public void Clear()
     {
-        KeyAction = null;
         MouseAction = null;
     }
 

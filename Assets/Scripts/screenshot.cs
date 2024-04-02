@@ -6,11 +6,13 @@ using UnityEngine;
 public class screenshot : MonoBehaviour
 {
     public Camera renderCamera;
+    static int i = 0;
     private void Update()
     {
-        string path = "Assets/Resources/CombatSceneTileImage.png";
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            string path = Application.persistentDataPath + $"/screenshot{i}.png";
+            i++;
             TakeScreenshotAndSave(path);
         }
     }

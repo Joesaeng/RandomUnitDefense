@@ -10,7 +10,7 @@ public class CombatScene : BaseScene
 
     // SlotIndex,Unit
     Dictionary<int,Unit> _unitDict;
-    
+
     UnitSlot[] _unitSlots = null;
 
     UnitNames[] _selectedUnitIds;
@@ -36,23 +36,32 @@ public class CombatScene : BaseScene
         Managers.Game.OnSellAUnit += OnSellAUnit;
 
         _selectedUnitIds = Managers.Game.SetUnits;
-        
+
         Managers.InGameItem.Init();
         Managers.UnitStatus.Init();
         Managers.Time.Init();
 
         #region 오브젝트풀 미리 초기화
-        Managers.Resource.Destroy (Managers.Resource.Instantiate("UnitBullet"));
-        Managers.Resource.Destroy (Managers.Resource.Instantiate("DamageText"));
-        Managers.Resource.Destroy (Managers.Resource.Instantiate("HitEffect_1"));
-        Managers.Resource.Destroy (Managers.Resource.Instantiate("HitEffect_2"));
-        Managers.Resource.Destroy (Managers.Resource.Instantiate("Unit"));
-        Managers.Resource.Destroy (Managers.Resource.Instantiate("Monster"));
-        for(int i = 1; i <= ConstantData.HighestStage; ++i)
+        Managers.Pool.CreatePool(Managers.Resource.Load<GameObject>("Prefabs/UnitBullet"), 10);
+        Managers.Pool.CreatePool(Managers.Resource.Load<GameObject>("Prefabs/DamageText"), 10);
+        Managers.Pool.CreatePool(Managers.Resource.Load<GameObject>("Prefabs/HitEffect_2"), 10);
+        Managers.Pool.CreatePool(Managers.Resource.Load<GameObject>("Prefabs/Unit"));
+        Managers.Pool.CreatePool(Managers.Resource.Load<GameObject>("Prefabs/Monster"), 40);
+        Managers.Pool.CreatePool(Managers.Resource.Load<GameObject>("Prefabs/UI/WorldSpace/UI_HPBar"), 40);
+
+        for (int i = 1; i <= ConstantData.HighestStage; ++i)
         {
+            // 몬스터 생성
             string stage = $"{i}";
             string tstage = stage.PadLeft(3, '0');
-            Managers.Resource.Destroy(Managers.Resource.Instantiate($"Units/Monster{tstage}"));
+            Managers.Pool.CreatePool(Managers.Resource.Load<GameObject>($"Prefabs/Units/Monster{tstage}"), 40);
+        }
+
+        for (int i = 0; i < Managers.Game.SetUnits.Length; ++i)
+        {
+            // 1레벨 유닛들 풀에 미리 생성
+            string unitName = $"{Managers.Game.SetUnits[i]}_1";
+            Managers.Pool.CreatePool(Managers.Resource.Load<GameObject>($"Prefabs/Units/{unitName}"));
         }
         #endregion
 
@@ -60,7 +69,7 @@ public class CombatScene : BaseScene
 
         Managers.Game.Ruby = ConstantData.InitialRuby;
 
-        Managers.Sound.Play("GameScene",Define.Sound.Bgm);
+        Managers.Sound.Play("GameScene", Define.Sound.Bgm);
     }
 
     private void Update()
@@ -78,7 +87,7 @@ public class CombatScene : BaseScene
         {
             unit.UnitUpdate();
         }
-        if(Managers.Game._dyingMonsters.Count > 0)
+        if (Managers.Game._dyingMonsters.Count > 0)
         {
             Managers.Game.DyingMonsterDespawn();
         }
@@ -112,7 +121,7 @@ public class CombatScene : BaseScene
             }
             else
             {
-                (_unitDict[curSlotIndex], _unitDict[nextSlotIndex]) 
+                (_unitDict[curSlotIndex], _unitDict[nextSlotIndex])
                     = (_unitDict[nextSlotIndex], _unitDict[curSlotIndex]);
 
                 _unitDict[nextSlotIndex].transform.position = GetUnitMovePos(nextSlotIndex);
@@ -215,7 +224,7 @@ public class CombatScene : BaseScene
     // 플레이어가 유닛을 드래그 할 때 호출되는 이벤트
     private void OnDraggableUnitDragEventReader(Unit unit)
     {
-        for(int slotIndex = 0;  slotIndex < _unitSlots.Length; ++slotIndex)
+        for (int slotIndex = 0; slotIndex < _unitSlots.Length; ++slotIndex)
         {
             if (unit.SlotIndex == slotIndex)
                 continue;
@@ -227,12 +236,12 @@ public class CombatScene : BaseScene
     // 더블클릭시 씬에 나와있는 유닛들을 돌면서 합성가능한 유닛이 있다면 합성한다
     private void OnDraggableUnitDoubleClickEventReader(Unit unit)
     {
-        foreach(Unit nextUnit in _unitDict.Values)
+        foreach (Unit nextUnit in _unitDict.Values)
         {
             if (TryCombineUnit(unit, nextUnit))
                 return;
         }
-        
+
     }
 
     // 유닛 합성
@@ -258,7 +267,7 @@ public class CombatScene : BaseScene
     }
 
     // 플레이어가 유닛 판매를 시도할 때
-    private void OnSellAUnit(Unit unit,int sellCost)
+    private void OnSellAUnit(Unit unit, int sellCost)
     {
         if (_unitDict.ContainsKey(unit.SlotIndex))
         {

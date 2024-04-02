@@ -14,7 +14,6 @@ public class UI_Scene : UI_Base
         Canvas canvas = Util.GetOrAddComponent<Canvas>(this.gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceCamera;
         canvas.worldCamera = Camera.main;
-        canvas.pixelPerfect = true;
 
         canvas.overrideSorting = true;
 
