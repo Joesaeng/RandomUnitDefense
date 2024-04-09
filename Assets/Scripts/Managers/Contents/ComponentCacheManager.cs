@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 컴포넌트를 캐싱하고 관리하는 매니저
 public class ComponentCacheManager
 {
     public Dictionary<GameObject,List<Component>> CompCache = new();

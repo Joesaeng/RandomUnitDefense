@@ -19,13 +19,10 @@ public class Monster : MonoBehaviour
     int _nextMovePoint;
     int _previousMovePoint;
 
-    [SerializeField]
     private bool _isStun { get; set; } = false;
-    [SerializeField]
     private bool _isDead = false;
     public bool IsDead => _isDead;
 
-    [SerializeField]
     List<BaseDebuff> _debuffs;
     public List<BaseDebuff> Debuffs => _debuffs;
 
@@ -265,9 +262,6 @@ public class Monster : MonoBehaviour
         Managers.CompCache.GetOrAddComponentCache(damageTextObj, out DamageText damageTextComp);
         
         damageTextComp.SetText(damage + addedDamage, isCritical);
-
-        // GameObject damageText = Managers.Resource.Instantiate("DamageText", pos);
-        // damageText.GetComponent<DamageText>().SetText(damage + addedDamage, isCritical);
     }
 
     public void ReduceHp(float damage)

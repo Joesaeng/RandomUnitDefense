@@ -12,7 +12,6 @@ public enum UnitState
 
 
 
-[Serializable]
 public class UnitStateMachine : MonoBehaviour
 {
     GameObject _ownObj;
@@ -48,7 +47,6 @@ public class UnitStateMachine : MonoBehaviour
 
     private UnitState _state;
 
-    [SerializeField]
     float _curAttackRateTime;
 
     public void OnUpdate()

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+// 플레이어의 데이터를 관리, 저장 및 로드 담당
 public class PlayerManager
 {
     PlayerData _playerData;

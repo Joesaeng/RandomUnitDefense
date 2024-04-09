@@ -18,10 +18,9 @@ public class CombatScene : BaseScene
     protected override void Init()
     {
         base.Init();
-        Application.targetFrameRate = 60; // 프레임 고정
         SceneType = Define.Scene.Combat;
 
-        Managers.Game.InitForGameScene(_curMap);
+        Managers.Game.InitForCombatScene(_curMap);
         _unitSlots = GameObject.Find("UnitSlots").gameObject.GetComponentsInChildren<UnitSlot>();
 
         _unitDict = Managers.Game.UnitDict;

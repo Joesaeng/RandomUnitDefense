@@ -12,6 +12,7 @@ public class Define
         GradeDown,
         Count,
     }
+
     public enum NotiTexts
     {
         NotEnoughGoldCoin,
@@ -86,6 +87,7 @@ public class Define
         Ground = 7,
         Block = 8,
     }
+
     public enum Scene
     {
         Unknown,
@@ -93,17 +95,20 @@ public class Define
         Lobby,
         Combat,
     }
+
     public enum Sound
     {
         Bgm,
         Effect,
         MaxCount,
     }
+
     public enum UIEvent
     {
         Click,
         Drag,
     }
+
     public enum MouseEvent
     {
         Press,
@@ -111,6 +116,7 @@ public class Define
         PointerUp,
         Click,
     }
+
     public enum CameraMode
     {
         QuaterView,

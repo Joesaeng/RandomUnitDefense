@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// CombatScene의 전반적인 진행을 담당하는 매니저
 public class GameManagerEx : MonoBehaviour
 {
     private Define.GameLanguage _gameLanguage = Define.GameLanguage.Korean;
@@ -85,7 +86,8 @@ public class GameManagerEx : MonoBehaviour
         CurrentScene = scene;
     }
 
-    public void InitForGameScene(Define.Map map)
+    // CombatScene 진입 시 매니저 초기화
+    public void InitForCombatScene(Define.Map map)
     {
         CurStage = 1;
         CurStageMonsterCount = 0;
@@ -119,11 +121,14 @@ public class GameManagerEx : MonoBehaviour
             Managers.UnitStatus.OnUnitUpgradeSlot -= OnUnitUpgrade;
             Managers.UnitStatus.OnUnitUpgradeSlot += OnUnitUpgrade;
         }
+
+        // 유닛 업그레이드 비용 초기화
         UpgradeCostOfUnits = new int[ConstantData.SetUnitCount];
         for (int i = 0; i < Managers.Game.UpgradeCostOfUnits.Length; ++i)
         {
             UpgradeCostOfUnits[i] = ConstantData.BaseUpgradeCost;
         }
+
         // UnitDict 초기화
         if (_unitDict != null)
             _unitDict.Clear();
@@ -271,17 +276,20 @@ public class GameManagerEx : MonoBehaviour
             Managers.Resource.Destroy(monster.gameObject);
         }
     }
+
     // 플레이어 유닛 이동 메서드
     public void MoveUnitBetweenSlots(int curSlotIndex, int moveSlotIndex)
     {
         Util.CheckTheEventAndCall(OnMoveUnitEvent, curSlotIndex, moveSlotIndex);
     }
+
     // 현재 프레임에 사망하는 몬스터들을 등록하는 메서드
     public void RegisterDyingMonster(Monster monster)
     {
         _dyingMonsters.Push(monster);
         Ruby += monster.GivenRuny;
     }
+
     // 현재 프레임에 사망할 몬스터들 디스폰
     public void DyingMonsterDespawn()
     {
@@ -297,6 +305,7 @@ public class GameManagerEx : MonoBehaviour
     {
         Util.CheckTheEventAndCall(OnSpawnButtonClickEvent);
     }
+
     // 유닛 선택 메서드(공격범위 및 UI_UnitInfo 생성)
     public void SelectUnit(Unit unit)
     {

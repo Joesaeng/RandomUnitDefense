@@ -26,6 +26,8 @@ public abstract class BaseScene : MonoBehaviour
         }
         Managers.Game.InitScene(SceneType);
         Managers.Scene.CurrentScene = this;
+        Application.targetFrameRate = 60; // 프레임 고정
+
     }
 
     public abstract void Clear();
